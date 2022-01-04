@@ -13,7 +13,7 @@ class Word(models.Model):
     ]
 
     word_text = models.CharField(max_length=50)
-    language = models.CharField(choices=language_choices)
+    language = models.CharField(max_length=2, choices=language_choices)
 
     sentences = models.ManyToManyField(Sentence)
 
