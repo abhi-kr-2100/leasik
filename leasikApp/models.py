@@ -30,11 +30,14 @@ class Word(models.Model):
 
 class List(models.Model):
     name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
+
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    
     words = models.ManyToManyField(Word)
 
     def __str__(self) -> str:
         return self.name
 
     class Meta:
-        unique_together = ('name', 'owner')
+        unique_together = ('slug', 'owner')
