@@ -3,9 +3,6 @@ from django.db import models
 
 class Sentence(models.Model):
     sentence_id = models.IntegerField("Tatoeba sentence ID", primary_key=True)
-    
-    # this field has been deprecated and will be removed
-    sentence_text = models.TextField(blank=True)
 
     def __str__(self) -> str:
         return f'ID: {self.sentence_id}'
