@@ -39,10 +39,18 @@ def get_sentence_text(id):
     page = get(url)
     parser = BeautifulSoup(page.content, 'html.parser')
 
-    # We've a dynamic page but the data is available inside the ng-init
-    # attribute. Unfortunately, there's a bit of junk around it that we need to
-    # get rid of.
-    raw_data = parser.select_one(SELECTOR)['ng-init']
-    json_data = loads(clean_data(raw_data))
+    try:
+        # We've a dynamic page but the data is available inside the ng-init
+        # attribute. Unfortunately, there's a bit of junk around it that we need 
+        # to get rid of.
+        raw_data = parser.select_one(SELECTOR)['ng-init']
+    except TypeError:   # page doesn't exist
+        raise KeyError("Given ID doesn't correspond to a sentence.")
 
-    return json_data['text']
+    json_data = loads(clean_data(raw_data))
+    try:
+        text = json_data['text']
+    except KeyError:    # clean_data failed; probably sentence page is bad
+        raise KeyError("Given ID doesn't correspond to a valid sentence page.")
+
+    return text
