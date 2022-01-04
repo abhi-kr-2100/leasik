@@ -3,9 +3,14 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 
+from .helpers import get_sentence_text
+
 
 class Sentence(models.Model):
     sentence_id = models.IntegerField("Tatoeba sentence ID", primary_key=True)
+
+    def get_text(self):
+        return get_sentence_text(self.sentence_id)
 
     def __str__(self) -> str:
         return f'ID: {self.sentence_id}'
