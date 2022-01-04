@@ -2,10 +2,13 @@ from django.db import models
 
 
 class Sentence(models.Model):
-    sentence_text = models.TextField(primary_key=True)
+    sentence_id = models.IntegerField("Tatoeba sentence ID", primary_key=True)
+    
+    # this field has been deprecated and will be removed
+    sentence_text = models.TextField(blank=True)
 
     def __str__(self) -> str:
-        return self.sentence_text
+        return f'ID: {self.sentence_id}'
 
 
 class Word(models.Model):
