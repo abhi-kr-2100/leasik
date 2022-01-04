@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Sentence(models.Model):
@@ -25,3 +26,12 @@ class Word(models.Model):
 
     class Meta:
         unique_together = ('word_text', 'language')
+
+
+class List(models.Model):
+    name = models.CharField(max_length=100)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    words = models.ManyToManyField(Word)
+
+    def __str__(self) -> str:
+        return self.name
