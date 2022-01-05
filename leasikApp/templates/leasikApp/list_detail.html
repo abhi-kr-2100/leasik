@@ -1,5 +1,6 @@
 {% extends "leasikApp/base.html" %}
 
+{% load static %}
 {% load dictionary_access %}
 
 {% block title %}{{ object }}{% endblock %}
@@ -10,19 +11,27 @@
 <ul>
 {% for word in proficiencies %}
     <li>
-        <div class="word">
-            <h2>{{ word }} - {{ proficiencies|get_item:word }}%</h2>
-
-            <ul>
-            {% for sentence in sentences|get_item:word %}
-                <li>{{ sentence.get_text }} -- {{ sentence.get_english_translation }}</li>
-            {% endfor %}
-            </ul>
-        </div>
+    {% for sentence in sentences|get_item:word %}
+        <word-test
+            word="{{ word }}"
+            sentence="{{ sentence.get_text }}"
+            translation="{{ sentence.get_english_translation }}"
+        >
+        </word-test>
+    {% endfor %}
     </li>
 {% endfor %}
 </ul>
 {% else %}
 {% include "leasikApp/unauthenticated.html" %}
 {% endif %}
+{% endblock %}
+
+
+{% block head_scripts %}
+<script src="https://unpkg.com/vue@next"></script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'frontend/js/list_detail.js' %}"></script>
 {% endblock %}
