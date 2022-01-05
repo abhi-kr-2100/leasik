@@ -3,9 +3,9 @@ from django.http.response import HttpResponseRedirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import List, Proficiency, Sentence
+from .models import List, Proficiency, Sentence, Word
 from .forms import NewWordForm
-from .helpers import get_proficiency_dict, get_sentence_dict
+from .helpers import get_proficiency_dict, get_sentence_dict, add_word_to_list
 
 
 class WordListView(ListView):
@@ -59,6 +59,12 @@ class ListDetailEditView(DetailView):
 
 
 def add_new_word(request, slug):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = NewWordForm(request.POST)
+        if form.is_valid():
+            add_word_to_list(request.user, slug, form, Word, List, Sentence)
+
         return HttpResponseRedirect(reverse('leasikApp:list-edit', args=[slug]))
+
+    # TODO: Display form on GET request    
     return HttpResponseRedirect(reverse('leasikApp:home'))
