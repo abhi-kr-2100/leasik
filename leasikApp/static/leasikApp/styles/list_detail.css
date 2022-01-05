@@ -13,6 +13,14 @@
     border-radius: 0.3em;
 }
 
+.word-test-div .correct-resp {
+    color: #5cb85c;
+}
+
+.word-test-div .incorrect-resp {
+    color: #c9302c;
+}
+
 .word-test-buttons input {
     padding: 0.5em;
 }

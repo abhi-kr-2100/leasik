@@ -22,7 +22,8 @@ app.component('word-test', {
     data() {
         return {
             checked: false,
-            userInput: null
+            userInput: null,
+            isAnswerCorrect: null
         }
     },
 
@@ -35,14 +36,13 @@ app.component('word-test', {
     methods: {
         check() {
             if (this.checked) {
-                alert("Already checked!")
                 return
             }
 
             if (semanticallyEqual(this.userInput, this.sentence)) {
-                alert("Correct!")
+                this.isAnswerCorrect = true
             } else {
-                alert("Wrong!")
+                this.isAnswerCorrect = false
             }
 
             this.checked = true
@@ -51,7 +51,13 @@ app.component('word-test', {
     
     template: `
     <div class="word-test-div">
-        <h2 v-show="this.checked">{{ sentence }}</h2>
+        <h2
+            v-show="this.checked"
+            :class="this.isAnswerCorrect ? 'correct-resp' : 'incorrect-resp'"
+        >
+            {{ sentence }}
+        </h2>
+        
         <p>{{ translation }}</p>
 
         <div class="word-test-buttons">
