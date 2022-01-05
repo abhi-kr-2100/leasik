@@ -4,7 +4,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 
-from .helpers import get_sentence_text
+from .helpers import get_sentence_text, get_english_translation
 
 
 class Sentence(models.Model):
@@ -12,6 +12,9 @@ class Sentence(models.Model):
 
     def get_text(self):
         return get_sentence_text(self.sentence_id)
+
+    def get_english_translation(self):
+        return  get_english_translation(self.sentence_id)
 
     def __str__(self) -> str:
         return f'ID: {self.sentence_id}'
