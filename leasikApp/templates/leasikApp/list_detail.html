@@ -11,14 +11,13 @@
 <ul>
 {% for word in proficiencies %}
     <li>
-    {% for sentence in sentences|get_item:word %}
+        {% get_item word as sentence %}
         <word-test
             word="{{ word }}"
             sentence="{{ sentence.get_text }}"
             translation="{{ sentence.get_english_translation }}"
         >
         </word-test>
-    {% endfor %}
     </li>
 {% endfor %}
 </ul>

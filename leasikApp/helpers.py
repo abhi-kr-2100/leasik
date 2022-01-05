@@ -113,10 +113,10 @@ def get_proficiency_dict(user, words, proficiency_model):
 
 
 def get_sentence_dict(words):
-    """Return an OrderedDict of word to sentences mapping."""
+    """Return an OrderedDict of word to sentence mapping."""
 
     sentences_dict = OrderedDict()
     for w in words:
-        sentences_dict[w] = w.sentences.all()
+        sentences_dict[w] = w.sentences.all().order_by('?').first()
 
     return sentences_dict
