@@ -54,3 +54,17 @@ def get_sentence_text(id):
         raise KeyError("Given ID doesn't correspond to a valid sentence page.")
 
     return text
+
+
+def get_or_create_proficiencies(user, words, proficiency_model):
+    """Return a list of Proficiency for given words of a given user.
+    
+    If a Proficiency doesn't, create it.
+    """
+
+    proficiencies = []
+    for w in words:
+        proficiencies.append(
+            proficiency_model.objects.get_or_create(user=user, word=w)[0])
+
+    return proficiencies
