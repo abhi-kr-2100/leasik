@@ -1,9 +1,17 @@
 {% extends "leasikApp/base.html" %}
 
 
-{% block title %}List Detail{% endblock %}
+{% block title %}{{ object }}{% endblock %}
 
 
 {% block content %}
-<p>Nothing here yet.</p>
+{% if request.user.is_authenticated %}
+<ul>
+{% for word in object.words.all %}
+    <li>{{ word }}</li>
+{% endfor %}
+</ul>
+{% else %}
+{% include "leasikApp/unauthenticated.html" %}
+{% endif %}
 {% endblock %}
