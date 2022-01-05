@@ -1,9 +1,47 @@
 {% extends "leasikApp/base.html" %}
 
+{% load static %}
+
 
 {% block title %}List List{% endblock %}
 
-
 {% block content %}
-<p>Nothing here yet.</p>
+<div id="app">
+{% if request.user.is_authenticated %}
+    <a id="new-list-button">Create a new list</a>
+
+    
+    <ul id="word-list-list">
+    {% for word_list in object_list %}
+        <li>
+            <div class="word-list" id="word-list-{{ word_list.slug }}">
+                <h2>{{ word_list.name }}</h2>
+                <div class="word-list-actions">
+                    <a class="word-list-delete-action">Delete</a>
+                    <a class="word-list-play-action">Play</a>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+{% include "leasikApp/unauthenticated.html" %}
+{% endif %}
+</div>
+{% endblock %}
+
+
+{% block head_scripts %}
+<script src="https://unpkg.com/vue@next"></script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'frontend/js/list_list.js' %}"></script>
+<script>
+    const mountedApp = app.mount('#content')
+</script>
+{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'leasikApp/styles/list_list.css' %}"
 {% endblock %}
