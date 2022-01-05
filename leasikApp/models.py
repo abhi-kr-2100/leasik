@@ -9,12 +9,22 @@ from .helpers import get_sentence_text, get_english_translation
 
 class Sentence(models.Model):
     sentence_id = models.IntegerField("Tatoeba sentence ID", primary_key=True)
+    text = models.TextField(null=True, editable=False)
+    english_translation = models.TextField(null=True, editable=False)
 
     def get_text(self):
-        return get_sentence_text(self.sentence_id)
+        if not self.text:
+            self.text = get_sentence_text(self.sentence_id)
+            self.save(update_fields=['text'])
+
+        return self.text
 
     def get_english_translation(self):
-        return  get_english_translation(self.sentence_id)
+        if not self.english_translation:
+            self.english_translation = get_english_translation(self.sentence_id)
+            self.save(update_fields=['english_translation'])
+
+        return self.english_translation
 
     def __str__(self) -> str:
         return f'ID: {self.sentence_id}'
