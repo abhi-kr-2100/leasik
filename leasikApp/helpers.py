@@ -2,6 +2,8 @@
 
 
 from collections import OrderedDict
+from re import compile
+from random import randint, choice
 from json import loads
 
 from requests import get
@@ -51,6 +53,41 @@ def load_tatoeba_json_data(id):
     json_data = loads(clean_data(raw_data))
 
     return json_data
+
+
+def get_page_url_for_word(word):
+    """Return a URL where sentences with the given word can be found."""
+
+    base_url = f'https://tatoeba.org/en/sentences/search?query={word}'
+    page = get(base_url)
+    parser = BeautifulSoup(page.content, 'html.parser')
+
+    list_of_page_links = parser.find_all('a', string=compile(r'^[1-9]\d*$'))
+    max_page_num = 1
+    for pl in list_of_page_links:
+        if int(pl.text) > max_page_num:
+            max_page_num = int(pl.text)
+
+    target_page_num = randint(1, max_page_num)
+    target_url = base_url + f'&page={target_page_num}'
+
+    return target_url
+
+
+def get_sentence_id_for_word(word):
+    """Return a Tatoeba sentence ID associated with the given word."""
+
+    SELECTOR = 'sentence-and-translations'
+
+    url = get_page_url_for_word(word)
+    page = get(url)
+    parser = BeautifulSoup(page.content, 'html.parser')
+
+    sentence_element = choice(parser.find_all('div', { SELECTOR: True }))
+    raw_data = sentence_element['ng-init']
+    json_data = loads(clean_data(raw_data))
+
+    return json_data['id']
 
 
 def get_sentence_text(id):
@@ -120,3 +157,20 @@ def get_sentence_dict(words):
         sentences_dict[w] = w.sentences.all().order_by('?').first()
 
     return sentences_dict
+
+
+def add_word_to_list(user, slug, form, Word, List, Sentence):
+    """Add the word inside form to a list with the given slug owned by user."""
+
+    the_list = List.objects.get(owner=user, slug=slug)
+    the_word = Word.objects.get_or_create(
+        word_text=form.cleaned_data['word_text'],
+        language=form.cleaned_data['language']
+    )[0]
+
+    new_sentence_id = get_sentence_id_for_word(form.cleaned_data['word_text'])
+    new_sentence = Sentence.objects.get_or_create(
+        sentence_id=new_sentence_id)[0]
+
+    the_word.sentences.add(new_sentence)
+    the_list.words.add(the_word)
