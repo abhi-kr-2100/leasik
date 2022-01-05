@@ -2,7 +2,12 @@ const app = Vue.createApp({})
 
 
 app.component('word-test', {
-    props: ['word', 'sentence', 'translation'],
+    props: {
+        word: String,
+        sentence: String,
+        translation: String
+    },
+    
     template: `
     <div class="word-test-div">
         <h2>{{ sentence }}</h2>
