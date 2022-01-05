@@ -29,25 +29,25 @@
     border-radius: 1em;
 }
 
-.word-list-delete-action {
+.word-list-actions a {
     padding: 0.5em;
 
-    background-color: #c9302c;
-    color: white;
-
-    font-family: 'Roboto';
-
-    border-radius: 0.3em;
-}
-
-.word-list-play-action {
-    padding: 0.5em;
-
-    background-color: #5cb85c;
     color: white;
 
     font-family: 'Roboto';
     text-decoration: none;
 
     border-radius: 0.3em;
+}
+
+.word-list-delete-action {
+    background-color: #c9302c;
+}
+
+.word-list-edit-action {
+    background-color: #007bff;
+}
+
+.word-list-play-action {
+    background-color: #5cb85c;
 }
