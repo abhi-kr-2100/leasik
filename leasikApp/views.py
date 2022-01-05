@@ -35,3 +35,15 @@ class ListDetailView(DetailView):
         context['sentences'] = sentence_dict
 
         return context
+
+
+class ListDetailEditView(DetailView):
+    model = List
+
+    def get_template_names(self):
+        return ['leasikApp/list_edit.html']
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return List.objects.filter(owner=self.request.user)
+        return List.objects.none()
