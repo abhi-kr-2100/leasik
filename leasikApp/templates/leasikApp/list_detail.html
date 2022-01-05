@@ -1,5 +1,6 @@
 {% extends "leasikApp/base.html" %}
 
+{% load dictionary_access %}
 
 {% block title %}{{ object }}{% endblock %}
 
@@ -10,7 +11,7 @@
 {% for word in object.words.all %}
     <li>
         <div class="word">
-            <h2>{{ word }}</h2>
+            <h2>{{ word }} - {{ proficiencies|get_item:word }}%</h2>
             <ul>
             {% for sentence in word.sentences.all %}
                 <li>{{ sentence.get_text }}</li>
