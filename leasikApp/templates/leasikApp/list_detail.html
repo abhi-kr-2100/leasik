@@ -8,7 +8,7 @@
 
 {% block content %}
 {% if request.user.is_authenticated %}
-<ul>
+<ul id="question-list">
 {% for word in proficiencies %}
     <li>
         {% get_item word as sentence %}
@@ -26,6 +26,10 @@
 {% endif %}
 {% endblock %}
 
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'leasikApp/styles/list_detail.css' %}">
+{% endblock %}
 
 {% block head_scripts %}
 <script src="https://unpkg.com/vue@next"></script>

@@ -1,0 +1,32 @@
+#question-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#question-list li {
+    margin: 2em 1em 0 1em;
+    padding: 1em;
+
+    border-style: solid;
+    border-width: 0.1em;
+    border-radius: 0.3em;
+}
+
+.word-test-buttons input {
+    padding: 0.5em;
+}
+
+.word-test-buttons a {
+    cursor: pointer;
+
+    margin-left: 1em;
+    padding: 0.5em;
+
+    border-radius: 0.3em;
+    
+    background-color: #5cb85c;
+    color: white;
+
+    font-family: 'Roboto', sans-serif;
+}
