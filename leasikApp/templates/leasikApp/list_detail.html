@@ -8,15 +8,10 @@
 {% block content %}
 {% if request.user.is_authenticated %}
 <ul>
-{% for word in object.words.all %}
+{% for word in proficiencies %}
     <li>
         <div class="word">
             <h2>{{ word }} - {{ proficiencies|get_item:word }}%</h2>
-            <ul>
-            {% for sentence in word.sentences.all %}
-                <li>{{ sentence.get_text }}</li>
-            {% endfor %}
-            </ul>
         </div>
     </li>
 {% endfor %}
