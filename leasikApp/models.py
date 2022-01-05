@@ -53,8 +53,8 @@ class List(models.Model):
 class Proficiency(models.Model):
     """How proficient is a user with a word?"""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    word = models.OneToOneField(Word, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    word = models.ForeignKey(Word, on_delete=models.CASCADE)
 
     proficiency = models.IntegerField(
         default=0,
