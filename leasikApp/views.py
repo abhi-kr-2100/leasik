@@ -1,8 +1,8 @@
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import List, Proficiency
-from .helpers import get_proficiency_dict
+from .models import List, Proficiency, Sentence
+from .helpers import get_proficiency_dict, get_sentence_dict
 
 
 class WordListView(ListView):
@@ -26,9 +26,12 @@ class ListDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         words = context['object'].words.all()
-        
+
         proficiency_dict = get_proficiency_dict(
             self.request.user, words, Proficiency)
         context['proficiencies'] = proficiency_dict
+
+        sentence_dict = get_sentence_dict(proficiency_dict.keys())
+        context['sentences'] = sentence_dict
 
         return context

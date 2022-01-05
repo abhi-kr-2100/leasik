@@ -12,6 +12,12 @@
     <li>
         <div class="word">
             <h2>{{ word }} - {{ proficiencies|get_item:word }}%</h2>
+
+            <ul>
+            {% for sentence in sentences|get_item:word %}
+                <li>{{ sentence.get_text }}</li>
+            {% endfor %}
+            </ul>
         </div>
     </li>
 {% endfor %}
