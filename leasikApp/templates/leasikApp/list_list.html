@@ -18,7 +18,13 @@
                 <h2>{{ word_list.name }}</h2>
                 <div class="word-list-actions">
                     <a class="word-list-delete-action">Delete</a>
-                    <a class="word-list-play-action">Play</a>
+                    
+                    <a
+                        href="{% url 'leasikApp:list-detail' word_list.slug %}"
+                        class="word-list-play-action"
+                    >
+                        Play
+                    </a>
                 </div>
             </div>
         </li>
