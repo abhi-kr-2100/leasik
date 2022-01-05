@@ -1,7 +1,10 @@
+from django.urls import reverse
+from django.http.response import HttpResponseRedirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from .models import List, Proficiency, Sentence
+from .forms import NewWordForm
 from .helpers import get_proficiency_dict, get_sentence_dict
 
 
@@ -47,3 +50,15 @@ class ListDetailEditView(DetailView):
         if self.request.user.is_authenticated:
             return List.objects.filter(owner=self.request.user)
         return List.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = NewWordForm
+
+        return context
+
+
+def add_new_word(request, slug):
+    if request.method == 'POST':
+        return HttpResponseRedirect(reverse('leasikApp:list-edit', args=[slug]))
+    return HttpResponseRedirect(reverse('leasikApp:home'))

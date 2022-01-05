@@ -1,1 +1,27 @@
 {% extends "leasikApp/base.html" %}
+
+
+{% block content %}
+{% if request.user.is_authenticated %}
+<ul id="existing-word-list">
+{% for word in object.words.all %}
+    <li>
+        <div class="existing-word-list-item">
+            <h3>{{ word }}</h3>
+            <a>Delete</a>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+
+<div id="add-new-word">
+    <form action="{% url 'leasikApp:add-new-word' object.slug %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+</div>
+{% else %}
+{% include "leasikApp/unauthenticated.html" %}
+{% endif %}
+{% endblock %}
