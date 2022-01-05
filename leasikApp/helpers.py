@@ -31,8 +31,8 @@ def clean_data(raw_data):
     return '{ "error": "Failed!" }'
 
 
-def get_sentence_text(id):
-    """Return the Tatoeba sentence text associated with the given id."""
+def load_tatoeba_json_data(id):
+    """Return the JSON data for the Tatoeba sentence associated with the ID."""
 
     SELECTOR = 'div.sentence-and-translations.md-whiteframe-1dp'
 
@@ -49,12 +49,36 @@ def get_sentence_text(id):
         raise KeyError("Given ID doesn't correspond to a sentence.")
 
     json_data = loads(clean_data(raw_data))
+
+    return json_data
+
+
+def get_sentence_text(id):
+    """Return the Tatoeba sentence text associated with the given id."""
+
+    json_data = load_tatoeba_json_data(id)
+
     try:
         text = json_data['text']
     except KeyError:    # clean_data failed; probably sentence page is bad
         raise KeyError("Given ID doesn't correspond to a valid sentence page.")
 
     return text
+
+
+def get_english_translation(id):
+    """Return the English translation of the Tatoeba sentence associated with
+    the given ID.
+    """
+
+    json_data = load_tatoeba_json_data(id)
+
+    try:
+        translation = json_data["base"]["text"]
+    except KeyError:
+        raise KeyError("Given ID doesn't correspond to a valid sentence page.")
+
+    return translation
 
 
 def get_or_create_proficiencies(user, words, proficiency_model):
