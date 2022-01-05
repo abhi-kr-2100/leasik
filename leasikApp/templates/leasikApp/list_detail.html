@@ -8,7 +8,16 @@
 {% if request.user.is_authenticated %}
 <ul>
 {% for word in object.words.all %}
-    <li>{{ word }}</li>
+    <li>
+        <div class="word">
+            <h2>{{ word }}</h2>
+            <ul>
+            {% for sentence in word.sentences.all %}
+                <li>{{ sentence.get_text }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </li>
 {% endfor %}
 </ul>
 {% else %}
