@@ -2,6 +2,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from .models import List, Proficiency
+from .helpers import get_or_create_proficiencies
 
 
 class WordListView(ListView):
@@ -25,10 +26,8 @@ class ListDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         words = context['object'].words.all()
-        proficiencies = Proficiency.objects.filter(
-            user=self.request.user,
-            word__in=words
-        )
+        proficiencies = get_or_create_proficiencies(
+            self.request.user, words, Proficiency)
 
         proficiency_dict = {
             p.word: p.proficiency for p in proficiencies
