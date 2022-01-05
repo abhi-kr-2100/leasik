@@ -31,17 +31,6 @@
 {% endblock %}
 
 
-{% block head_scripts %}
-<script src="https://unpkg.com/vue@next"></script>
-{% endblock %}
-
-{% block scripts %}
-<script src="{% static 'frontend/js/list_list.js' %}"></script>
-<script>
-    const mountedApp = app.mount('#content')
-</script>
-{% endblock %}
-
 {% block stylesheets %}
 <link rel="stylesheet" href="{% static 'leasikApp/styles/list_list.css' %}"
 {% endblock %}
