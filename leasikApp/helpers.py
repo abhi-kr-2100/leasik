@@ -1,6 +1,7 @@
 """Helper or utility functions for the leasikApp app."""
 
 
+from collections import OrderedDict
 from json import loads
 
 from requests import get
@@ -68,3 +69,20 @@ def get_or_create_proficiencies(user, words, proficiency_model):
             proficiency_model.objects.get_or_create(user=user, word=w)[0])
 
     return proficiencies
+
+
+def get_proficiency_dict(user, words, proficiency_model):
+    """Return an OrderedDict of word to proficiency mapping.
+    
+    The dictionary is ordered by proficiency. The considered words are passed
+    in through the parameters and are assumed to belong to the given user.
+    """
+
+    proficiencies = sorted(
+        get_or_create_proficiencies(user, words, proficiency_model))
+
+    proficiency_dict = OrderedDict()
+    for p in proficiencies:
+        proficiency_dict[p.word] = p.proficiency
+
+    return proficiency_dict

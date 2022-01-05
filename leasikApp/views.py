@@ -1,10 +1,8 @@
-from collections import OrderedDict
-
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from .models import List, Proficiency
-from .helpers import get_or_create_proficiencies
+from .helpers import get_proficiency_dict
 
 
 class WordListView(ListView):
@@ -28,14 +26,9 @@ class ListDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         words = context['object'].words.all()
-        proficiencies = sorted(
-            get_or_create_proficiencies(self.request.user, words, Proficiency)
-        )
-
-        proficiency_dict = OrderedDict()
-        for p in proficiencies:
-            proficiency_dict[p.word] = p.proficiency
-
+        
+        proficiency_dict = get_proficiency_dict(
+            self.request.user, words, Proficiency)
         context['proficiencies'] = proficiency_dict
 
         return context
