@@ -55,7 +55,7 @@ app.component('word-test', {
         <p>{{ translation }}</p>
 
         <div class="word-test-buttons">
-            <input v-model="userInput">
+            <input @keyup.enter="check" v-model="userInput">
             <a @click="check">Check</a>
         </div>
     </div>
