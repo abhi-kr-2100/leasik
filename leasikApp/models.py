@@ -1,4 +1,5 @@
-from enum import unique
+from __future__ import annotations
+
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -63,6 +64,9 @@ class Proficiency(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user.id}: {self.word.word_text} - {self.proficiency}%'
+
+    def __lt__(self, other: Proficiency) -> bool:
+        return self.proficiency < other.proficiency
 
     class Meta:
         unique_together = ('user', 'word')
