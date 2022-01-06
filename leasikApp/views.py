@@ -92,7 +92,7 @@ def update_proficiency(request):
             word_text=item['word_text'], language=item['language'])
         to_update = Proficiency.objects.get(user=user, word=word)
 
-        new_proficiency = (to_update.proficiency + 10) % 100
+        new_proficiency = (to_update.proficiency + 1) % 100
         to_update.proficiency = new_proficiency
         to_update.save(update_fields=['proficiency'])
 
