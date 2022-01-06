@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Sentence, Word, List, Proficiency
+from .models import Sentence, Word, List, Proficiency, UserProfile
 
 
 class SentenceAdmin(admin.ModelAdmin):
@@ -17,3 +17,4 @@ admin.site.register(Sentence, SentenceAdmin)
 admin.site.register(Word)
 admin.site.register(List)
 admin.site.register(Proficiency)
+admin.site.register(UserProfile)

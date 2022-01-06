@@ -3,8 +3,18 @@ from __future__ import annotations
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+from django.dispatch import receiver
+
+from allauth.account.signals import user_signed_up
 
 from .helpers import get_sentence_text, get_english_translation
+
+
+# a provisional list of all languages available
+language_choices = [
+    ('en', 'English'),
+    ('tr', 'Türkçe'),
+]
 
 
 class Sentence(models.Model):
@@ -31,12 +41,6 @@ class Sentence(models.Model):
 
 
 class Word(models.Model):
-    # a provisional list of all languages available
-    language_choices = [
-        ('en', 'English'),
-        ('tr', 'Türkçe'),
-    ]
-
     word_text = models.CharField(max_length=50)
     language = models.CharField(max_length=2, choices=language_choices)
 
@@ -83,3 +87,20 @@ class Proficiency(models.Model):
 
     class Meta:
         unique_together = ('user', 'word')
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    current_studying_language = models.CharField(max_length=2,
+        choices=language_choices, default=language_choices[0][0])
+    questions_per_page = models.IntegerField(
+        validators=[MinValueValidator(5), MaxValueValidator(99)], default=50)
+
+    def __str__(self) -> str:
+        return self.user.username
+
+    @receiver(user_signed_up)
+    def create_user_profile(sender, **kwargs):
+        user = User.objects.get(username=kwargs['user'].username)
+        UserProfile.objects.create(user=user)
