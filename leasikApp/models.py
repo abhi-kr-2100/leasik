@@ -95,7 +95,7 @@ class UserProfile(models.Model):
     current_studying_language = models.CharField(max_length=2,
         choices=language_choices, default=language_choices[0][0])
     questions_per_page = models.IntegerField(
-        validators=[MinValueValidator(5), MaxValueValidator(99)], default=50)
+        validators=[MinValueValidator(5), MaxValueValidator(50)], default=25)
 
     def __str__(self) -> str:
         return self.user.username
