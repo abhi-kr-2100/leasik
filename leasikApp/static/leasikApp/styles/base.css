@@ -2,6 +2,7 @@
 
 body {
     width: 100vw;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
 }
@@ -13,6 +14,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+#content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 100vw;
+    min-height: 90vh;
 }
 
 #main-header h1 {
