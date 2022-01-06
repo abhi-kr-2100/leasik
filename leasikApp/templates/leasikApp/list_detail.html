@@ -9,8 +9,22 @@
 {% block content %}
 {% if request.user.is_authenticated %}
 <div id="app">
-    <input
-        v-model="answer" :class="answerCorrectness" @keyup.enter="sumbitAnswer">
+    <div id="answer-box">
+        <p id="pre-blank">
+            {% verbatim %}
+            {{ preBlank }}
+            {% endverbatim %}
+        </p>
+        <input
+            v-model="answer" :class="answerCorrectness"
+            @keyup.enter="sumbitAnswer"
+        >
+        <p id="post-blank">
+            {% verbatim %}
+            {{ postBlank }}
+            {% endverbatim %}
+        </p>
+    </div>
     <p>
         {% verbatim %}
         {{ questions[currentQuestion].translation }}

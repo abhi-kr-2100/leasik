@@ -1,14 +1,48 @@
 const app = Vue.createApp({
     data() {
+        const currentQuestion = question_list[0]
+        const currentSentence = currentQuestion.sentence
+        const words = currentSentence.split(" ")
+
         return {
             questions: question_list,
             currentQuestion: 0,
+
+            missingWordIndex: Math.floor(Math.random() * words.length),
             
             answer: '',
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
 
-            resultsPosted: false
+            resultsPosted: false,
+
+            preQuestionSetup() {
+                const currentQuestion = this.questions[this.currentQuestion]
+                const currentSentence = currentQuestion.sentence
+                const words = currentSentence.split(" ");
+    
+                this.missingWordIndex = Math.floor(Math.random() * words.length)
+            }
+        }
+    },
+
+    computed: {
+        preBlank() {
+            const currentQuestion = this.questions[this.currentQuestion]
+            const currentSentence = currentQuestion.sentence
+            const words = currentSentence.split(' ')
+            const wordsToInclude = words.slice(0, this.missingWordIndex)
+
+            return wordsToInclude.join(' ')
+        },
+
+        postBlank() {
+            const currentQuestion = this.questions[this.currentQuestion]
+            const currentSentence = currentQuestion.sentence
+            const words = currentSentence.split(' ')
+            const wordsToInclude = words.slice(this.missingWordIndex + 1)
+
+            return wordsToInclude.join(' ')
         }
     },
 
@@ -18,8 +52,12 @@ const app = Vue.createApp({
                 return
             }
 
-            const isCorrect = semanticallyEqual(
-                this.answer, this.questions[this.currentQuestion].sentence)
+            const currentQuestion = this.questions[this.currentQuestion]
+            const currentSentence = currentQuestion.sentence
+            const words = currentSentence.split(" ")
+            const wordToGuess = words[this.missingWordIndex]
+
+            const isCorrect = semanticallyEqual(this.answer, wordToGuess)
             if (isCorrect) {
                 this.answerCorrectness = 'correct'
                 this.questions[this.currentQuestion].score = 1
@@ -28,7 +66,7 @@ const app = Vue.createApp({
             }
 
             this.isCurrentAnswerChecked = true
-            this.answer = this.questions[this.currentQuestion].sentence
+            this.answer = wordToGuess
         },
 
         showNextQuestion() {
@@ -36,6 +74,8 @@ const app = Vue.createApp({
             this.answer = ''
             this.isCurrentAnswerChecked = false
             this.answerCorrectness = 'unknown'
+
+            this.preQuestionSetup()
         },
 
         finish() {

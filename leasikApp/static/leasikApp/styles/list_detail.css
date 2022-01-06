@@ -7,9 +7,20 @@
     padding: 3em;
 }
 
+#answer-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#answer-box p {
+    font-size: 1.5em;
+    text-align: center;
+}
+
 #app input {
-    padding: 0.5em;
-    font-size: 3em;
+    padding: 0.1em;
+    font-size: 2em;
     text-align: center;
 }
 
