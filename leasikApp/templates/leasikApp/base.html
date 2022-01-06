@@ -26,12 +26,12 @@
             <h1>Leasik</h1>
             <nav>
                 <ul>
+                {% if request.user.is_authenticated %}
                     <li><a href="{% url 'leasikApp:home' %}">My Lists</a></li>
-                    {% if request.user.is_authenticated %}
-                        <li><a>{{ request.user.username }}</a></li>
-                    {% else %}
-                        <li><a>Log in</a></li>
-                    {% endif %}
+                    <li><a>{{ request.user.username }}</a></li>
+                {% else %}
+                    <li><a>Log in with Google</a></li>
+                {% endif %}
                 </ul>
             </nav>
         </header>
