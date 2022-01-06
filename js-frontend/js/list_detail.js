@@ -28,6 +28,7 @@ const app = Vue.createApp({
             }
 
             this.isCurrentAnswerChecked = true
+            this.answer = this.questions[this.currentQuestion].sentence
         },
 
         showNextQuestion() {
