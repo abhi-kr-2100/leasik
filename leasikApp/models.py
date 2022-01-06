@@ -59,7 +59,7 @@ class List(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     
-    words = models.ManyToManyField(Word)
+    words = models.ManyToManyField(Word, blank=True)
 
     def __str__(self) -> str:
         return self.name
