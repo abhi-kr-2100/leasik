@@ -22,7 +22,7 @@
     >
         Next
     </a>
-    <a v-else>Finish</a>
+    <a v-else @click="finish()">Finish</a>
 </div>
 {% else %}
 {% include "leasikApp/unauthenticated.html" %}
@@ -44,8 +44,11 @@
     {% for word in proficiencies %}
         {% get_item word as sentence %}
         question_list.push({
+            'word_text': "{{ word|escapejs }}",
+            'language': "{{ word.language|escapejs }}",
             'sentence': "{{ sentence.get_text|escapejs }}",
-            'translation': "{{ sentence.get_english_translation|escapejs }}"
+            'translation': "{{ sentence.get_english_translation|escapejs }}",
+            'score': 0
         })
     {% endfor %}
 </script>

@@ -20,6 +20,7 @@ const app = Vue.createApp({
                 this.answer, this.questions[this.currentQuestion].sentence)
             if (isCorrect) {
                 this.answerCorrectness = 'correct'
+                this.questions[this.currentQuestion].score = 1
             } else {
                 this.answerCorrectness = 'incorrect'
             }
@@ -32,6 +33,12 @@ const app = Vue.createApp({
             this.answer = ''
             this.isCurrentAnswerChecked = false
             this.answerCorrectness = 'unknown'
+        },
+
+        finish() {
+            const totalCorrect = this.questions.map(i => i.score).reduce(
+                (a, b) => a + b, 0)
+            alert(`${totalCorrect} correct out of ${this.questions.length}`)
         }
     }
 })
