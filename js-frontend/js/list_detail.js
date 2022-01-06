@@ -2,13 +2,36 @@ const app = Vue.createApp({
     data() {
         return {
             questions: question_list,
-            currentQuestion: 0
+            currentQuestion: 0,
+            
+            answer: '',
+            isCurrentAnswerChecked: false,
+            answerCorrectness: 'unknown'
         }
     },
 
     methods: {
+        checkAnswer() {
+            if (this.answer.trim() === '') {
+                return
+            }
+
+            const isCorrect = semanticallyEqual(
+                this.answer, this.questions[this.currentQuestion].sentence)
+            if (isCorrect) {
+                this.answerCorrectness = 'correct'
+            } else {
+                this.answerCorrectness = 'incorrect'
+            }
+
+            this.isCurrentAnswerChecked = true
+        },
+
         showNextQuestion() {
             ++this.currentQuestion
+            this.answer = ''
+            this.isCurrentAnswerChecked = false
+            this.answerCorrectness = 'unknown'
         }
     }
 })

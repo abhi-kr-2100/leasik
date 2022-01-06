@@ -9,14 +9,15 @@
 {% block content %}
 {% if request.user.is_authenticated %}
 <div id="app">
-    <input>
+    <input v-model="answer" :class="answerCorrectness">
     <p>
         {% verbatim %}
         {{ questions[currentQuestion].translation }}
         {% endverbatim %}
     </p>
+    <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
     <a
-        v-if="currentQuestion < questions.length - 1"
+        v-else-if="currentQuestion < questions.length - 1"
         @click="showNextQuestion()"
     >
         Next
