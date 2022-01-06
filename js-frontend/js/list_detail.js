@@ -70,6 +70,16 @@ const app = Vue.createApp({
                 this.resultsPosted = true
                 alert('Quiz over!')
             }).catch(err => alert('Something went wrong. Please try again.'))
+        },
+
+        sumbitAnswer() {
+            if (!this.isCurrentAnswerChecked) {
+                this.checkAnswer()
+            } else if (this.currentQuestion < this.questions.length - 1) {
+                this.showNextQuestion()
+            } else {
+                this.finish()
+            }
         }
     }
 })
