@@ -8,19 +8,21 @@
 
 {% block content %}
 {% if request.user.is_authenticated %}
-<ul id="question-list">
-{% for word in proficiencies %}
-    <li>
-        {% get_item word as sentence %}
-        <word-test
-            word="{{ word }}"
-            sentence="{{ sentence.get_text }}"
-            translation="{{ sentence.get_english_translation }}"
-        >
-        </word-test>
-    </li>
-{% endfor %}
-</ul>
+<div id="app">
+    <input>
+    <p>
+        {% verbatim %}
+        {{ questions[currentQuestion].translation }}
+        {% endverbatim %}
+    </p>
+    <a
+        v-if="currentQuestion < questions.length - 1"
+        @click="showNextQuestion()"
+    >
+        Next
+    </a>
+    <a v-else>Finish</a>
+</div>
 {% else %}
 {% include "leasikApp/unauthenticated.html" %}
 {% endif %}
@@ -36,5 +38,16 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    const question_list = []
+    {% for word in proficiencies %}
+        {% get_item word as sentence %}
+        question_list.push({
+            'sentence': "{{ sentence.get_text|escapejs }}",
+            'translation': "{{ sentence.get_english_translation|escapejs }}"
+        })
+    {% endfor %}
+</script>
+
 <script src="{% static 'frontend/js/list_detail.js' %}"></script>
 {% endblock %}

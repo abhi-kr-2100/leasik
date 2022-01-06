@@ -1,4 +1,20 @@
-const app = Vue.createApp({})
+const app = Vue.createApp({
+    data() {
+        return {
+            questions: question_list,
+            currentQuestion: 0
+        }
+    },
+
+    methods: {
+        showNextQuestion() {
+            ++this.currentQuestion
+        }
+    }
+})
+
+
+app.mount('#app')
 
 
 function semanticallyEqual(sent1, sent2) {
@@ -16,57 +32,3 @@ function semanticallyEqual(sent1, sent2) {
 
     return sent1 === sent2
 }
-
-
-app.component('word-test', {
-    data() {
-        return {
-            checked: false,
-            userInput: null,
-            isAnswerCorrect: null
-        }
-    },
-
-    props: {
-        word: String,
-        sentence: String,
-        translation: String
-    },
-
-    methods: {
-        check() {
-            if (this.checked) {
-                return
-            }
-
-            if (semanticallyEqual(this.userInput, this.sentence)) {
-                this.isAnswerCorrect = true
-            } else {
-                this.isAnswerCorrect = false
-            }
-
-            this.checked = true
-        }
-    },
-    
-    template: `
-    <div class="word-test-div">
-        <h2
-            v-show="this.checked"
-            :class="this.isAnswerCorrect ? 'correct-resp' : 'incorrect-resp'"
-        >
-            {{ sentence }}
-        </h2>
-        
-        <p>{{ translation }}</p>
-
-        <div class="word-test-buttons">
-            <input @keyup.enter="check" v-model="userInput">
-            <a @click="check">Check</a>
-        </div>
-    </div>
-    `
-})
-
-
-app.mount('#content')
