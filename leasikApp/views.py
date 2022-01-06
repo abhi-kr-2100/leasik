@@ -1,6 +1,10 @@
+from json import loads
+
 from django.urls import reverse
 from django.http import (
-    HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect)
+    HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
+    HttpResponseForbidden
+)
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
@@ -72,9 +76,24 @@ def add_new_word(request, slug):
 
 
 def update_proficiency(request):
-    if request.method == 'POST':
-        print("TODO: Update proficiency")
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
 
-        return HttpResponse(status=200)
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
 
-    return HttpResponseNotAllowed(['POST'])
+    request_data = loads(request.body.decode('utf-8'))
+
+    user = request.user
+    data_items = request_data['data']
+
+    for item in data_items:
+        word = Word.objects.get(
+            word_text=item['word_text'], language=item['language'])
+        to_update = Proficiency.objects.get(user=user, word=word)
+
+        new_proficiency = (to_update.proficiency + 10) % 100
+        to_update.proficiency = new_proficiency
+        to_update.save(update_fields=['proficiency'])
+
+    return HttpResponse(status=200)
