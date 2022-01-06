@@ -6,7 +6,9 @@ const app = Vue.createApp({
             
             answer: '',
             isCurrentAnswerChecked: false,
-            answerCorrectness: 'unknown'
+            answerCorrectness: 'unknown',
+
+            resultsPosted: false
         }
     },
 
@@ -36,9 +38,37 @@ const app = Vue.createApp({
         },
 
         finish() {
-            const totalCorrect = this.questions.map(i => i.score).reduce(
-                (a, b) => a + b, 0)
-            alert(`${totalCorrect} correct out of ${this.questions.length}`)
+            if (this.resultsPosted) {
+                return
+            }
+
+            let payloadData = []
+            for (let question of this.questions) {
+                if (question.score) {
+                    payloadData.push({
+                        'word_text': question.word_text,
+                        'language': question.language,
+                    })
+                }
+            }
+            
+            const payload = {
+                'data': payloadData
+            }
+
+            const headers = {
+                'X-CSRFToken': csrftoken
+            }
+
+            axios({
+                method: 'POST',
+                url: updateProficiencyPostURL,
+                headers: headers,
+                data: payload
+            }).then(res => {
+                this.resultsPosted = true
+                alert('Quiz over!')
+            }).catch(err => alert('Something went wrong. Please try again.'))
         }
     }
 })

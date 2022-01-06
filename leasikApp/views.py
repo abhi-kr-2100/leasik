@@ -1,5 +1,6 @@
 from django.urls import reverse
-from django.http.response import HttpResponseRedirect
+from django.http import (
+    HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect)
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
@@ -68,3 +69,12 @@ def add_new_word(request, slug):
 
     # TODO: Display form on GET request    
     return HttpResponseRedirect(reverse('leasikApp:home'))
+
+
+def update_proficiency(request):
+    if request.method == 'POST':
+        print("TODO: Update proficiency")
+
+        return HttpResponse(status=200)
+
+    return HttpResponseNotAllowed(['POST'])
