@@ -9,6 +9,7 @@
 {% block content %}
 {% if request.user.is_authenticated %}
 <div id="app">
+    {% if proficiencies.all %}
     <div id="answer-box">
         <p id="pre-blank">
             {% verbatim %}
@@ -38,6 +39,9 @@
         Next
     </a>
     <a v-else @click="finish()">Finish</a>
+    {% else %}
+    <p>No words in this list!</p>
+    {% endif %}
 </div>
 {% else %}
 {% include "leasikApp/unauthenticated.html" %}
@@ -50,12 +54,14 @@
 {% endblock %}
 
 {% block head_scripts %}
+{% if proficiencies.all %}
 <script src="https://unpkg.com/vue@next"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
-
+{% if proficiencies.all %}
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
@@ -77,4 +83,5 @@
 </script>
 
 <script src="{% static 'frontend/js/list_detail.js' %}"></script>
+{% endif %}
 {% endblock %}
