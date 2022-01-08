@@ -9,7 +9,7 @@
 {% block content %}
 {% if request.user.is_authenticated %}
 <div id="app">
-    {% if proficiencies.all %}
+    {% if proficiencies %}
     <div id="answer-box">
         <p id="pre-blank">
             {% verbatim %}
@@ -54,14 +54,14 @@
 {% endblock %}
 
 {% block head_scripts %}
-{% if proficiencies.all %}
+{% if proficiencies %}
 <script src="https://unpkg.com/vue@next"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endif %}
 {% endblock %}
 
 {% block scripts %}
-{% if proficiencies.all %}
+{% if proficiencies %}
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
