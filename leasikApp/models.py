@@ -17,6 +17,21 @@ language_choices = [
 ]
 
 
+class SelfContainedSentence(models.Model):
+    sentence_id = models.AutoField(primary_key=True)
+    text = models.TextField()
+    english_translation = models.TextField()
+
+    def get_text(self):
+        return self.text
+
+    def get_english_translation(self):
+        return self.english_translation
+
+    def __str__(self) -> str:
+        return f'{self.text} ({self.english_translation})'
+
+
 class Sentence(models.Model):
     sentence_id = models.IntegerField("Tatoeba sentence ID", primary_key=True)
     text = models.TextField(null=True, editable=False)
@@ -44,7 +59,7 @@ class Word(models.Model):
     word_text = models.CharField(max_length=50)
     language = models.CharField(max_length=2, choices=language_choices)
 
-    sentences = models.ManyToManyField(Sentence)
+    sentences = models.ManyToManyField(SelfContainedSentence)
 
     def __str__(self) -> str:
         return self.word_text
