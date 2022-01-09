@@ -168,9 +168,10 @@ def add_word_to_list(user, slug, form, Word, List, Sentence):
         language=form.cleaned_data['language']
     )[0]
 
-    new_sentence_id = get_sentence_id_for_word(form.cleaned_data['word_text'])
     new_sentence = Sentence.objects.get_or_create(
-        sentence_id=new_sentence_id)[0]
+        text=form.cleaned_data['text'],
+        english_translation=form.cleaned_data['translation']
+    )[0]
 
     the_word.sentences.add(new_sentence)
     the_list.words.add(the_word)

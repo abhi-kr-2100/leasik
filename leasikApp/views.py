@@ -8,7 +8,7 @@ from django.http import (
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import List, Proficiency, Sentence, Word
+from .models import List, Proficiency, Sentence, Word, SelfContainedSentence
 from .forms import NewWordForm
 from .helpers import get_proficiency_dict, get_sentence_dict, add_word_to_list
 
@@ -67,7 +67,8 @@ def add_new_word(request, slug):
     if request.method == 'POST' and request.user.is_authenticated:
         form = NewWordForm(request.POST)
         if form.is_valid():
-            add_word_to_list(request.user, slug, form, Word, List, Sentence)
+            add_word_to_list(
+                request.user, slug, form, Word, List, SelfContainedSentence)
 
         return HttpResponseRedirect(reverse('leasikApp:list-edit', args=[slug]))
 
