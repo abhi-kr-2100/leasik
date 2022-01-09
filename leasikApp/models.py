@@ -62,7 +62,7 @@ class Word(models.Model):
     word_text = models.CharField(max_length=50)
     language = models.CharField(max_length=2, choices=language_choices)
 
-    sentences = models.ManyToManyField(SelfContainedSentence)
+    sentences = models.ManyToManyField(SelfContainedSentence, blank=True)
 
     def __str__(self) -> str:
         return self.word_text
