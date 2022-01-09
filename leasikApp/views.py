@@ -58,7 +58,10 @@ class ListDetailEditView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = NewWordForm
+        context['form'] = NewWordForm({
+            'word_text': self.request.GET.get('word'),
+            'language': self.request.GET.get('language')
+        })
 
         return context
 
@@ -70,7 +73,13 @@ def add_new_word(request, slug):
             add_word_to_list(
                 request.user, slug, form, Word, List, SelfContainedSentence)
 
-        return HttpResponseRedirect(reverse('leasikApp:list-edit', args=[slug]))
+        redirect_url = f'{reverse("leasikApp:list-edit", args=[slug])}'
+        if form.is_valid():
+            word = form.cleaned_data['word_text']
+            language = form.cleaned_data['language']
+            redirect_url += f'?word={word}&language={language}'
+
+        return HttpResponseRedirect(redirect_url)
 
     # TODO: Display form on GET request    
     return HttpResponseRedirect(reverse('leasikApp:home'))
