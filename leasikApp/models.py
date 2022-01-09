@@ -22,6 +22,9 @@ class SelfContainedSentence(models.Model):
     text = models.TextField()
     english_translation = models.TextField()
 
+    class Meta:
+        unique_together = ('text', 'english_translation')
+
     def get_text(self):
         return self.text
 
