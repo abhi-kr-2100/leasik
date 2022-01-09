@@ -1,3 +1,8 @@
 #add-new-word {
     padding: 2em;
 }
+
+form {
+    display: flex;
+    flex-direction: column;
+}
