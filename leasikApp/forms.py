@@ -11,3 +11,8 @@ class NewWordForm(forms.Form):
     language = forms.ChoiceField(label='', choices=language_choices)
     text = forms.CharField(label='Sentence text')
     translation = forms.CharField(label='English translation')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['word_text'].widget.attrs.update({'autofocus': 'autofocus'})
