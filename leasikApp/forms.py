@@ -15,4 +15,4 @@ class NewWordForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['word_text'].widget.attrs.update({'autofocus': 'autofocus'})
+        self.fields['text'].widget.attrs.update({'autofocus': 'autofocus'})
