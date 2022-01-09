@@ -127,7 +127,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SITE_ID = getenv('DJANGO_SITE_ID')
+SITE_ID = int(getenv('DJANGO_SITE_ID'))
 
 LOGIN_REDIRECT_URL = '/lists'
 LOGOUT_REDIRECT_URL = '/lists'
