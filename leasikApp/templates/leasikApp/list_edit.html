@@ -1,36 +1,39 @@
 {% extends "leasikApp/base.html" %}
 
+
 {% load static %}
+
 
 {% block content %}
 {% if request.user.is_authenticated %}
-<div id="list-editor">
-    <ul id="existing-sentence-list">
-    {% for sentence in object.sentences.all %}
-        <li>
-            <div class="existing-sentence-list-item">
-                <h3>{{ sentence }}</h3>
-                <a>Delete</a>
-            </div>
-        </li>
-    {% endfor %}
-    </ul>
+    <div id="list-editor">
+        <ul id="existing-sentence-list">
+        {% for sentence in object.sentences.all %}
+            <li>
+                <div class="existing-sentence-list-item">
+                    <h3>{{ sentence }}</h3>
+                    <a>Delete</a>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
 
-    <div id="add-new-sentence">
-        <form
-            action="{% url 'leasikApp:add-new-sentence' object.slug %}"
-            method="post"
-        >
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Submit">
-        </form>
+        <div id="add-new-sentence">
+            <form
+                action="{% url 'leasikApp:add-new-sentence' object.slug %}"
+                method="post"
+            >
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Submit">
+            </form>
+        </div>
     </div>
-</div>
 {% else %}
-{% include "leasikApp/unauthenticated.html" %}
+    {% include "leasikApp/unauthenticated.html" %}
 {% endif %}
 {% endblock %}
+
 
 {% block stylesheets %}
 <link rel="stylesheet" href="{% static 'leasikApp/styles/list_edit.css' %}"
