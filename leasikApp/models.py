@@ -26,7 +26,7 @@ class Sentence(models.Model):
         return f'{self.text} ({self.translation})'
 
 
-class SentenceList(models.Model):
+class List(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
 

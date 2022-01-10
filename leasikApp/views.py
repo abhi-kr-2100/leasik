@@ -8,27 +8,27 @@ from django.http import (
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Sentence, SentenceList, SentenceProficiency
+from .models import Sentence, List, SentenceProficiency
 from .forms import NewSentenceForm
 from .helpers import get_sentence_proficiency_dict, add_sentence_to_list
 
 
 class SentenceListView(ListView):
-    model = SentenceList
+    model = List
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return SentenceList.objects.filter(owner=self.request.user)
-        return SentenceList.objects.none()
+            return List.objects.filter(owner=self.request.user)
+        return List.objects.none()
 
 
 class SentenceListDetailView(DetailView):
-    model = SentenceList
+    model = List
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return SentenceList.objects.filter(owner=self.request.user)
-        return SentenceList.objects.none()
+            return List.objects.filter(owner=self.request.user)
+        return List.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,15 +43,15 @@ class SentenceListDetailView(DetailView):
 
 
 class SentenceListDetailEditView(DetailView):
-    model = SentenceList
+    model = List
 
     def get_template_names(self):
         return ['leasikApp/list_edit.html']
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return SentenceList.objects.filter(owner=self.request.user)
-        return SentenceList.objects.none()
+            return List.objects.filter(owner=self.request.user)
+        return List.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,7 +65,7 @@ def add_new_sentence(request, slug):
         form = NewSentenceForm(request.POST)
         if form.is_valid():
             add_sentence_to_list(
-                request.user, slug, form, Sentence, SentenceList)
+                request.user, slug, form, Sentence, List)
         else:
             print("Invalid form")
             print(request.POST)
@@ -91,7 +91,7 @@ def update_sentence_proficiency(request):
 
     for item in data_items:
         sentence = Sentence.objects.get(
-            text=item['text'], english_translation=item['translation'])
+            text=item['text'], translation=item['translation'])
         to_update = SentenceProficiency.objects.get(
             user=user, sentence=sentence)
 
