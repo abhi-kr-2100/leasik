@@ -8,18 +8,19 @@ from django.http import (
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import List, Proficiency, Sentence, Word, SelfContainedSentence
+from .models import (
+    List, Proficiency, Sentence, Word, SelfContainedSentence, SentenceList)
 from .forms import NewWordForm
 from .helpers import get_proficiency_dict, get_sentence_dict, add_word_to_list
 
 
-class WordListView(ListView):
-    model = List
+class SentenceListView(ListView):
+    model = SentenceList
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return List.objects.filter(owner=self.request.user)
-        return List.objects.none()
+            return SentenceList.objects.filter(owner=self.request.user)
+        return SentenceList.objects.none()
 
 
 class ListDetailView(DetailView):

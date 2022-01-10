@@ -1,13 +1,13 @@
 from django.urls import path
 
 from .views import (
-    WordListView, ListDetailView, ListDetailEditView, add_new_word,
+    SentenceListView, ListDetailView, ListDetailEditView, add_new_word,
     update_proficiency
 )
 
 app_name = 'leasikApp'
 urlpatterns = [
-    path('', WordListView.as_view(), name='home'),
+    path('', SentenceListView.as_view(), name='home'),
     path('update_proficiency', update_proficiency, name='update-proficiency'),
     path('<slug:slug>', ListDetailView.as_view(), name='list-detail'),
     path('<slug:slug>/edit', ListDetailEditView.as_view(), name='list-edit'),
