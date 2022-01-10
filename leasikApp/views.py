@@ -10,7 +10,7 @@ from django.views.generic.detail import DetailView
 
 from .models import Sentence, List, Proficiency
 from .forms import NewSentenceForm
-from .helpers import get_sentence_proficiency_dict, add_sentence_to_list
+from .helpers import get_proficiency_dict, add_sentence_to_list
 
 
 class SentenceListView(ListView):
@@ -35,7 +35,7 @@ class SentenceListDetailView(DetailView):
 
         sentences = context['object'].sentences.all()
 
-        proficiency_dict = get_sentence_proficiency_dict(
+        proficiency_dict = get_proficiency_dict(
             self.request.user, sentences, Proficiency)
         context['proficiencies'] = proficiency_dict
 

@@ -4,7 +4,7 @@
 from collections import OrderedDict
 
 
-def get_or_create_sentence_proficiencies(user, sentences, proficiency_model):
+def get_or_create_proficiencies(user, sentences, proficiency_model):
     """Return a list of Proficiency for given sentences of a given user.
     
     If a Proficiency doesn't, create it.
@@ -18,7 +18,7 @@ def get_or_create_sentence_proficiencies(user, sentences, proficiency_model):
     return proficiencies
 
 
-def get_sentence_proficiency_dict(user, sentences, proficiency_model):
+def get_proficiency_dict(user, sentences, proficiency_model):
     """Return an OrderedDict of sentence to proficiency mapping.
     
     The dictionary is ordered by proficiency. The considered sentences are
@@ -27,7 +27,7 @@ def get_sentence_proficiency_dict(user, sentences, proficiency_model):
     """
 
     proficiencies = sorted(
-        get_or_create_sentence_proficiencies(user, sentences, proficiency_model)
+        get_or_create_proficiencies(user, sentences, proficiency_model)
     )
 
     proficiency_dict = OrderedDict()
