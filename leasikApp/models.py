@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from django.db import models
+from django.db.models.signals import post_save
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-
-from allauth.account.signals import user_signed_up
 
 
 class Sentence(models.Model):
@@ -65,7 +64,7 @@ class UserProfile(models.Model):
     def __str__(self) -> str:
         return self.user.username
 
-    @receiver(user_signed_up)
-    def create_user_profile(sender, **kwargs):
-        user = User.objects.get(username=kwargs['user'].username)
-        UserProfile.objects.create(user=user)
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
