@@ -49,7 +49,7 @@ def add_sentence_to_list(user, slug, form, Sentence, List):
     the_list = List.objects.get(owner=user, slug=slug)
     the_sentence = Sentence.objects.get_or_create(
         text=form.cleaned_data['text'],
-        english_translation=form.cleaned_data['translation']
+        translation=form.cleaned_data['translation']
     )[0]
 
     the_list.sentences.add(the_sentence)
