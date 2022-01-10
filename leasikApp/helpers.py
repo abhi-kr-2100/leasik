@@ -47,3 +47,17 @@ def add_sentence_to_list(owner, slug, form):
     )[0]
 
     the_list.sentences.add(the_sentence)
+
+
+def update_each_proficiency(user, data_items):
+    """Update the proficiency of user with each sentence in data_items."""
+
+    for item in data_items:
+        sentence = Sentence.objects.get(
+            text=item['text'], translation=item['translation'])
+        to_update = Proficiency.objects.get(
+            user=user, sentence=sentence)
+
+        new_proficiency = (to_update.proficiency + 1) % 100
+        to_update.proficiency = new_proficiency
+        to_update.save(update_fields=['proficiency'])

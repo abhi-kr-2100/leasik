@@ -1,16 +1,18 @@
 from json import loads
 
 from django.urls import reverse
-from django.http import (
-    HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
-    HttpResponseForbidden
-)
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.http import (
+    HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
+    HttpResponseBadRequest, HttpResponseForbidden
+)
 
-from .models import Sentence, List, Proficiency
+from .models import List
 from .forms import NewSentenceForm
-from .helpers import get_proficiency_dict, add_sentence_to_list
+from .helpers import (
+    get_proficiency_dict, add_sentence_to_list, update_each_proficiency
+)
 
 
 class ListsView(ListView):
@@ -60,19 +62,19 @@ class EditListView(DetailView):
 
 
 def add_new_sentence(request, slug):
-    if request.method == 'POST' and request.user.is_authenticated:
-        form = NewSentenceForm(request.POST)
-        if form.is_valid():
-            add_sentence_to_list(request.user, slug, form)
-        else:
-            print("Invalid form")
-            print(request.POST)
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    elif not request.user.is_authenticated:
+        return HttpResponseForbidden()
 
-        redirect_url = f'{reverse("leasikApp:list-edit", args=[slug])}'
-        return HttpResponseRedirect(redirect_url)
 
-    # TODO: Display form on GET request
-    return HttpResponseRedirect(reverse('leasikApp:home'))
+    form = NewSentenceForm(request.POST)
+    if form.is_valid():
+        add_sentence_to_list(request.user, slug, form)
+    else:
+        return HttpResponseBadRequest()
+
+    return HttpResponseRedirect(reverse('leasikApp:list-edit', args=[slug]))
 
 
 def update_proficiency(request):
@@ -87,14 +89,6 @@ def update_proficiency(request):
     user = request.user
     data_items = request_data['data']
 
-    for item in data_items:
-        sentence = Sentence.objects.get(
-            text=item['text'], translation=item['translation'])
-        to_update = Proficiency.objects.get(
-            user=user, sentence=sentence)
-
-        new_proficiency = (to_update.proficiency + 1) % 100
-        to_update.proficiency = new_proficiency
-        to_update.save(update_fields=['proficiency'])
+    update_each_proficiency(user, data_items)
 
     return HttpResponse(status=200)
