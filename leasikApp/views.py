@@ -8,7 +8,7 @@ from django.http import (
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Sentence, List, SentenceProficiency
+from .models import Sentence, List, Proficiency
 from .forms import NewSentenceForm
 from .helpers import get_sentence_proficiency_dict, add_sentence_to_list
 
@@ -36,7 +36,7 @@ class SentenceListDetailView(DetailView):
         sentences = context['object'].sentences.all()
 
         proficiency_dict = get_sentence_proficiency_dict(
-            self.request.user, sentences, SentenceProficiency)
+            self.request.user, sentences, Proficiency)
         context['proficiencies'] = proficiency_dict
 
         return context
@@ -92,7 +92,7 @@ def update_sentence_proficiency(request):
     for item in data_items:
         sentence = Sentence.objects.get(
             text=item['text'], translation=item['translation'])
-        to_update = SentenceProficiency.objects.get(
+        to_update = Proficiency.objects.get(
             user=user, sentence=sentence)
 
         new_proficiency = (to_update.proficiency + 1) % 100

@@ -41,7 +41,7 @@ class List(models.Model):
         unique_together = ('slug', 'owner')
 
 
-class SentenceProficiency(models.Model):
+class Proficiency(models.Model):
     """How proficient is a user with a given sentence?"""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -56,7 +56,7 @@ class SentenceProficiency(models.Model):
     def __str__(self) -> str:
         return f'{self.user.id}: {self.sentence.text} - {self.proficiency}%'
 
-    def __lt__(self, other: SentenceProficiency) -> bool:
+    def __lt__(self, other: Proficiency) -> bool:
         return self.proficiency < other.proficiency
 
     class Meta:
