@@ -53,6 +53,7 @@ class Proficiency(models.Model):
 
     class Meta:
         unique_together = ('user', 'sentence')
+        verbose_name_plural = 'proficiencies'
 
 
 class UserProfile(models.Model):
