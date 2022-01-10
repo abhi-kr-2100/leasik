@@ -8,13 +8,6 @@ from django.dispatch import receiver
 from allauth.account.signals import user_signed_up
 
 
-# a provisional list of all languages available
-language_choices = [
-    ('en', 'English'),
-    ('tr', 'Türkçe'),
-]
-
-
 class Sentence(models.Model):
     text = models.TextField()
     translation = models.TextField()
@@ -66,8 +59,6 @@ class Proficiency(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    current_studying_language = models.CharField(max_length=2,
-        choices=language_choices, default=language_choices[0][0])
     questions_per_page = models.IntegerField(
         validators=[MinValueValidator(5), MaxValueValidator(50)], default=25)
 
