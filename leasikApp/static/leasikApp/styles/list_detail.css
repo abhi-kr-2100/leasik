@@ -18,9 +18,13 @@
     text-align: center;
 }
 
-#app input {
+#answer-box input {
     padding: 0.1em;
     font-size: 2em;
+    text-align: center;
+}
+
+#question-box {
     text-align: center;
 }
 

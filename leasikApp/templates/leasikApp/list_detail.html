@@ -1,49 +1,53 @@
 {% extends "leasikApp/base.html" %}
 
+
 {% load static %}
+
 
 {% block title %}{{ object }}{% endblock %}
 
 
 {% block content %}
 {% if request.user.is_authenticated %}
-<div id="app">
-    {% if proficiencies %}
-    <div id="answer-box">
-        <p id="pre-blank">
-            {% verbatim %}
-            {{ preBlank }}
-            {% endverbatim %}
-        </p>
-        <input
-            v-model="userEnteredAnswer" :class="answerCorrectness"
-            @keyup.enter="sumbitAnswer"
-        >
-        <p id="post-blank">
-            {% verbatim %}
-            {{ postBlank }}
-            {% endverbatim %}
-        </p>
+    <div id="app">
+        {% if proficiencies %}
+            <div id="answer-box">
+                <p id="pre-blank">
+                    {% verbatim %}
+                    {{ preBlank }}
+                    {% endverbatim %}
+                </p>
+                <input
+                    v-model="userEnteredAnswer" :class="answerCorrectness"
+                    @keyup.enter="sumbitAnswer"
+                >
+                <p id="post-blank">
+                    {% verbatim %}
+                    {{ postBlank }}
+                    {% endverbatim %}
+                </p>
+            </div>
+
+            <p id="question-box">
+                {% verbatim %}
+                {{ questions[currentQuestionIndex].translation }}
+                {% endverbatim %}
+            </p>
+
+            <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
+            <a
+                v-else-if="currentQuestionIndex < questions.length - 1"
+                @click="showNextQuestion()"
+            >
+                Next
+            </a>
+            <a v-else @click="finish()">Finish</a>
+        {% else %}
+            <p>No sentences in this list!</p>
+        {% endif %}
     </div>
-    <p>
-        {% verbatim %}
-        {{ questions[currentQuestionIndex].translation }}
-        {% endverbatim %}
-    </p>
-    <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
-    <a
-        v-else-if="currentQuestionIndex < questions.length - 1"
-        @click="showNextQuestion()"
-    >
-        Next
-    </a>
-    <a v-else @click="finish()">Finish</a>
-    {% else %}
-    <p>No words in this list!</p>
-    {% endif %}
-</div>
 {% else %}
-{% include "leasikApp/unauthenticated.html" %}
+    {% include "leasikApp/unauthenticated.html" %}
 {% endif %}
 {% endblock %}
 
@@ -52,32 +56,38 @@
 <link rel="stylesheet" href="{% static 'leasikApp/styles/list_detail.css' %}">
 {% endblock %}
 
+
 {% block head_scripts %}
 {% if proficiencies %}
-<script src="https://unpkg.com/vue@next"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endif %}
 {% endblock %}
 
+
 {% block scripts %}
 {% if proficiencies %}
-{% csrf_token %}
-<script>
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
-    const updateProficiencyPostURL = "{% url 'leasikApp:update-proficiency' %}"
-</script>
+    {% csrf_token %}
+    
+    <script>
+        const csrfTokenSelector = '[name=csrfmiddlewaretoken]'
+        const csrftoken = document.querySelector(csrfTokenSelector).value
+        const updateProficiencyPostURL = (
+            "{% url 'leasikApp:update-proficiency' %}"
+        )
+    </script>
 
-<script>
-    const question_list = []
-    {% for sentence in proficiencies %}
-        question_list.push({
-            'sentence': "{{ sentence.text|escapejs }}",
-            'translation': "{{ sentence.translation|escapejs }}",
-            'score': 0
-        })
-    {% endfor %}
-</script>
+    <script>
+        const question_list = []
+        {% for sentence in proficiencies %}
+            question_list.push({
+                'sentence': "{{ sentence.text|escapejs }}",
+                'translation': "{{ sentence.translation|escapejs }}",
+                'score': 0
+            })
+        {% endfor %}
+    </script>
 
-<script src="{% static 'frontend/js/list_detail.js' %}"></script>
+    <script src="{% static 'frontend/js/list_detail.js' %}"></script>
 {% endif %}
 {% endblock %}
