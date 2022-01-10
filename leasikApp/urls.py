@@ -1,10 +1,8 @@
 from django.urls import path
 
 from .views import (
-    SentenceListView, ListDetailView, ListDetailEditView,
-    SentenceListDetailEditView, SentenceListDetailView,
-    add_new_word, update_proficiency, update_sentence_proficiency,
-    add_new_sentence
+    SentenceListView, SentenceListDetailEditView, SentenceListDetailView,
+    update_sentence_proficiency, add_new_sentence
 )
 
 app_name = 'leasikApp'
