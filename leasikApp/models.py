@@ -8,6 +8,8 @@ from django.dispatch import receiver
 
 
 class Sentence(models.Model):
+    """A sentence with a text and translation."""
+
     text = models.TextField()
     translation = models.TextField()
 
@@ -19,6 +21,8 @@ class Sentence(models.Model):
 
 
 class List(models.Model):
+    """A list of sentences owned by a user."""
+    
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
 
@@ -37,8 +41,7 @@ class Proficiency(models.Model):
     """How proficient is a user with a given sentence?"""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sentence = models.ForeignKey(
-        Sentence, on_delete=models.CASCADE)
+    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
 
     proficiency = models.IntegerField(
         default=0,
@@ -60,7 +63,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     questions_per_page = models.IntegerField(
-        validators=[MinValueValidator(5), MaxValueValidator(50)], default=25)
+        default=25,
+        validators=[MinValueValidator(5), MaxValueValidator(50)]
+    )
 
     def __str__(self) -> str:
         return self.user.username
