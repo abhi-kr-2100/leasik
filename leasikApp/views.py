@@ -131,3 +131,28 @@ def update_proficiency(request):
         to_update.save(update_fields=['proficiency'])
 
     return HttpResponse(status=200)
+
+
+def update_sentence_proficiency(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
+
+    request_data = loads(request.body.decode('utf-8'))
+
+    user = request.user
+    data_items = request_data['data']
+
+    for item in data_items:
+        sentence = SelfContainedSentence.objects.get(
+            text=item['text'], english_translation=item['translation'])
+        to_update = SentenceProficiency.objects.get(
+            user=user, sentence=sentence)
+
+        new_proficiency = (to_update.proficiency + 1) % 100
+        to_update.proficiency = new_proficiency
+        to_update.save(update_fields=['proficiency'])
+
+    return HttpResponse(status=200)

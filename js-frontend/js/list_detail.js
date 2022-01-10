@@ -87,11 +87,13 @@ const app = Vue.createApp({
             for (let question of this.questions) {
                 if (question.score) {
                     payloadData.push({
-                        'word_text': question.word_text,
-                        'language': question.language,
+                        'text': question.sentence,
+                        'translation': question.translation,
                     })
                 }
             }
+
+            console.log(payloadData)
             
             const payload = {
                 'data': payloadData
