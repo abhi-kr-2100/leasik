@@ -2,12 +2,6 @@
 
 
 from collections import OrderedDict
-from re import compile
-from random import randint, choice
-from json import loads
-
-from requests import get
-from bs4 import BeautifulSoup
 
 
 def get_or_create_sentence_proficiencies(user, sentences, proficiency_model):
