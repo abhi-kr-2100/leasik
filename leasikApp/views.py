@@ -13,7 +13,7 @@ from .forms import NewSentenceForm
 from .helpers import get_proficiency_dict, add_sentence_to_list
 
 
-class SentenceListView(ListView):
+class ListsView(ListView):
     model = List
 
     def get_queryset(self):
@@ -22,7 +22,7 @@ class SentenceListView(ListView):
         return List.objects.none()
 
 
-class SentenceListDetailView(DetailView):
+class PlayListView(DetailView):
     model = List
 
     def get_queryset(self):
@@ -41,7 +41,7 @@ class SentenceListDetailView(DetailView):
         return context
 
 
-class SentenceListDetailEditView(DetailView):
+class EditListView(DetailView):
     model = List
 
     def get_template_names(self):
@@ -75,7 +75,7 @@ def add_new_sentence(request, slug):
     return HttpResponseRedirect(reverse('leasikApp:home'))
 
 
-def update_sentence_proficiency(request):
+def update_proficiency(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
 
