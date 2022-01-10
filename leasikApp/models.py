@@ -86,6 +86,21 @@ class List(models.Model):
         unique_together = ('slug', 'owner')
 
 
+class SentenceList(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    sentences = models.ManyToManyField(SelfContainedSentence, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        unique_together = ('slug', 'owner')
+
+
 class Proficiency(models.Model):
     """How proficient is a user with a word?"""
 
