@@ -70,8 +70,7 @@
 
 <script>
     const question_list = []
-    {% for word in proficiencies %}
-        {% get_item word as sentence %}
+    {% for sentence in proficiencies %}
         question_list.push({
             'word_text': "{{ word|escapejs }}",
             'language': "{{ word.language|escapejs }}",

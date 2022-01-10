@@ -9,9 +9,12 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from .models import (
-    List, Proficiency, Sentence, Word, SelfContainedSentence, SentenceList)
+    List, Proficiency, Sentence, Word, SelfContainedSentence, SentenceList,
+    SentenceProficiency)
 from .forms import NewWordForm
-from .helpers import get_proficiency_dict, get_sentence_dict, add_word_to_list
+from .helpers import (
+    get_proficiency_dict, get_sentence_dict, add_word_to_list,
+    get_sentence_proficiency_dict)
 
 
 class SentenceListView(ListView):
@@ -42,6 +45,26 @@ class ListDetailView(DetailView):
 
         sentence_dict = get_sentence_dict(proficiency_dict.keys())
         context['sentences'] = sentence_dict
+
+        return context
+
+
+class SentenceListDetailView(DetailView):
+    model = SentenceList
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return SentenceList.objects.filter(owner=self.request.user)
+        return SentenceList.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        sentences = context['object'].sentences.all()
+
+        proficiency_dict = get_sentence_proficiency_dict(
+            self.request.user, sentences, SentenceProficiency)
+        context['proficiencies'] = proficiency_dict
 
         return context
 
