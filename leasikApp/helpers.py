@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 
 def get_or_create_sentence_proficiencies(user, sentences, proficiency_model):
-    """Return a list of Proficiency for given words of a given user.
+    """Return a list of Proficiency for given sentences of a given user.
     
     If a Proficiency doesn't, create it.
     """
