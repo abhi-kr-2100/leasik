@@ -113,6 +113,14 @@ class SentenceProficiency(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
 
+    def __str__(self) -> str:
+        return f'{self.user.id}: {self.sentence.text} - {self.proficiency}%'
+
+    def __lt__(self, other: SentenceProficiency) -> bool:
+        return self.proficiency < other.proficiency
+
+    class Meta:
+        unique_together = ('user', 'sentence')
 
 class Proficiency(models.Model):
     """How proficient is a user with a word?"""
