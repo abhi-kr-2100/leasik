@@ -1,34 +1,33 @@
 {% extends "leasikApp/base.html" %}
 
+
 {% load static %}
 
 
 {% block title %}List List{% endblock %}
 
+
 {% block content %}
-<div id="app">
 {% if request.user.is_authenticated %}
     <a id="new-list-button">Create a new list</a>
 
     
-    <ul id="word-list-list">
-    {% for word_list in object_list %}
+    <ul id="list-list">
+    {% for list in object_list %}
         <li>
-            <div class="word-list" id="word-list-{{ word_list.slug }}">
-                <h2>{{ word_list.name }}</h2>
-                <div class="word-list-actions">
-                    <a class="word-list-delete-action">Delete</a>
+            <div class="list">
+                <h2>{{ list.name }}</h2>
+                <div class="list-actions">
+                    <a class="list-delete-action">Delete</a>
                     
-                    <a
-                        href="{% url 'leasikApp:list-edit' word_list.slug %}"
-                        class="word-list-edit-action"
+                    <a href="{% url 'leasikApp:list-edit' list.slug %}"
+                        class="list-edit-action"
                     >
                         Edit
                     </a>
                     
-                    <a
-                        href="{% url 'leasikApp:list-detail' word_list.slug %}"
-                        class="word-list-play-action"
+                    <a href="{% url 'leasikApp:list-detail' list.slug %}"
+                        class="list-play-action"
                     >
                         Play
                     </a>
@@ -38,9 +37,8 @@
     {% endfor %}
     </ul>
 {% else %}
-{% include "leasikApp/unauthenticated.html" %}
+    {% include "leasikApp/unauthenticated.html" %}
 {% endif %}
-</div>
 {% endblock %}
 
 

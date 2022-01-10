@@ -1,8 +1,3 @@
-#app {
-    margin-top: 1em;
-    padding: 2em;
-}
-
 #new-list-button {
     padding: 1em;
 
@@ -14,13 +9,13 @@
     border-radius: 0.3em;
 }
 
-#word-list-list {
+#list-list {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.word-list {
+.list {
     margin-top: 2em;
     padding: 1em;
 
@@ -29,7 +24,7 @@
     border-radius: 1em;
 }
 
-.word-list-actions a {
+.list-actions a {
     padding: 0.5em;
     margin-right: 1em;
 
@@ -41,14 +36,14 @@
     border-radius: 0.3em;
 }
 
-.word-list-delete-action {
+.list-delete-action {
     background-color: #c9302c;
 }
 
-.word-list-edit-action {
+.list-edit-action {
     background-color: #007bff;
 }
 
-.word-list-play-action {
+.list-play-action {
     background-color: #5cb85c;
 }
