@@ -101,6 +101,19 @@ class SentenceList(models.Model):
         unique_together = ('slug', 'owner')
 
 
+class SentenceProficiency(models.Model):
+    """How proficient is a user with a given sentence?"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    sentence = models.ForeignKey(
+        SelfContainedSentence, on_delete=models.CASCADE)
+
+    proficiency = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+
+
 class Proficiency(models.Model):
     """How proficient is a user with a word?"""
 
