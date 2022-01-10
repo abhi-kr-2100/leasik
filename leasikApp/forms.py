@@ -20,7 +20,7 @@ class NewWordForm(forms.Form):
 
 class NewSentenceForm(forms.Form):
     text = forms.CharField(label='Text', widget=forms.Textarea)
-    translation = forms.ChoiceField(label='Translation', widget=forms.Textarea)
+    translation = forms.CharField(label='Translation', widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
