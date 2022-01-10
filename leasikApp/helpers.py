@@ -208,3 +208,15 @@ def add_word_to_list(user, slug, form, Word, List, Sentence):
 
     the_word.sentences.add(new_sentence)
     the_list.words.add(the_word)
+
+
+def add_sentence_to_list(user, slug, form, Sentence, List):
+    """Add the sentence in form to a list with the given slug owned by user."""
+
+    the_list = List.objects.get(owner=user, slug=slug)
+    the_sentence = Sentence.objects.get_or_create(
+        text=form.cleaned_data['text'],
+        english_translation=form.cleaned_data['translation']
+    )[0]
+
+    the_list.sentences.add(the_sentence)
