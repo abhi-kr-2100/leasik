@@ -70,6 +70,10 @@ body {
 
 /* Font */
 
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
 #main-header h1 {
     font-family: 'Dancing Script', cursive;
     font-size: 3em;
