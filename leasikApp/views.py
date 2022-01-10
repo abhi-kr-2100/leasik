@@ -35,8 +35,7 @@ class SentenceListDetailView(DetailView):
 
         sentences = context['object'].sentences.all()
 
-        proficiency_dict = get_proficiency_dict(
-            self.request.user, sentences, Proficiency)
+        proficiency_dict = get_proficiency_dict(self.request.user, sentences)
         context['proficiencies'] = proficiency_dict
 
         return context
@@ -64,8 +63,7 @@ def add_new_sentence(request, slug):
     if request.method == 'POST' and request.user.is_authenticated:
         form = NewSentenceForm(request.POST)
         if form.is_valid():
-            add_sentence_to_list(
-                request.user, slug, form, Sentence, List)
+            add_sentence_to_list(request.user, slug, form)
         else:
             print("Invalid form")
             print(request.POST)
