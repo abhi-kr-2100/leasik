@@ -17,7 +17,7 @@
             {% endverbatim %}
         </p>
         <input
-            v-model="answer" :class="answerCorrectness"
+            v-model="userEnteredAnswer" :class="answerCorrectness"
             @keyup.enter="sumbitAnswer"
         >
         <p id="post-blank">
@@ -28,12 +28,12 @@
     </div>
     <p>
         {% verbatim %}
-        {{ questions[currentQuestion].translation }}
+        {{ questions[currentQuestionIndex].translation }}
         {% endverbatim %}
     </p>
     <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
     <a
-        v-else-if="currentQuestion < questions.length - 1"
+        v-else-if="currentQuestionIndex < questions.length - 1"
         @click="showNextQuestion()"
     >
         Next
@@ -72,8 +72,6 @@
     const question_list = []
     {% for sentence in proficiencies %}
         question_list.push({
-            'word_text': "{{ word|escapejs }}",
-            'language': "{{ word.language|escapejs }}",
             'sentence': "{{ sentence.get_text|escapejs }}",
             'translation': "{{ sentence.get_english_translation|escapejs }}",
             'score': 0

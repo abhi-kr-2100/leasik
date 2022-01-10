@@ -6,18 +6,19 @@ const app = Vue.createApp({
 
         return {
             questions: question_list,
-            currentQuestion: 0,
+            currentQuestionIndex: 0,
 
             missingWordIndex: Math.floor(Math.random() * words.length),
             
-            answer: '',
+            userEnteredAnswer: '',
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
 
             resultsPosted: false,
 
             preQuestionSetup() {
-                const currentQuestion = this.questions[this.currentQuestion]
+                const currentQuestion = this.questions[
+                    this.currentQuestionIndex]
                 const currentSentence = currentQuestion.sentence
                 const words = currentSentence.split(" ");
     
@@ -28,7 +29,7 @@ const app = Vue.createApp({
 
     computed: {
         preBlank() {
-            const currentQuestion = this.questions[this.currentQuestion]
+            const currentQuestion = this.questions[this.currentQuestionIndex]
             const currentSentence = currentQuestion.sentence
             const words = currentSentence.split(' ')
             const wordsToInclude = words.slice(0, this.missingWordIndex)
@@ -37,7 +38,7 @@ const app = Vue.createApp({
         },
 
         postBlank() {
-            const currentQuestion = this.questions[this.currentQuestion]
+            const currentQuestion = this.questions[this.currentQuestionIndex]
             const currentSentence = currentQuestion.sentence
             const words = currentSentence.split(' ')
             const wordsToInclude = words.slice(this.missingWordIndex + 1)
@@ -48,30 +49,32 @@ const app = Vue.createApp({
 
     methods: {
         checkAnswer() {
-            if (this.answer.trim() === '') {
+            if (this.userEnteredAnswer.trim() === '') {
                 return
             }
 
-            const currentQuestion = this.questions[this.currentQuestion]
+            const currentQuestion = this.questions[this.currentQuestionIndex]
             const currentSentence = currentQuestion.sentence
             const words = currentSentence.split(" ")
             const wordToGuess = words[this.missingWordIndex]
 
-            const isCorrect = semanticallyEqual(this.answer, wordToGuess)
+            const isCorrect = semanticallyEqual(
+                this.userEnteredAnswer, wordToGuess
+            )
             if (isCorrect) {
                 this.answerCorrectness = 'correct'
-                this.questions[this.currentQuestion].score = 1
+                currentQuestion.score = 1
             } else {
                 this.answerCorrectness = 'incorrect'
             }
 
             this.isCurrentAnswerChecked = true
-            this.answer = wordToGuess
+            this.userEnteredAnswer = wordToGuess
         },
 
         showNextQuestion() {
-            ++this.currentQuestion
-            this.answer = ''
+            ++this.currentQuestionIndex
+            this.userEnteredAnswer = ''
             this.isCurrentAnswerChecked = false
             this.answerCorrectness = 'unknown'
 
@@ -117,7 +120,7 @@ const app = Vue.createApp({
         sumbitAnswer() {
             if (!this.isCurrentAnswerChecked) {
                 this.checkAnswer()
-            } else if (this.currentQuestion < this.questions.length - 1) {
+            } else if (this.currentQuestionIndex < this.questions.length - 1) {
                 this.showNextQuestion()
             } else {
                 this.finish()
