@@ -5,19 +5,22 @@
 {% block content %}
 {% if request.user.is_authenticated %}
 <div id="list-editor">
-    <ul id="existing-word-list">
-    {% for word in object.words.all %}
+    <ul id="existing-sentence-list">
+    {% for sentence in object.sentences.all %}
         <li>
-            <div class="existing-word-list-item">
-                <h3>{{ word }}</h3>
+            <div class="existing-sentence-list-item">
+                <h3>{{ sentence }}</h3>
                 <a>Delete</a>
             </div>
         </li>
     {% endfor %}
     </ul>
 
-    <div id="add-new-word">
-        <form action="{% url 'leasikApp:add-new-word' object.slug %}" method="post">
+    <div id="add-new-sentence">
+        <form
+            action="{% url 'leasikApp:add-new-sentence' object.slug %}"
+            method="post"
+        >
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Submit">
