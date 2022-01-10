@@ -71,8 +71,8 @@
     const question_list = []
     {% for sentence in proficiencies %}
         question_list.push({
-            'sentence': "{{ sentence.get_text|escapejs }}",
-            'translation': "{{ sentence.get_english_translation|escapejs }}",
+            'sentence': "{{ sentence.text|escapejs }}",
+            'translation': "{{ sentence.translation|escapejs }}",
             'score': 0
         })
     {% endfor %}

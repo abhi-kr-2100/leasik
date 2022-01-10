@@ -8,7 +8,7 @@ from django.http import (
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import SelfContainedSentence, SentenceList, SentenceProficiency
+from .models import Sentence, SentenceList, SentenceProficiency
 from .forms import NewSentenceForm
 from .helpers import get_sentence_proficiency_dict, add_sentence_to_list
 
@@ -65,7 +65,7 @@ def add_new_sentence(request, slug):
         form = NewSentenceForm(request.POST)
         if form.is_valid():
             add_sentence_to_list(
-                request.user, slug, form, SelfContainedSentence, SentenceList)
+                request.user, slug, form, Sentence, SentenceList)
         else:
             print("Invalid form")
             print(request.POST)
@@ -90,7 +90,7 @@ def update_sentence_proficiency(request):
     data_items = request_data['data']
 
     for item in data_items:
-        sentence = SelfContainedSentence.objects.get(
+        sentence = Sentence.objects.get(
             text=item['text'], english_translation=item['translation'])
         to_update = SentenceProficiency.objects.get(
             user=user, sentence=sentence)

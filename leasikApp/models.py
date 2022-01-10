@@ -15,22 +15,15 @@ language_choices = [
 ]
 
 
-class SelfContainedSentence(models.Model):
-    sentence_id = models.AutoField(primary_key=True)
+class Sentence(models.Model):
     text = models.TextField()
-    english_translation = models.TextField()
+    translation = models.TextField()
 
     class Meta:
-        unique_together = ('text', 'english_translation')
-
-    def get_text(self):
-        return self.text
-
-    def get_english_translation(self):
-        return self.english_translation
+        unique_together = ('text', 'translation')
 
     def __str__(self) -> str:
-        return f'{self.text} ({self.english_translation})'
+        return f'{self.text} ({self.translation})'
 
 
 class SentenceList(models.Model):
@@ -39,7 +32,7 @@ class SentenceList(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    sentences = models.ManyToManyField(SelfContainedSentence, blank=True)
+    sentences = models.ManyToManyField(Sentence, blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -53,7 +46,7 @@ class SentenceProficiency(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     sentence = models.ForeignKey(
-        SelfContainedSentence, on_delete=models.CASCADE)
+        Sentence, on_delete=models.CASCADE)
 
     proficiency = models.IntegerField(
         default=0,
