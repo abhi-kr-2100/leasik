@@ -22,7 +22,8 @@ def update_proficiency_helper(user, sentence_id):
     """Update the proficiency between the given user and sentence."""
 
     the_sentence = Sentence.objects.get(id=sentence_id)
-    the_proficiency = Proficiency.objects.get(user=user, sentence=the_sentence)
+    the_proficiency = Proficiency.objects.get_or_create(
+        user=user, sentence=the_sentence)[0]
 
     new_proficiency = (the_proficiency.proficiency + 1) % 100
     the_proficiency.proficiency = new_proficiency
