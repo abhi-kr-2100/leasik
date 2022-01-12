@@ -62,11 +62,6 @@ class Proficiency(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    questions_per_page = models.IntegerField(
-        default=25,
-        validators=[MinValueValidator(5), MaxValueValidator(50)]
-    )
-
     def __str__(self) -> str:
         return self.user.username
 
