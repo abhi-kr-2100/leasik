@@ -1,10 +1,13 @@
+from __future__ import annotations
+from typing import Any, Dict, List
 from json import loads
 
+from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.http import (
-    HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
+    HttpRequest, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
     HttpResponseBadRequest, HttpResponseForbidden
 )
 
@@ -20,7 +23,7 @@ class ListsView(ListView):
 
     model = SentenceList
 
-    def get_queryset(self):
+    def get_queryset(self: ListsView) -> QuerySet[SentenceList]:
         if self.request.user.is_authenticated:
             return SentenceList.objects.filter(owner=self.request.user)
         return SentenceList.objects.none()
@@ -31,12 +34,12 @@ class PlayListView(DetailView):
 
     model = SentenceList
 
-    def get_queryset(self):
+    def get_queryset(self: PlayListView) -> QuerySet[SentenceList]:
         if self.request.user.is_authenticated:
             return SentenceList.objects.filter(owner=self.request.user)
         return SentenceList.objects.none()
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self: PlayListView, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         sentences = context['object'].sentences.all()
@@ -51,22 +54,22 @@ class EditListView(DetailView):
 
     model = SentenceList
 
-    def get_template_names(self):
+    def get_template_names(self: EditListView) -> List[str]:
         return ['leasikApp/list_edit.html']
 
-    def get_queryset(self):
+    def get_queryset(self: EditListView) -> QuerySet[SentenceList]:
         if self.request.user.is_authenticated:
             return SentenceList.objects.filter(owner=self.request.user)
         return SentenceList.objects.none()
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self: EditListView, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['form'] = NewSentenceForm
 
         return context
 
 
-def add_new_sentence(request, pk):
+def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     elif not request.user.is_authenticated:
@@ -84,7 +87,7 @@ def add_new_sentence(request, pk):
         'leasikApp:list-edit', args=[this_list.slug]))
 
 
-def update_proficiency(request):
+def update_proficiency(request: HttpRequest) -> HttpResponse:
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     elif not request.user.is_authenticated:

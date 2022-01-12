@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -66,6 +67,7 @@ class UserProfile(models.Model):
         return self.user.username
 
     @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
+    def create_user_profile(sender: UserProfile, instance: User, created: bool,
+            **kwargs: Any) -> None:
         if created:
             UserProfile.objects.create(user=instance)
