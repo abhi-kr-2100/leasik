@@ -50,23 +50,6 @@ const app = Vue.createApp({
     },
 
     methods: {
-        updateProficiency(currentQuestion) {
-            const payload = {
-                'id': currentQuestion.id
-            }
-
-            const headers = {
-                'X-CSRFToken': csrftoken
-            }
-
-            axios({
-                method: 'POST',
-                url: updateProficiencyPostURL,
-                headers: headers,
-                data: payload
-            }).catch(err => alert(`Something went wrong: ${err}`))
-        },
-
         checkAnswer() {
             if (this.userEnteredAnswer.trim() === '') {
                 alert("Please enter something to check.")
@@ -82,7 +65,7 @@ const app = Vue.createApp({
             )
             if (isCorrect) {
                 this.answerCorrectness = 'correct'
-                this.updateProficiency(currentQuestion)
+                updateProficiency(currentQuestion)
             } else {
                 this.answerCorrectness = 'incorrect'
             }
@@ -126,6 +109,27 @@ const app = Vue.createApp({
 
 
 app.mount('#app')
+
+
+function updateProficiency(sentence) {
+    // send a POST request to Leasik's backend to update the given sentence's
+    // proficiency
+
+    const payload = {
+        'id': sentence.id
+    }
+
+    const headers = {
+        'X-CSRFToken': csrftoken
+    }
+
+    axios({
+        method: 'POST',
+        url: updateProficiencyPostURL,
+        headers: headers,
+        data: payload
+    }).catch(err => alert(`Something went wrong: ${err}`))
+}
 
 
 function semanticallyEqual(sent1, sent2) {
