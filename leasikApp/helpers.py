@@ -44,6 +44,8 @@ def get_sentences_in_order(user: User, sentences: QuerySet[Sentence]) -> \
         * The relative order of equally proficient sentences is random.
     """
 
+    # since comparisions of equal Proficiencies are randomized, we don't have
+    # to do anything to meet the second constraint on the order of the list
     return sorted(
         sentences,
         key=lambda s: Proficiency.objects.get_or_create(user=user, sentence=s)
