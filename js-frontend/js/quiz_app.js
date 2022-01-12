@@ -14,8 +14,6 @@ const app = Vue.createApp({
             userEnteredAnswer: '',
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
-
-            resultsPosted: false,
         }
     },
 
@@ -89,15 +87,6 @@ const app = Vue.createApp({
             this.answerCorrectness = 'unknown'
         },
 
-        finish() {
-            if (this.resultsPosted) {
-                return
-            }
-
-            this.resultsPosted = true
-            alert('Quiz over.')
-        },
-
         sumbitAnswer() {
             if (!this.isCurrentAnswerChecked) {
                 this.checkAnswer()
@@ -106,7 +95,7 @@ const app = Vue.createApp({
             } else if (this.hasNextPage) {
                 document.getElementById('next-page-link').click()
             } else {
-                this.finish()
+                document.getElementById('finish-quiz').click()
             }
         }
     }

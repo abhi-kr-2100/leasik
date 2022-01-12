@@ -49,7 +49,7 @@
                 Next
             </a>
         {% endif %}
-        <a v-else @click="finish()">Finish</a>
+        <a id="finish-quiz" v-else href="{% url 'leasikApp:home' %}">Finish</a>
     {% else %}
         <p>No sentences in this list!</p>
     {% endif %}
