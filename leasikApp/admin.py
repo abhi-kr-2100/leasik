@@ -1,9 +1,6 @@
 from django.contrib import admin
 
-from .models import UserProfile, Sentence, List, Proficiency
+from .models import List
 
 
-admin.site.register(Sentence)
-admin.site.register(UserProfile)
 admin.site.register(List)
-admin.site.register(Proficiency)
