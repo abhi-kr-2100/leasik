@@ -11,7 +11,7 @@ from django.http import (
 from .models import List
 from .forms import NewSentenceForm
 from .helpers import (
-    get_proficiency_dict, add_sentence_to_list, update_each_proficiency
+    add_sentence_to_list, update_each_proficiency, get_sentences_in_order
 )
 
 
@@ -40,9 +40,8 @@ class PlayListView(DetailView):
         context = super().get_context_data(**kwargs)
 
         sentences = context['object'].sentences.all()
-
-        proficiency_dict = get_proficiency_dict(self.request.user, sentences)
-        context['proficiencies'] = proficiency_dict
+        context['sentences'] = get_sentences_in_order(
+            self.request.user, sentences)
 
         return context
 

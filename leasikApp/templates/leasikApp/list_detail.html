@@ -10,7 +10,7 @@
 {% block content %}
 {% if request.user.is_authenticated %}
     <div id="app">
-        {% if proficiencies %}
+        {% if sentences %}
             <div id="answer-box">
                 <p id="pre-blank">
                     {% verbatim %}
@@ -58,7 +58,7 @@
 
 
 {% block head_scripts %}
-{% if proficiencies %}
+{% if sentences %}
     <script src="https://unpkg.com/vue@next"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endif %}
@@ -66,7 +66,7 @@
 
 
 {% block scripts %}
-{% if proficiencies %}
+{% if sentences %}
     {% csrf_token %}
     
     <script>
@@ -79,7 +79,7 @@
 
     <script>
         const question_list = []
-        {% for sentence in proficiencies %}
+        {% for sentence in sentences %}
             question_list.push({
                 'sentence': "{{ sentence.text|escapejs }}",
                 'translation': "{{ sentence.translation|escapejs }}",
