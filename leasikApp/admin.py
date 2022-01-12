@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import List, Sentence
+from .models import SentenceList, Sentence
 
 
-admin.site.register(List)
+admin.site.register(SentenceList)
 admin.site.register(Sentence)

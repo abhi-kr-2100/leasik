@@ -8,7 +8,7 @@ from django.http import (
     HttpResponseBadRequest, HttpResponseForbidden
 )
 
-from .models import List
+from .models import SentenceList
 from .forms import NewSentenceForm
 from .helpers import (
     get_sentence_from_form, update_proficiency_helper, get_sentences_in_order
@@ -18,23 +18,23 @@ from .helpers import (
 class ListsView(ListView):
     """Display a list of all the lists owned by the current user."""
 
-    model = List
+    model = SentenceList
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return List.objects.filter(owner=self.request.user)
-        return List.objects.none()
+            return SentenceList.objects.filter(owner=self.request.user)
+        return SentenceList.objects.none()
 
 
 class PlayListView(DetailView):
     """Allow the user to play this list."""
 
-    model = List
+    model = SentenceList
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return List.objects.filter(owner=self.request.user)
-        return List.objects.none()
+            return SentenceList.objects.filter(owner=self.request.user)
+        return SentenceList.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,15 +49,15 @@ class PlayListView(DetailView):
 class EditListView(DetailView):
     """Allow user to add and remove sentences from this list."""
 
-    model = List
+    model = SentenceList
 
     def get_template_names(self):
         return ['leasikApp/list_edit.html']
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return List.objects.filter(owner=self.request.user)
-        return List.objects.none()
+            return SentenceList.objects.filter(owner=self.request.user)
+        return SentenceList.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -74,7 +74,7 @@ def add_new_sentence(request, pk):
 
 
     form = NewSentenceForm(request.POST)
-    this_list = List.objects.get(pk=pk)
+    this_list = SentenceList.objects.get(pk=pk)
     if form.is_valid():
         this_list.sentences.add(get_sentence_from_form(form))
     else:

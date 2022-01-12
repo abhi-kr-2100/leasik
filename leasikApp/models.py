@@ -20,7 +20,7 @@ class Sentence(models.Model):
         return f'{self.text} ({self.translation})'
 
 
-class List(models.Model):
+class SentenceList(models.Model):
     """A list of sentences owned by a user."""
     
     name = models.CharField(max_length=100)
