@@ -1,36 +1,30 @@
 const app = Vue.createApp({
     data() {
-        const currentQuestion = question_list[0]
-        const currentSentence = currentQuestion.sentence
-        const words = currentSentence.split(" ")
-
         return {
             hasNextPage: hasNextPage,
 
             questions: question_list,
             currentQuestionIndex: 0,
 
-            missingWordIndex: Math.floor(Math.random() * words.length),
+            // what's the most recent question index for which missingWordIndex
+            // has been set?
+            missingWordIndexSetFor: undefined,
+            missingWordIndex: undefined,
             
             userEnteredAnswer: '',
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
 
             resultsPosted: false,
-
-            preQuestionSetup() {
-                const currentQuestion = this.questions[
-                    this.currentQuestionIndex]
-                const currentSentence = currentQuestion.sentence
-                const words = currentSentence.split(" ");
-    
-                this.missingWordIndex = Math.floor(Math.random() * words.length)
-            }
         }
     },
 
     computed: {
         preBlank() {
+            if (this.missingWordIndexSetFor !== this.currentQuestionIndex) {
+                this.setMissingWordIndex()
+            }
+
             const currentQuestion = this.questions[this.currentQuestionIndex]
             const currentSentence = currentQuestion.sentence
             const words = currentSentence.split(' ')
@@ -40,6 +34,10 @@ const app = Vue.createApp({
         },
 
         postBlank() {
+            if (this.missingWordIndexSetFor !== this.currentQuestionIndex) {
+                this.setMissingWordIndex()
+            }
+
             const currentQuestion = this.questions[this.currentQuestionIndex]
             const currentSentence = currentQuestion.sentence
             const words = currentSentence.split(' ')
@@ -50,6 +48,15 @@ const app = Vue.createApp({
     },
 
     methods: {
+        setMissingWordIndex() {
+            const currentQuestion = this.questions[this.currentQuestionIndex]
+            const currentSentence = currentQuestion.sentence
+            const words = currentSentence.split(" ");
+
+            this.missingWordIndex = Math.floor(Math.random() * words.length)
+            this.missingWordIndexSetFor = this.currentQuestionIndex
+        },
+
         checkAnswer() {
             if (this.userEnteredAnswer.trim() === '') {
                 alert("Please enter something to check.")
@@ -80,8 +87,6 @@ const app = Vue.createApp({
             this.userEnteredAnswer = ''
             this.isCurrentAnswerChecked = false
             this.answerCorrectness = 'unknown'
-
-            this.preQuestionSetup()
         },
 
         finish() {
