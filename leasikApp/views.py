@@ -56,7 +56,7 @@ class EditListView(DetailView):
     model = SentenceList
 
     def get_template_names(self: EditListView) -> List[str]:
-        return ['leasikApp/list_edit.html']
+        return ['leasikApp/sentencelist_edit.html']
 
     def get_queryset(self: EditListView) -> QuerySet[SentenceList]:
         if self.request.user.is_authenticated:
