@@ -1,9 +1,7 @@
 """Helper or utility functions for the leasikApp app."""
 
 
-from collections import OrderedDict
-
-from .models import Proficiency, Sentence, List
+from .models import Proficiency, Sentence
 
 
 def get_sentence_from_form(form):
