@@ -1,7 +1,7 @@
 """Helper or utility functions for the leasikApp app."""
 
 
-from typing import Any, List
+from typing import List
 
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
@@ -22,7 +22,7 @@ def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
     )[0]
 
 
-def update_proficiency_helper(user: User, sentence_id: int) -> Any:
+def update_proficiency_helper(user: User, sentence_id: int) -> None:
     """Update the proficiency between the given user and sentence."""
 
     the_sentence: Sentence = Sentence.objects.get(id=sentence_id)
