@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from os import getenv
 from pathlib import Path
+from typing import List
 
 from dotenv import load_dotenv
 
@@ -30,7 +31,7 @@ SECRET_KEY = 'django-insecure-v9+!baktcmd+blyuv#4kg+d=6yma0pcj$zanx77v6_35es%4xk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: List[str] = []
 
 
 # Application definition
@@ -127,7 +128,10 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SITE_ID = int(getenv('DJANGO_SITE_ID'))
+if site_id := getenv('DJANGO_SITE_ID') == None:
+    raise KeyError("DJANGO_SITE_ID not set.")
+
+SITE_ID = int(site_id)
 
 LOGIN_REDIRECT_URL = '/lists'
 LOGOUT_REDIRECT_URL = '/lists'
