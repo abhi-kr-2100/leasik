@@ -38,7 +38,7 @@ class SentencesListView(ListView):
     def get_template_names(self) -> List[str]:
         return ['leasikApp/sentence_list.html']
 
-    def get_queryset(self: SentencesListView) -> QuerySet[Sentence]:
+    def get_queryset(self: SentencesListView) -> List[Sentence]:
         if not self.request.user.is_authenticated:
             return Sentence.objects.none()
 
