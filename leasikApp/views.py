@@ -16,6 +16,8 @@ from .helpers import (
 
 
 class ListsView(ListView):
+    """Display a list of all the lists owned by the current user."""
+
     model = List
 
     def get_queryset(self):
@@ -25,6 +27,8 @@ class ListsView(ListView):
 
 
 class PlayListView(DetailView):
+    """Allow the user to play this list."""
+
     model = List
 
     def get_queryset(self):
@@ -44,6 +48,8 @@ class PlayListView(DetailView):
 
 
 class EditListView(DetailView):
+    """Allow user to add and remove sentences from this list."""
+
     model = List
 
     def get_template_names(self):
@@ -80,8 +86,7 @@ def add_new_sentence(request, slug):
 def update_proficiency(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-
-    if not request.user.is_authenticated:
+    elif not request.user.is_authenticated:
         return HttpResponseForbidden()
 
     request_data = loads(request.body.decode('utf-8'))
