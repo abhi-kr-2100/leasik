@@ -43,8 +43,7 @@ const app = Vue.createApp({
         },
 
         setMissingWordIndex() {
-            const currentQuestion = this.questions[this.currentQuestionIndex]
-            const currentSentence = currentQuestion.sentence
+            const currentSentence = this.currentQuestion().sentence
             const words = currentSentence.split(" ");
 
             this.missingWordIndex = Math.floor(Math.random() * words.length)
@@ -56,24 +55,20 @@ const app = Vue.createApp({
                 alert("Please enter something to check.")
             }
 
-            const currentQuestion = this.questions[this.currentQuestionIndex]
-            const currentSentence = currentQuestion.sentence
+            const currentSentence = this.currentQuestion().sentence
             const words = currentSentence.split(" ")
-            const wordToGuess = words[this.missingWordIndex]
+            const correctAnswer = words[this.missingWordIndex]
 
-            const isCorrect = semanticallyEqual(
-                this.userEnteredAnswer, wordToGuess
-            )
-            if (isCorrect) {
+            if (semanticallyEqual(this.userEnteredAnswer, correctAnswer)) {
                 this.answerCorrectness = 'correct'
-                updateProficiency(currentQuestion)
+                updateProficiency(this.currentQuestion())
             } else {
                 this.answerCorrectness = 'incorrect'
             }
 
             this.isCurrentAnswerChecked = true
             // set input box to the correct answer
-            this.userEnteredAnswer = wordToGuess
+            this.userEnteredAnswer = correctAnswer
         },
 
         showNextQuestion() {
