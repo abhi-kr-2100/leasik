@@ -10,6 +10,6 @@ urlpatterns = [
     path('update_proficiency', update_proficiency, name='update-proficiency'),
     path('<slug:slug>', PlayListView.as_view(), name='list-detail'),
     path('<slug:slug>/edit', EditListView.as_view(), name='list-edit'),
-    path('<slug:slug>/edit/add-new-sentence', add_new_sentence,
+    path('<int:pk>/edit/add-new-sentence', add_new_sentence,
         name='add-new-sentence')
 ]

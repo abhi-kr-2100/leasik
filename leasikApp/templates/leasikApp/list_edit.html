@@ -19,7 +19,7 @@
 
     <div id="add-new-sentence">
         <form
-            action="{% url 'leasikApp:add-new-sentence' object.slug %}"
+            action="{% url 'leasikApp:add-new-sentence' object.pk %}"
             method="post"
         >
             {% csrf_token %}

@@ -11,7 +11,7 @@ from django.http import (
 from .models import List
 from .forms import NewSentenceForm
 from .helpers import (
-    add_sentence_to_list, update_proficiency_helper, get_sentences_in_order
+    get_sentence_from_form, update_proficiency_helper, get_sentences_in_order
 )
 
 
@@ -66,7 +66,7 @@ class EditListView(DetailView):
         return context
 
 
-def add_new_sentence(request, slug):
+def add_new_sentence(request, pk):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     elif not request.user.is_authenticated:
@@ -74,12 +74,14 @@ def add_new_sentence(request, slug):
 
 
     form = NewSentenceForm(request.POST)
+    this_list = List.objects.get(pk=pk)
     if form.is_valid():
-        add_sentence_to_list(request.user, slug, form)
+        this_list.sentences.add(get_sentence_from_form(form))
     else:
         return HttpResponseBadRequest()
 
-    return HttpResponseRedirect(reverse('leasikApp:list-edit', args=[slug]))
+    return HttpResponseRedirect(reverse(
+        'leasikApp:list-edit', args=[this_list.slug]))
 
 
 def update_proficiency(request):

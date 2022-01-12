@@ -6,16 +6,16 @@ from collections import OrderedDict
 from .models import Proficiency, Sentence, List
 
 
-def add_sentence_to_list(owner, slug, form):
-    """Add the sentence in form to the list with the given slug and owner."""
+def get_sentence_from_form(form):
+    """Create and return a sentence object from the given form.
+    
+    If the sentence already exists, just return it.
+    """
 
-    the_list = List.objects.get(owner=owner, slug=slug)
-    the_sentence = Sentence.objects.get_or_create(
+    return Sentence.objects.get_or_create(
         text=form.cleaned_data['text'],
         translation=form.cleaned_data['translation']
     )[0]
-
-    the_list.sentences.add(the_sentence)
 
 
 def update_proficiency_helper(user, sentence_id):
