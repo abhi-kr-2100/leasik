@@ -33,7 +33,7 @@ class SentencesListView(ListView):
     """Allow the user to all sentences in a given list."""
 
     model = Sentence
-    paginate_by = 100
+    paginate_by = 10
 
     def get_template_names(self) -> List[str]:
         return ['leasikApp/sentence_list.html']
