@@ -49,13 +49,8 @@ const app = Vue.createApp({
 
     methods: {
         updateProficiency(currentQuestion) {
-            let payloadData = [{
-                'text': currentQuestion.sentence,
-                'translation': currentQuestion.translation
-            }]
-
             const payload = {
-                'data': payloadData
+                'id': currentQuestion.id
             }
 
             const headers = {

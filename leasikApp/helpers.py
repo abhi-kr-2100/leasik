@@ -18,18 +18,15 @@ def add_sentence_to_list(owner, slug, form):
     the_list.sentences.add(the_sentence)
 
 
-def update_each_proficiency(user, data_items):
-    """Update the proficiency of user with each sentence in data_items."""
+def update_proficiency_helper(user, sentence_id):
+    """Update the proficiency between the given user and sentence."""
 
-    for item in data_items:
-        sentence = Sentence.objects.get(
-            text=item['text'], translation=item['translation'])
-        to_update = Proficiency.objects.get(
-            user=user, sentence=sentence)
+    the_sentence = Sentence.objects.get(id=sentence_id)
+    the_proficiency = Proficiency.objects.get(user=user, sentence=the_sentence)
 
-        new_proficiency = (to_update.proficiency + 1) % 100
-        to_update.proficiency = new_proficiency
-        to_update.save(update_fields=['proficiency'])
+    new_proficiency = (the_proficiency.proficiency + 1) % 100
+    the_proficiency.proficiency = new_proficiency
+    the_proficiency.save(update_fields=['proficiency'])
 
 
 def get_sentences_in_order(user, sentences):

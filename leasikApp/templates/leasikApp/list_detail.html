@@ -81,6 +81,7 @@
         const question_list = []
         {% for sentence in sentences %}
             question_list.push({
+                'id': {{ sentence.id }},
                 'sentence': "{{ sentence.text|escapejs }}",
                 'translation': "{{ sentence.translation|escapejs }}",
                 'score': 0

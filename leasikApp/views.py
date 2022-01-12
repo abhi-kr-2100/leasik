@@ -11,7 +11,7 @@ from django.http import (
 from .models import List
 from .forms import NewSentenceForm
 from .helpers import (
-    add_sentence_to_list, update_each_proficiency, get_sentences_in_order
+    add_sentence_to_list, update_proficiency_helper, get_sentences_in_order
 )
 
 
@@ -91,8 +91,8 @@ def update_proficiency(request):
     request_data = loads(request.body.decode('utf-8'))
 
     user = request.user
-    data_items = request_data['data']
+    sentence_id = request_data['id']
 
-    update_each_proficiency(user, data_items)
+    update_proficiency_helper(user, sentence_id)
 
     return HttpResponse(status=200)
