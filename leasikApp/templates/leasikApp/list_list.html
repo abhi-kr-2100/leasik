@@ -1,4 +1,4 @@
-{% extends "leasikApp/base.html" %}
+{% extends "leasikApp/base_authorized.html" %}
 
 
 {% load static %}
@@ -7,41 +7,37 @@
 {% block title %}List List{% endblock %}
 
 
-{% block content %}
-{% if request.user.is_authenticated %}
-    <a id="new-list-button">Create a new list</a>
+{% block auth_content %}
+<a id="new-list-button">Create a new list</a>
 
-    
-    <ul id="list-list">
-    {% for list in object_list %}
-        <li>
-            <div class="list">
-                <h2>{{ list.name }}</h2>
-                <div class="list-actions">
-                    <a class="list-delete-action">Delete</a>
-                    
-                    <a href="{% url 'leasikApp:list-edit' list.slug %}"
-                        class="list-edit-action"
-                    >
-                        Edit
-                    </a>
-                    
-                    <a href="{% url 'leasikApp:list-detail' list.slug %}"
-                        class="list-play-action"
-                    >
-                        Play
-                    </a>
-                </div>
+
+<ul id="list-list">
+{% for list in object_list %}
+    <li>
+        <div class="list">
+            <h2>{{ list.name }}</h2>
+            <div class="list-actions">
+                <a class="list-delete-action">Delete</a>
+                
+                <a href="{% url 'leasikApp:list-edit' list.slug %}"
+                    class="list-edit-action"
+                >
+                    Edit
+                </a>
+                
+                <a href="{% url 'leasikApp:list-detail' list.slug %}"
+                    class="list-play-action"
+                >
+                    Play
+                </a>
             </div>
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    {% include "leasikApp/unauthenticated.html" %}
-{% endif %}
+        </div>
+    </li>
+{% endfor %}
+</ul>
 {% endblock %}
 
 
-{% block stylesheets %}
+{% block auth_stylesheets %}
 <link rel="stylesheet" href="{% static 'leasikApp/styles/list_list.css' %}"
 {% endblock %}

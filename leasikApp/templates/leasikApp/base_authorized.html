@@ -1,0 +1,35 @@
+{% extends "leasikApp/base.html" %}
+
+
+{% block content %}
+{% if request.user.is_authenticated %}
+    {% block auth_content %}
+    {% endblock %}
+{% else %}
+    {% include "leasikApp/unauthenticated.html" %}
+{% endif %}
+{% endblock %}
+
+
+{% block stylesheets %}
+{% if request.user.is_authenticated %}
+    {% block auth_stylesheets %}
+    {% endblock %}
+{% endif %}
+{% endblock %}
+
+
+{% block head_scripts %}
+{% if request.user.is_authenticated %}
+    {% block auth_head_scripts %}
+    {% endblock %}
+{% endif %}
+{% endblock %}
+
+
+{% block scripts %}
+{% if request.user.is_authenticated %}
+    {% block auth_scripts %}
+    {% endblock %}
+{% endif %}
+{% endblock %}

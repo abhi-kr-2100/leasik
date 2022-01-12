@@ -1,4 +1,4 @@
-{% extends "leasikApp/base.html" %}
+{% extends "leasikApp/base_authorized.html" %}
 
 
 {% load static %}
@@ -7,57 +7,53 @@
 {% block title %}{{ object }}{% endblock %}
 
 
-{% block content %}
-{% if request.user.is_authenticated %}
-    <div id="app">
-        {% if sentences %}
-            <div id="answer-box">
-                <p id="pre-blank">
-                    {% verbatim %}
-                    {{ preBlank }}
-                    {% endverbatim %}
-                </p>
-                <input
-                    v-model="userEnteredAnswer" :class="answerCorrectness"
-                    @keyup.enter="sumbitAnswer"
-                >
-                <p id="post-blank">
-                    {% verbatim %}
-                    {{ postBlank }}
-                    {% endverbatim %}
-                </p>
-            </div>
-
-            <p id="question-box">
+{% block auth_content %}
+<div id="app">
+    {% if sentences %}
+        <div id="answer-box">
+            <p id="pre-blank">
                 {% verbatim %}
-                {{ questions[currentQuestionIndex].translation }}
+                {{ preBlank }}
                 {% endverbatim %}
             </p>
-
-            <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
-            <a
-                v-else-if="currentQuestionIndex < questions.length - 1"
-                @click="showNextQuestion()"
+            <input
+                v-model="userEnteredAnswer" :class="answerCorrectness"
+                @keyup.enter="sumbitAnswer"
             >
-                Next
-            </a>
-            <a v-else @click="finish()">Finish</a>
-        {% else %}
-            <p>No sentences in this list!</p>
-        {% endif %}
-    </div>
-{% else %}
-    {% include "leasikApp/unauthenticated.html" %}
-{% endif %}
+            <p id="post-blank">
+                {% verbatim %}
+                {{ postBlank }}
+                {% endverbatim %}
+            </p>
+        </div>
+
+        <p id="question-box">
+            {% verbatim %}
+            {{ questions[currentQuestionIndex].translation }}
+            {% endverbatim %}
+        </p>
+
+        <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
+        <a
+            v-else-if="currentQuestionIndex < questions.length - 1"
+            @click="showNextQuestion()"
+        >
+            Next
+        </a>
+        <a v-else @click="finish()">Finish</a>
+    {% else %}
+        <p>No sentences in this list!</p>
+    {% endif %}
+</div>
 {% endblock %}
 
 
-{% block stylesheets %}
+{% block auth_stylesheets %}
 <link rel="stylesheet" href="{% static 'leasikApp/styles/list_detail.css' %}">
 {% endblock %}
 
 
-{% block head_scripts %}
+{% block auth_head_scripts %}
 {% if sentences %}
     <script src="https://unpkg.com/vue@next"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -65,7 +61,7 @@
 {% endblock %}
 
 
-{% block scripts %}
+{% block auth_scripts %}
 {% if sentences %}
     {% csrf_token %}
     
