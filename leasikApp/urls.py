@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .views import (
-    ListsView, EditListView, PlayListView, update_proficiency,  add_new_sentence
+    ListsView, EditListView, SentencesListView, update_proficiency, 
+    add_new_sentence
 )
 
 
@@ -13,7 +14,7 @@ urlpatterns = [
     # the proficiency by 1
     path('update_proficiency', update_proficiency, name='update-proficiency'),
 
-    path('<slug:slug>', PlayListView.as_view(), name='list-detail'),
+    path('<slug:slug>', SentencesListView.as_view(), name='list-detail'),
     path('<slug:slug>/edit', EditListView.as_view(), name='list-edit'),
     
     # post request with pk of list and the appropriate form in POST will add

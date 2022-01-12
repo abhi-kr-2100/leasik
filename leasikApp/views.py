@@ -11,7 +11,7 @@ from django.http import (
     HttpResponseBadRequest, HttpResponseForbidden
 )
 
-from .models import SentenceList
+from .models import Sentence, SentenceList
 from .forms import NewSentenceForm
 from .helpers import (
     get_sentence_from_form, update_proficiency_helper, get_sentences_in_order
@@ -29,24 +29,25 @@ class ListsView(ListView):
         return SentenceList.objects.none()
 
 
-class PlayListView(DetailView):
-    """Allow the user to play this list."""
+class SentencesListView(ListView):
+    """Allow the user to all sentences in a given list."""
 
-    model = SentenceList
+    model = Sentence
+    paginate_by = 100
 
-    def get_queryset(self: PlayListView) -> QuerySet[SentenceList]:
-        if self.request.user.is_authenticated:
-            return SentenceList.objects.filter(owner=self.request.user)
-        return SentenceList.objects.none()
+    def get_template_names(self) -> List[str]:
+        return ['leasikApp/sentence_list.html']
 
-    def get_context_data(self: PlayListView, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+    def get_queryset(self: SentencesListView) -> QuerySet[Sentence]:
+        if not self.request.user.is_authenticated:
+            return Sentence.objects.none()
 
-        sentences = context['object'].sentences.all()
-        context['sentences'] = get_sentences_in_order(
-            self.request.user, sentences)
+        user = self.request.user
+        slug: str = self.kwargs['slug']
+        sentence_list: SentenceList = SentenceList.objects.get(
+            owner=user, slug=slug)
 
-        return context
+        return get_sentences_in_order(user, sentence_list.sentences.all())
 
 
 class EditListView(DetailView):

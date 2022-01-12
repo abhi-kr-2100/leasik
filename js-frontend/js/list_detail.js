@@ -5,6 +5,8 @@ const app = Vue.createApp({
         const words = currentSentence.split(" ")
 
         return {
+            hasNextPage: hasNextPage,
+
             questions: question_list,
             currentQuestionIndex: 0,
 
@@ -113,6 +115,8 @@ const app = Vue.createApp({
                 this.checkAnswer()
             } else if (this.currentQuestionIndex < this.questions.length - 1) {
                 this.showNextQuestion()
+            } else if (this.hasNextPage) {
+                document.getElementById('next-page-link').click()
             } else {
                 this.finish()
             }

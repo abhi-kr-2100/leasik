@@ -9,7 +9,7 @@
 
 {% block auth_content %}
 <div id="app">
-    {% if sentences %}
+    {% if object_list %}
         <div id="answer-box">
             <p id="pre-blank">
                 {% verbatim %}
@@ -18,7 +18,7 @@
             </p>
             <input
                 v-model="userEnteredAnswer" :class="answerCorrectness"
-                @keyup.enter="sumbitAnswer"
+                @keyup.enter="sumbitAnswer" autofocus
             >
             <p id="post-blank">
                 {% verbatim %}
@@ -40,6 +40,15 @@
         >
             Next
         </a>
+        {% if page_obj.has_next %}
+            <a
+                id="next-page-link"
+                v-else-if="hasNextPage" 
+                href="?page={{ page_obj.next_page_number }}"
+            >
+                Next
+            </a>
+        {% endif %}
         <a v-else @click="finish()">Finish</a>
     {% else %}
         <p>No sentences in this list!</p>
@@ -54,7 +63,7 @@
 
 
 {% block auth_head_scripts %}
-{% if sentences %}
+{% if object_list %}
     <script src="https://unpkg.com/vue@next"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {% endif %}
@@ -62,7 +71,7 @@
 
 
 {% block auth_scripts %}
-{% if sentences %}
+{% if object_list %}
     {% csrf_token %}
     
     <script>
@@ -71,11 +80,12 @@
         const updateProficiencyPostURL = (
             "{% url 'leasikApp:update-proficiency' %}"
         )
+        const hasNextPage = '{{ page_obj.has_next }}' === 'True'
     </script>
 
     <script>
         const question_list = []
-        {% for sentence in sentences %}
+        {% for sentence in object_list %}
             question_list.push({
                 'id': {{ sentence.id }},
                 'sentence': "{{ sentence.text|escapejs }}",
