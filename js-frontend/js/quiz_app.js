@@ -23,12 +23,8 @@ const app = Vue.createApp({
                 this.setMissingWordIndex()
             }
 
-            const currentQuestion = this.questions[this.currentQuestionIndex]
-            const currentSentence = currentQuestion.sentence
-            const words = currentSentence.split(' ')
-            const wordsToInclude = words.slice(0, this.missingWordIndex)
-
-            return wordsToInclude.join(' ')
+            const question = this.currentQuestion()
+            return wordSlice(question.sentence, this.missingWordIndex, 'pre')
         },
 
         postBlank() {
@@ -36,16 +32,16 @@ const app = Vue.createApp({
                 this.setMissingWordIndex()
             }
 
-            const currentQuestion = this.questions[this.currentQuestionIndex]
-            const currentSentence = currentQuestion.sentence
-            const words = currentSentence.split(' ')
-            const wordsToInclude = words.slice(this.missingWordIndex + 1)
-
-            return wordsToInclude.join(' ')
+            const question = this.currentQuestion()
+            return wordSlice(question.sentence, this.missingWordIndex, 'post')
         }
     },
 
     methods: {
+        currentQuestion() {
+            return this.questions[this.currentQuestionIndex]
+        },
+
         setMissingWordIndex() {
             const currentQuestion = this.questions[this.currentQuestionIndex]
             const currentSentence = currentQuestion.sentence
@@ -104,6 +100,18 @@ const app = Vue.createApp({
 
 app.mount('#app')
 
+
+function wordSlice(text, index, pre_or_post) {
+    // return the initial part of text (pre) or the latter part of text (post)
+    // index is the index of the word that is either the last or the first to
+    // not be included
+
+    const words = text.split(' ')
+    const wordsToInclude = (pre_or_post === 'pre') ? words.slice(0, index)
+        : words.slice(index + 1)
+
+    return wordsToInclude.join(' ')
+}
 
 function updateProficiency(sentence) {
     // send a POST request to Leasik's backend to update the given sentence's
