@@ -6,17 +6,6 @@
 
 {% block auth_content %}
 <div id="list-editor">
-    <ul id="existing-sentence-list">
-    {% for sentence in object.sentences.all %}
-        <li>
-            <div class="existing-sentence-list-item">
-                <h3>{{ sentence }}</h3>
-                <a>Delete</a>
-            </div>
-        </li>
-    {% endfor %}
-    </ul>
-
     <div id="add-new-sentence">
         <form
             action="{% url 'leasikApp:add-new-sentence' object.pk %}"
