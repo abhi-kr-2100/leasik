@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any
+from random import choice
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -53,6 +54,10 @@ class Proficiency(models.Model):
         return f'{self.user.id}: {self.sentence.text} - {self.proficiency}%'
 
     def __lt__(self, other: Proficiency) -> bool:
+        if self.proficiency == other.proficiency:
+            # for extra randomization
+            return choice([True, False])
+            
         return self.proficiency < other.proficiency
 
     class Meta:
