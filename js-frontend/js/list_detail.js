@@ -48,9 +48,31 @@ const app = Vue.createApp({
     },
 
     methods: {
+        updateProficiency(currentQuestion) {
+            let payloadData = [{
+                'text': currentQuestion.sentence,
+                'translation': currentQuestion.translation
+            }]
+
+            const payload = {
+                'data': payloadData
+            }
+
+            const headers = {
+                'X-CSRFToken': csrftoken
+            }
+
+            axios({
+                method: 'POST',
+                url: updateProficiencyPostURL,
+                headers: headers,
+                data: payload
+            }).catch(err => alert(`Something went wrong: ${err}`))
+        },
+
         checkAnswer() {
             if (this.userEnteredAnswer.trim() === '') {
-                return
+                alert("Please enter something to check.")
             }
 
             const currentQuestion = this.questions[this.currentQuestionIndex]
@@ -63,12 +85,13 @@ const app = Vue.createApp({
             )
             if (isCorrect) {
                 this.answerCorrectness = 'correct'
-                currentQuestion.score = 1
+                this.updateProficiency(currentQuestion)
             } else {
                 this.answerCorrectness = 'incorrect'
             }
 
             this.isCurrentAnswerChecked = true
+            // set input box to the correct answer
             this.userEnteredAnswer = wordToGuess
         },
 
@@ -86,35 +109,8 @@ const app = Vue.createApp({
                 return
             }
 
-            let payloadData = []
-            for (let question of this.questions) {
-                if (question.score) {
-                    payloadData.push({
-                        'text': question.sentence,
-                        'translation': question.translation,
-                    })
-                }
-            }
-
-            console.log(payloadData)
-            
-            const payload = {
-                'data': payloadData
-            }
-
-            const headers = {
-                'X-CSRFToken': csrftoken
-            }
-
-            axios({
-                method: 'POST',
-                url: updateProficiencyPostURL,
-                headers: headers,
-                data: payload
-            }).then(res => {
-                this.resultsPosted = true
-                alert('Quiz over!')
-            }).catch(err => alert('Something went wrong. Please try again.'))
+            this.resultsPosted = true
+            alert('Quiz over.')
         },
 
         sumbitAnswer() {
