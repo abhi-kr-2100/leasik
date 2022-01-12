@@ -4,6 +4,7 @@
 from typing import List
 
 from django.db.models.query import QuerySet
+from django.db.models import F
 from django.contrib.auth.models import User
 
 from .forms import NewSentenceForm
@@ -26,12 +27,12 @@ def update_proficiency_helper(user: User, sentence_id: int) -> None:
     """Update the proficiency between the given user and sentence."""
 
     the_sentence: Sentence = Sentence.objects.get(id=sentence_id)
-    the_proficiency: Proficiency = Proficiency.objects.get_or_create(
-        user=user, sentence=the_sentence)[0]
-
-    new_proficiency: int = (the_proficiency.proficiency + 1) % 100
-    the_proficiency.proficiency = new_proficiency
-    the_proficiency.save(update_fields=['proficiency'])
+    
+    Proficiency.objects.update_or_create(
+        user=user,
+        sentence=the_sentence,
+        defaults={'proficiency': (F('proficiency') + 1) % 100}
+    )[0]
 
 
 def get_sentences_in_order(user: User, sentences: QuerySet[Sentence]) -> \
