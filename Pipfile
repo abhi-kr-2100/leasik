@@ -11,6 +11,8 @@ django-allauth = "*"
 python-dotenv = "*"
 
 [dev-packages]
+mypy = "*"
+django-stubs = "*"
 
 [requires]
 python_version = "3.8"
