@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 from json import loads
 
 from django.db.models.query import QuerySet
@@ -38,7 +38,8 @@ class SentencesListView(ListView):
     def get_template_names(self) -> List[str]:
         return ['leasikApp/sentence_list.html']
 
-    def get_queryset(self: SentencesListView) -> QuerySet[Sentence]:
+    def get_queryset(self: SentencesListView) -> \
+            Union[List[Sentence], QuerySet[Sentence]]:
         if not self.request.user.is_authenticated:
             return Sentence.objects.none()
 
