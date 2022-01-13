@@ -22,6 +22,16 @@ class Sentence(models.Model):
         return f'{self.text} ({self.translation})'
 
 
+class SentenceNote(models.Model):
+    """Additional notes for a sentence."""
+
+    note = models.TextField()
+    sentences = models.ManyToManyField(Sentence, blank=True)
+
+    def __str__(self) -> str:
+        return self.notes
+
+
 class SentenceList(models.Model):
     """A list of sentences owned by a user."""
     
