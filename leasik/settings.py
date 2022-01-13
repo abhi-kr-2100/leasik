@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'leasikApp',
+    'leasikStaticPages',
 
     'allauth',
     'allauth.account',
