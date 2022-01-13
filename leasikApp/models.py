@@ -34,7 +34,7 @@ class SentenceNote(models.Model):
         unique_together = ('sentence', 'user')
 
     def __str__(self) -> str:
-        return self.notes
+        return self.note
 
 
 class SentenceList(models.Model):
