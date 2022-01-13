@@ -24,7 +24,11 @@
 
     <body>
         <header id="main-header">
-            <h1>Leasik</h1>
+            <h1>
+                <a href="{% url 'leasikStaticPages:home-page' %}">
+                    Leasik
+                </a>
+            </h1>
             <nav>
                 <ul>
                 {% if request.user.is_authenticated %}

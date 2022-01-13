@@ -31,6 +31,10 @@ body {
     flex-grow: 1;
 }
 
+#main-header h1 a {
+    text-decoration: none;
+}
+
 #main-header ul {
     list-style-type: none;
 
@@ -62,6 +66,10 @@ body {
 
 #main-header h1 {
     color: white;
+}
+
+#main-header h1 a {
+    color: inherit;
 }
 
 #main-header ul li a {
