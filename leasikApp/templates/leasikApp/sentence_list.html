@@ -27,11 +27,22 @@
             </p>
         </div>
 
-        <p id="question-box">
-            {% verbatim %}
-            {{ questions[currentQuestionIndex].translation }}
-            {% endverbatim %}
-        </p>
+        <div id="question-box">
+            <p id="question">
+                {% verbatim %}
+                {{ questions[currentQuestionIndex].translation }}
+                {% endverbatim %}
+            </p>
+
+            <hr>
+
+            <div id="note">
+                <label for="note-input">
+                {% verbatim %}
+                <textarea>{{ questions[currentQuestionIndex].note }}</textarea>
+                {% endverbatim %}
+            </div>
+        </div>
 
         <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
         <a
@@ -85,12 +96,13 @@
 
     <script>
         const question_list = []
-        {% for sentence in object_list %}
+        {% for sentence, note in object_list %}
             question_list.push({
                 'id': {{ sentence.id }},
                 'sentence': "{{ sentence.text|escapejs }}",
                 'translation': "{{ sentence.translation|escapejs }}",
-                'score': 0
+                'score': 0,
+                'note': "{{ note.note|escapejs }}"
             })
         {% endfor %}
     </script>
