@@ -26,7 +26,7 @@ class Sentence(models.Model):
 class SentenceNote(models.Model):
     """Additional notes for a sentence."""
 
-    note = models.TextField()
+    note = models.TextField(default='')
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
