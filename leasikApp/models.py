@@ -26,7 +26,7 @@ class SentenceNote(models.Model):
     """Additional notes for a sentence."""
 
     note = models.TextField()
-    sentences = models.ManyToManyField(Sentence, blank=True)
+    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.notes
