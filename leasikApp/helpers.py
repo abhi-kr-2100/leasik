@@ -1,14 +1,14 @@
 """Helper or utility functions for the leasikApp app."""
 
 
-from typing import List
+from typing import List, Union
 
 from django.db.models.query import QuerySet
 from django.db.models import F
 from django.contrib.auth.models import User
 
 from .forms import NewSentenceForm
-from .models import Proficiency, Sentence
+from .models import Proficiency, Sentence, SentenceNote
 
 
 def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
@@ -50,3 +50,14 @@ def get_sentences_in_order(user: User, sentences: QuerySet[Sentence]) -> \
         sentences,
         key=lambda s: Proficiency.objects.get_or_create(user=user, sentence=s)
     )
+
+
+def get_notes_for_sentences(user: User,
+        sentences: Union[QuerySet[Sentence], List[Sentence]]) -> \
+            List[SentenceNote]:
+    """Return a list of notes for each given sentence in order."""
+
+    return [
+        SentenceNote.objects.get_or_create(user=user, sentence=s)[0] \
+            for s in sentences
+    ]

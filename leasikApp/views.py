@@ -14,7 +14,8 @@ from django.http import (
 from .models import Sentence, SentenceList
 from .forms import NewSentenceForm
 from .helpers import (
-    get_sentence_from_form, update_proficiency_helper, get_sentences_in_order
+    get_sentence_from_form, update_proficiency_helper, get_sentences_in_order,
+    get_notes_for_sentences
 )
 
 
@@ -49,6 +50,19 @@ class SentencesListView(ListView):
             owner=user, slug=slug)
 
         return get_sentences_in_order(user, sentence_list.sentences.all())
+
+    def get_context_data(self: SentencesListView, **kwargs: Any) -> \
+            Dict[str, Any]:
+        """Return context that contains sentences and associated notes."""
+
+        context = super().get_context_data(**kwargs)
+
+        sentences = context['object_list']
+        notes = get_notes_for_sentences(self.request.user, sentences)
+
+        context['object_list'] = zip(sentences, notes)
+
+        return context
 
 
 class EditListView(DetailView):
