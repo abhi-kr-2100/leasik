@@ -14,6 +14,8 @@ const app = Vue.createApp({
             userEnteredAnswer: '',
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
+
+            note: undefined
         }
     },
 
@@ -107,6 +109,15 @@ function wordSlice(text, index, pre_or_post) {
 
     return wordsToInclude.join(' ')
 }
+
+
+function updateNote(sentence, new_note) {
+    // send a POST request to Leasik's backend to update the note for the given
+    // sentence
+
+    // TODO
+}
+
 
 function updateProficiency(sentence) {
     // send a POST request to Leasik's backend to update the given sentence's

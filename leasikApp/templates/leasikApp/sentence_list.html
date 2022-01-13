@@ -38,7 +38,9 @@
 
             <div id="note">
                 {% verbatim %}
-                <textarea>{{ questions[currentQuestionIndex].note }}</textarea>
+                <textarea
+                    @v-model="note">{{ questions[currentQuestionIndex].note }}
+                </textarea>
                 {% endverbatim %}
             </div>
         </div>
