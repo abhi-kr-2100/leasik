@@ -1,4 +1,5 @@
 from __future__ import annotations
+from statistics import mode
 from typing import Any
 from random import choice
 
@@ -27,6 +28,10 @@ class SentenceNote(models.Model):
 
     note = models.TextField()
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('sentence', 'user')
 
     def __str__(self) -> str:
         return self.notes
