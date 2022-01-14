@@ -10,6 +10,7 @@ beautifulsoup4 = "*"
 django-allauth = "*"
 python-dotenv = "*"
 psycopg2 = "*"
+dj-database-url = "*"
 
 [dev-packages]
 mypy = "*"

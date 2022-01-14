@@ -14,6 +14,7 @@ from os import getenv
 from pathlib import Path
 
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -90,16 +91,12 @@ WSGI_APPLICATION = 'leasik.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': getenv('DJANGO_DB_NAME'),
-        'USER': getenv('DJANGO_DB_USER'),
-        'PASSWORD': getenv('DJANGO_DB_PASSWORD'),
-        'HOST': getenv('DJANGO_DB_HOST'),
-        'PORT': getenv('DJANGO_DB_PORT')
-    }
-}
+DATABASES = {}
+conn_max_age = getenv('DJANGO_DB_CON_MAX_AGE')
+DATABASES['default'] = dj_database_url.parse(
+    getenv('DATABASE_URL'),
+    conn_max_age=(int(conn_max_age) if conn_max_age is not None else None)
+)
 
 
 # Password validation
