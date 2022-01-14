@@ -9,6 +9,7 @@ requests = "*"
 beautifulsoup4 = "*"
 django-allauth = "*"
 python-dotenv = "*"
+psycopg2 = "*"
 
 [dev-packages]
 mypy = "*"

@@ -91,8 +91,12 @@ WSGI_APPLICATION = 'leasik.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': getenv('DJANGO_DB_NAME'),
+        'USER': getenv('DJANGO_DB_USER'),
+        'PASSWORD': getenv('DJANGO_DB_PASSWORD'),
+        'HOST': getenv('DJANGO_DB_HOST'),
+        'PORT': getenv('DJANGO_DB_PORT')
     }
 }
 
