@@ -89,6 +89,7 @@
         const updateProficiencyPostURL = (
             "{% url 'leasikApp:update-proficiency' %}"
         )
+        const updateNoteURL = "{% url 'leasikApp:update-note' %}"
         const quizFinishRedirectURL = "{% url 'leasikStaticPages:home-page' %}"
         const hasNextPage = '{{ page_obj.has_next }}' === 'True'
         {% if page_obj.has_next %}

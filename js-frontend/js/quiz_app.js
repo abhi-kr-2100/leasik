@@ -83,7 +83,7 @@ const app = Vue.createApp({
 
         sumbitAnswer() {
             if (this.currentQuestion().note.trim() != this.note.trim()) {
-                updateNote(this.currentQuestion().sentence, this.note)
+                updateNote(this.currentQuestion(), this.note)
                 this.currentQuestion().note = this.note.trim()
             }
 
@@ -121,8 +121,21 @@ function updateNote(sentence, new_note) {
     // send a POST request to Leasik's backend to update the note for the given
     // sentence
 
-    // TODO
-    console.log("TODO: Update note")
+    const payload = {
+        'id': sentence.id,
+        'new_note': new_note
+    }
+
+    const headers = {
+        'X-CSRFToken': csrftoken
+    }
+
+    axios({
+        method: 'POST',
+        url: updateNoteURL,
+        headers: headers,
+        data: payload
+    }).catch(err => alert(`Something went wrong: ${err}`))
 }
 
 

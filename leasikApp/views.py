@@ -15,7 +15,7 @@ from .models import Sentence, SentenceList
 from .forms import NewSentenceForm
 from .helpers import (
     get_sentence_from_form, update_proficiency_helper, get_sentences_in_order,
-    get_notes_for_sentences
+    get_notes_for_sentences, update_note_helper
 )
 
 
@@ -115,5 +115,22 @@ def update_proficiency(request: HttpRequest) -> HttpResponse:
     sentence_id = request_data['id']
 
     update_proficiency_helper(user, sentence_id)
+
+    return HttpResponse(status=200)
+
+
+def update_note(request: HttpRequest) -> HttpResponse:
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    elif not request.user.is_authenticated:
+        return HttpResponseForbidden()
+
+    request_data = loads(request.body.decode('utf-8'))
+
+    user = request.user
+    sentence_id = request_data['id']
+    new_note = request_data['new_note']
+
+    update_note_helper(user, sentence_id, new_note)
 
     return HttpResponse(status=200)
