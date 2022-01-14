@@ -15,7 +15,7 @@ const app = Vue.createApp({
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
 
-            note: undefined
+            note: question_list[0].note
         }
     },
 
@@ -78,17 +78,23 @@ const app = Vue.createApp({
             this.userEnteredAnswer = ''
             this.isCurrentAnswerChecked = false
             this.answerCorrectness = 'unknown'
+            this.note = this.currentQuestion().note
         },
 
         sumbitAnswer() {
+            if (this.currentQuestion().note.trim() != this.note.trim()) {
+                updateNote(this.currentQuestion().sentence, this.note)
+                this.currentQuestion().note = this.note.trim()
+            }
+
             if (!this.isCurrentAnswerChecked) {
                 this.checkAnswer()
             } else if (this.currentQuestionIndex < this.questions.length - 1) {
                 this.showNextQuestion()
             } else if (this.hasNextPage) {
-                document.getElementById('next-page-link').click()
+                window.location.href = nextPageURL
             } else {
-                document.getElementById('finish-quiz').click()
+                window.location.href = quizFinishRedirectURL
             }
         }
     }
@@ -116,6 +122,7 @@ function updateNote(sentence, new_note) {
     // sentence
 
     // TODO
+    console.log("TODO: Update note")
 }
 
 

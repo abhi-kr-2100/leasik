@@ -39,29 +39,26 @@
             <div id="note">
                 {% verbatim %}
                 <textarea
-                    @v-model="note">{{ questions[currentQuestionIndex].note }}
+                    v-model="note">{{ questions[currentQuestionIndex].note }}
                 </textarea>
                 {% endverbatim %}
             </div>
         </div>
 
-        <a v-if="!isCurrentAnswerChecked" @click="checkAnswer">Check</a>
+        <a v-if="!isCurrentAnswerChecked" @click="sumbitAnswer()">Check</a>
         <a
             v-else-if="currentQuestionIndex < questions.length - 1"
-            @click="showNextQuestion()"
+            @click="sumbitAnswer()"
         >
             Next
         </a>
-        {% if page_obj.has_next %}
-            <a
-                id="next-page-link"
-                v-else-if="hasNextPage" 
-                href="?page={{ page_obj.next_page_number }}"
-            >
+        <a v-else @click="sumbitAnswer()">
+            {% if page_obj.has_next %}
                 Next
-            </a>
-        {% endif %}
-        <a id="finish-quiz" v-else href="{% url 'leasikApp:home' %}">Finish</a>
+            {% else %}
+                Finish
+            {% endif %}
+        </a>
     {% else %}
         <p>No sentences in this list!</p>
     {% endif %}
@@ -92,7 +89,14 @@
         const updateProficiencyPostURL = (
             "{% url 'leasikApp:update-proficiency' %}"
         )
+        const quizFinishRedirectURL = "{% url 'leasikStaticPages:home-page' %}"
         const hasNextPage = '{{ page_obj.has_next }}' === 'True'
+        {% if page_obj.has_next %}
+        const nextPageNumber = "{{ page_obj.next_page_number }}"
+        const nextPageURL = (
+            `${window.location.href.split('?')[0]}?page=${nextPageNumber}`
+        )
+        {% endif %}
     </script>
 
     <script>
