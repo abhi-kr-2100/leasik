@@ -7,9 +7,9 @@ const path = require('path')
 
 gulp.task('build', function() {
     return (
-        src('js/*.js')
+        src('js-frontend/js/**/*.js')
             .pipe(minify())
-            .pipe(dest(path.resolve(__dirname, '../static/frontend/js/')))
+            .pipe(dest(path.resolve(__dirname, 'static/frontend/js/')))
     )
 })
 
