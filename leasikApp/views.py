@@ -3,9 +3,11 @@ from typing import Any, Dict, List, Union
 from json import loads
 
 from django.db.models.query import QuerySet
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.template.defaultfilters import slugify
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 from django.http import (
     HttpRequest, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
     HttpResponseBadRequest, HttpResponseForbidden
@@ -83,6 +85,21 @@ class EditListView(DetailView):
         context['form'] = NewSentenceForm
 
         return context
+
+
+class SentenceListCreateView(CreateView):
+    model = SentenceList
+    fields = ['name']
+    success_url = reverse_lazy('leasikApp:home')
+
+    def form_valid(self, form):
+        user = self.request.user
+        slug = slugify(form.instance.name)
+
+        form.instance.owner = user
+        form.instance.slug = slug
+
+        return super().form_valid(form)
 
 
 def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:

@@ -8,7 +8,9 @@
 
 
 {% block auth_content %}
-<a id="new-list-button">Create a new list</a>
+<a id="new-list-button" href="{% url 'leasikApp:new-list' %}">
+    Create a new list
+</a>
 
 
 <ul id="list-list">

@@ -2,13 +2,14 @@ from django.urls import path
 
 from .views import (
     ListsView, EditListView, SentencesListView, update_proficiency, 
-    add_new_sentence, update_note
+    add_new_sentence, update_note, SentenceListCreateView
 )
 
 
 app_name = 'leasikApp'
 urlpatterns = [
     path('', ListsView.as_view(), name='home'),
+    path('create_list', SentenceListCreateView.as_view(), name='new-list'),
 
     # post request with an authenticated user and id of sentence will increment
     # the proficiency by 1
