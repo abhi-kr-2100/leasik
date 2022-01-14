@@ -11,6 +11,7 @@ django-allauth = "*"
 python-dotenv = "*"
 psycopg2 = "*"
 dj-database-url = "*"
+gunicorn = "*"
 
 [dev-packages]
 mypy = "*"
