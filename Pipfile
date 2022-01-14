@@ -13,7 +13,6 @@ python-dotenv = "*"
 [dev-packages]
 mypy = "*"
 django-stubs = "*"
-ipython = "*"
 
 [requires]
 python_version = "3.8"
