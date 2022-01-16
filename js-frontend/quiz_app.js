@@ -161,17 +161,15 @@ function updateProficiency(sentence) {
 
 
 function semanticallyEqual(sent1, sent2) {
-    // remove punctuations and extra space, and lowercase the sentences
+    return normalizeSentence(sent1) === normalizeSentence(sent2)
+}
 
-    sent1 = sent1
-                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")
-                .replace(/\s{2,}/g," ")
-                .toLowerCase()
 
-    sent2 = sent2
-                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")
-                .replace(/\s{2,}/g," ")
-                .toLowerCase()
-
-    return sent1 === sent2
+function normalizeSentence(sentence) {
+    return (
+        sentence
+            .replace(/[^\p{L}\s]/gu,"")
+            .replace(/\s{2,}/g," ")
+            .toLowerCase()
+    )
 }
