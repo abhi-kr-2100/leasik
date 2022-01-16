@@ -67,7 +67,6 @@ def update_note_helper(user: User, sentence_id: int, new_note: str) -> None:
     """Update the note of the SentenceNote between user and given sentence."""
 
     the_sentence = Sentence.objects.get(id=sentence_id)
-    note = SentenceNote.objects.get(user=user, sentence=the_sentence)
 
     SentenceNote.objects.update_or_create(
         user=user, sentence=the_sentence, defaults={'note': new_note}
