@@ -40,17 +40,17 @@ class SentenceList(models.Model):
     """A list of sentences owned by a user."""
     
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True)
+
+    description = models.TextField(blank=True)
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=True)
 
     sentences = models.ManyToManyField(Sentence, blank=True)
 
     def __str__(self) -> str:
         return self.name
-
-    class Meta:
-        unique_together = ('slug', 'owner')
 
 
 class Proficiency(models.Model):

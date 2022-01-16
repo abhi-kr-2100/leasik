@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Any, Dict, List, Union
 from json import loads
+from string import ascii_letters, digits
+from random import sample
 
 from django.db.models.query import QuerySet
 from django.urls import reverse, reverse_lazy
@@ -26,10 +28,18 @@ class ListsView(ListView):
 
     model = SentenceList
 
-    def get_queryset(self: ListsView) -> QuerySet[SentenceList]:
+    def get_template_names(self) -> List[str]:
+        return ['leasikApp/sentencelist_list.html']
+
+    def get_queryset(self: ListsView) -> List[SentenceList]:
+        """Return a list of all SentenceLists that can be show to user."""
+
+        qs = set()
         if self.request.user.is_authenticated:
-            return SentenceList.objects.filter(owner=self.request.user)
-        return SentenceList.objects.none()
+            qs = qs.union(SentenceList.objects.filter(owner=self.request.user))
+        qs = qs.union(SentenceList.objects.filter(is_public=True))
+
+        return list(qs)
 
 
 class SentencesListView(ListView):
@@ -49,8 +59,9 @@ class SentencesListView(ListView):
         user = self.request.user
         slug: str = self.kwargs['slug']
 
-        sentence_list: SentenceList = SentenceList.objects.get(
-            owner=user, slug=slug)
+        sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
+        if not sentence_list.is_public and sentence_list.owner != user:
+            return Sentence.objects.none()
 
         return get_sentences_in_order(user, sentence_list.sentences.all())
 
@@ -73,13 +84,15 @@ class EditListView(DetailView):
 
     model = SentenceList
 
+    def get(self: EditListView, request: HttpRequest, *args: Any, \
+            **kwargs: Any) -> HttpResponse:
+        object: SentenceList = self.get_object()
+        if object.owner != request.user:
+            return HttpResponseForbidden()
+        return super().get(request, *args, **kwargs)
+
     def get_template_names(self: EditListView) -> List[str]:
         return ['leasikApp/sentencelist_edit.html']
-
-    def get_queryset(self: EditListView) -> QuerySet[SentenceList]:
-        if self.request.user.is_authenticated:
-            return SentenceList.objects.filter(owner=self.request.user)
-        return SentenceList.objects.none()
 
     def get_context_data(self: EditListView, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -90,12 +103,14 @@ class EditListView(DetailView):
 
 class SentenceListCreateView(CreateView):
     model = SentenceList
-    fields = ['name']
+    fields = ['name', 'description']
     success_url = reverse_lazy('leasikApp:home')
 
     def form_valid(self, form):
         user = self.request.user
         slug = slugify(form.instance.name)
+        while SentenceList.objects.filter(slug=slug).count():
+            slug += ''.join(sample(ascii_letters + digits, 1))
 
         form.instance.owner = user
         form.instance.slug = slug
@@ -109,14 +124,15 @@ def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
     elif not request.user.is_authenticated:
         return HttpResponseForbidden()
 
-
     form = NewSentenceForm(request.POST)
-    this_list = SentenceList.objects.get(pk=pk)
-    if form.is_valid():
-        this_list.sentences.add(get_sentence_from_form(form))
-    else:
+    this_list: SentenceList = SentenceList.objects.get(pk=pk)
+    if this_list.owner != request.user:
+        return HttpResponseForbidden()
+    if not form.is_valid():
         return HttpResponseBadRequest()
 
+    this_list.sentences.add(get_sentence_from_form(form))
+    
     return HttpResponseRedirect(reverse(
         'leasikApp:list-edit', args=[this_list.slug]))
 

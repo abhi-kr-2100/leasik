@@ -18,7 +18,9 @@
     <li>
         <div class="list">
             <h2>{{ list.name }}</h2>
+            <p>{{ list.description }}</p>
             <div class="list-actions">
+                {% if list.owner == request.user %}
                 <a class="list-delete-action">Delete</a>
                 
                 <a href="{% url 'leasikApp:list-edit' list.slug %}"
@@ -26,6 +28,7 @@
                 >
                     Edit
                 </a>
+                {% endif %}
                 
                 <a href="{% url 'leasikApp:list-detail' list.slug %}"
                     class="list-play-action"
