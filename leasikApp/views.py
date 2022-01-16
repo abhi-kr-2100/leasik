@@ -38,20 +38,6 @@ class SentencesListView(ListView):
     model = Sentence
     paginate_by = 50
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-
-        # As the order of our query set is semi-random (and changes from page to
-        # page), get_query_set returns a (potentially) different list each time
-        # it is called. This is Issue #3 on abhi-kr-2100/leasik (GitHub). As we
-        # wish to preserve order between pages, we'll save the initially
-        # computed query set along with other details to determine if a new
-        # query set needs to be calculated.
-
-        self.cached_query_set = None    # the saved query set
-        self.saved_for_user_id = None   # id of user for which the it was saved
-        self.saved_for_list_slug = None # slug of list for which it was saved
-
     def get_template_names(self) -> List[str]:
         return ['leasikApp/sentence_list.html']
 
@@ -63,17 +49,10 @@ class SentencesListView(ListView):
         user = self.request.user
         slug: str = self.kwargs['slug']
 
-        if not (self.request.GET.get('page') and self.cached_query_set and \
-                self.saved_for_user_id == user.id and \
-                self.saved_for_list_slug == slug):
-            # we need to calculate a new query set
-            sentence_list: SentenceList = SentenceList.objects.get(
-                owner=user, slug=slug)
+        sentence_list: SentenceList = SentenceList.objects.get(
+            owner=user, slug=slug)
 
-            self.cached_query_set = get_sentences_in_order(
-                user, sentence_list.sentences.all())
-
-        return self.cached_query_set
+        return get_sentences_in_order(user, sentence_list.sentences.all())
 
     def get_context_data(self: SentencesListView, **kwargs: Any) -> \
             Dict[str, Any]:
