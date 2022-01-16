@@ -7,7 +7,7 @@ const path = require('path')
 
 gulp.task('build', function() {
     return (
-        src('js-frontend/js/**/*.js')
+        src('js-frontend/*.js')
             .pipe(minify())
             .pipe(dest(path.resolve(__dirname, 'static/frontend/js/')))
     )
@@ -15,5 +15,5 @@ gulp.task('build', function() {
 
 
 gulp.task('watch', function() {
-    gulp.watch('js/*.js', gulp.series('build'))
+    gulp.watch('js-frontend/*.js', gulp.series('build'))
 })
