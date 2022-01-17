@@ -14,3 +14,9 @@ class IsOwnerOrReadonlyPublic(BasePermission):
         is_public = obj.is_public
 
         return is_owner or (readonly_access and is_public)
+
+class IsOnlyAddingOrReadonly(BasePermission):
+    """Allow only new objects to be added or existing objects to be viewed."""
+
+    def has_permission(self, request, view):
+        return request.method in ('POST',) + SAFE_METHODS

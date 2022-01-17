@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from leasikApp.models import Sentence, SentenceList
 from leasikApp.helpers import get_unique_slug
 from .serializers import SentenceListSerializer, SentenceSerializer
-from .permissions import IsOwnerOrReadonlyPublic
+from .permissions import IsOwnerOrReadonlyPublic, IsOnlyAddingOrReadonly
 
 
 class SentenceListViewSet(ModelViewSet):
@@ -37,4 +37,4 @@ class SentenceListViewSet(ModelViewSet):
 class SentenceViewSet(ModelViewSet):
     serializer_class = SentenceSerializer
     queryset = Sentence.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOnlyAddingOrReadonly)
