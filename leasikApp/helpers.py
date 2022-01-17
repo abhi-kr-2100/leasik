@@ -2,13 +2,16 @@
 
 
 from typing import List, Union
+from random import sample
+from string import ascii_letters, digits
 
 from django.db.models.query import QuerySet
 from django.db.models import F
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
 from .forms import NewSentenceForm
-from .models import Proficiency, Sentence, SentenceNote
+from .models import Proficiency, Sentence, SentenceNote, SentenceList
 
 
 def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
@@ -71,3 +74,12 @@ def update_note_helper(user: User, sentence_id: int, new_note: str) -> None:
     SentenceNote.objects.update_or_create(
         user=user, sentence=the_sentence, defaults={'note': new_note}
     )
+
+def get_unique_slug(to_slugify: str) -> str:
+    """Return a unique slug by slugifying to_slugify."""
+
+    slug = slugify(to_slugify)
+    while SentenceList.objects.filter(slug=slug).count():
+        slug += ''.join(sample(ascii_letters + digits, 1))
+
+    return slug

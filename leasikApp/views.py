@@ -1,13 +1,10 @@
 from __future__ import annotations
 from typing import Any, Dict, List
 from json import loads
-from string import ascii_letters, digits
-from random import sample
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
-from django.template.defaultfilters import slugify
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
@@ -20,7 +17,7 @@ from .models import Sentence, SentenceList
 from .forms import NewSentenceForm
 from .helpers import (
     get_sentence_from_form, update_proficiency_helper, get_sentences_in_order,
-    get_notes_for_sentences, update_note_helper
+    get_notes_for_sentences, update_note_helper, get_unique_slug
 )
 
 
@@ -111,10 +108,8 @@ class SentenceListCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         user = self.request.user
-        slug = slugify(form.instance.name)
-        while SentenceList.objects.filter(slug=slug).count():
-            slug += ''.join(sample(ascii_letters + digits, 1))
-
+        slug = get_unique_slug(form.instance.name)
+        
         form.instance.owner = user
         form.instance.slug = slug
 
