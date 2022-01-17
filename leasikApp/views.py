@@ -5,6 +5,8 @@ from string import ascii_letters, digits
 from random import sample
 
 from django.db.models.query import QuerySet
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
 from django.template.defaultfilters import slugify
 from django.views.generic.list import ListView
@@ -23,7 +25,7 @@ from .helpers import (
 )
 
 
-class ListsView(ListView):
+class ListsView(LoginRequiredMixin, ListView):
     """Display a list of all the lists owned by the current user."""
 
     model = SentenceList
@@ -34,15 +36,15 @@ class ListsView(ListView):
     def get_queryset(self: ListsView) -> List[SentenceList]:
         """Return a list of all SentenceLists that can be show to user."""
 
-        qs = set()
-        if self.request.user.is_authenticated:
-            qs = qs.union(SentenceList.objects.filter(owner=self.request.user))
+        user = self.request.user
+
+        qs = set().union(SentenceList.objects.filter(owner=user))
         qs = qs.union(SentenceList.objects.filter(is_public=True))
 
         return list(qs)
 
 
-class SentencesListView(ListView):
+class SentencesListView(LoginRequiredMixin, ListView):
     """Allow the user to all sentences in a given list."""
 
     model = Sentence
@@ -53,9 +55,6 @@ class SentencesListView(ListView):
 
     def get_queryset(self: SentencesListView) -> \
             Union[List[Sentence], QuerySet[Sentence]]:
-        if not self.request.user.is_authenticated:
-            return Sentence.objects.none()
-
         user = self.request.user
         slug: str = self.kwargs['slug']
 
@@ -79,7 +78,7 @@ class SentencesListView(ListView):
         return context
 
 
-class EditListView(DetailView):
+class EditListView(LoginRequiredMixin, DetailView):
     """Allow user to add and remove sentences from this list."""
 
     model = SentenceList
@@ -101,7 +100,7 @@ class EditListView(DetailView):
         return context
 
 
-class SentenceListCreateView(CreateView):
+class SentenceListCreateView(LoginRequiredMixin, CreateView):
     model = SentenceList
     fields = ['name', 'description']
     success_url = reverse_lazy('leasikApp:home')
@@ -118,11 +117,10 @@ class SentenceListCreateView(CreateView):
         return super().form_valid(form)
 
 
+@login_required
 def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    elif not request.user.is_authenticated:
-        return HttpResponseForbidden()
 
     form = NewSentenceForm(request.POST)
     this_list: SentenceList = SentenceList.objects.get(pk=pk)
@@ -137,11 +135,10 @@ def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
         'leasikApp:list-edit', args=[this_list.slug]))
 
 
+@login_required
 def update_proficiency(request: HttpRequest) -> HttpResponse:
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    elif not request.user.is_authenticated:
-        return HttpResponseForbidden()
 
     request_data = loads(request.body.decode('utf-8'))
 
@@ -153,11 +150,10 @@ def update_proficiency(request: HttpRequest) -> HttpResponse:
     return HttpResponse(status=200)
 
 
+@login_required
 def update_note(request: HttpRequest) -> HttpResponse:
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
-    elif not request.user.is_authenticated:
-        return HttpResponseForbidden()
 
     request_data = loads(request.body.decode('utf-8'))
 
