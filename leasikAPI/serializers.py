@@ -25,4 +25,4 @@ class SentenceNoteSerializer(serializers.ModelSerializer):
 class ProficiencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Proficiency
-        fields = ['user', 'sentence']
+        fields = ['sentence', 'proficiency']
