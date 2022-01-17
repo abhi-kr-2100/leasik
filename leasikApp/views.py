@@ -1,11 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 from json import loads
 from string import ascii_letters, digits
 from random import sample
 
-from django.db.models.query import QuerySet
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
 from django.template.defaultfilters import slugify
@@ -44,23 +43,29 @@ class ListsView(LoginRequiredMixin, ListView):
         return list(qs)
 
 
-class SentencesListView(LoginRequiredMixin, ListView):
+class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """Allow the user to all sentences in a given list."""
 
     model = Sentence
     paginate_by = 50
 
+    def test_func(self) -> bool:
+        """Test that the user owns the list or that the list is public."""
+
+        user = self.request.user
+        slug = self.kwargs['slug']
+
+        sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
+        return sentence_list.is_public or sentence_list.owner == user
+
     def get_template_names(self) -> List[str]:
         return ['leasikApp/sentence_list.html']
 
-    def get_queryset(self: SentencesListView) -> \
-            Union[List[Sentence], QuerySet[Sentence]]:
+    def get_queryset(self: SentencesListView) -> List[Sentence]:
         user = self.request.user
         slug: str = self.kwargs['slug']
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
-        if not sentence_list.is_public and sentence_list.owner != user:
-            return Sentence.objects.none()
 
         return get_sentences_in_order(user, sentence_list.sentences.all())
 
@@ -78,17 +83,16 @@ class SentencesListView(LoginRequiredMixin, ListView):
         return context
 
 
-class EditListView(LoginRequiredMixin, DetailView):
+class EditListView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     """Allow user to add and remove sentences from this list."""
 
     model = SentenceList
 
-    def get(self: EditListView, request: HttpRequest, *args: Any, \
-            **kwargs: Any) -> HttpResponse:
+    def test_func(self) -> bool:
+        """Test that user has permission to edit this list."""
+        
         object: SentenceList = self.get_object()
-        if object.owner != request.user:
-            return HttpResponseForbidden()
-        return super().get(request, *args, **kwargs)
+        return object.owner == self.request.user
 
     def get_template_names(self: EditListView) -> List[str]:
         return ['leasikApp/sentencelist_edit.html']
