@@ -25,3 +25,6 @@ class SentenceListViewSet(ModelViewSet):
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+    def perform_create(self, serializer: SentenceListSerializer):
+        serializer.save(owner=self.request.user)
