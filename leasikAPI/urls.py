@@ -6,8 +6,7 @@ from .views import SentenceListViewSet, SentenceViewSet
 
 router = DefaultRouter()
 router.register('lists', SentenceListViewSet, basename='SentenceList')
-router.register(
-    'lists/(?P<list_id>[0-9]+)/sentences', SentenceViewSet, basename='Sentence')
+router.register('sentences', SentenceViewSet, basename='Sentence')
 
 
 app_name = 'leasikAPI'
