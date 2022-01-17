@@ -32,7 +32,7 @@ def update_proficiency_helper(user: User, sentence_id: int) -> None:
     the_sentence: Sentence = Sentence.objects.get(id=sentence_id)
     
     Proficiency.objects.update_or_create(
-        user=user,
+        owner=user,
         sentence=the_sentence,
         defaults={'proficiency': (F('proficiency') + 1) % 100}
     )[0]
@@ -51,7 +51,7 @@ def get_sentences_in_order(user: User, sentences: QuerySet[Sentence]) -> \
     # to do anything to meet the second constraint on the order of the list
     return sorted(
         sentences,
-        key=lambda s: Proficiency.objects.get_or_create(user=user, sentence=s)
+        key=lambda s: Proficiency.objects.get_or_create(owner=user, sentence=s)
     )
 
 
@@ -61,7 +61,7 @@ def get_notes_for_sentences(user: User,
     """Return a list of notes for each given sentence in order."""
 
     return [
-        SentenceNote.objects.get_or_create(user=user, sentence=s)[0] \
+        SentenceNote.objects.get_or_create(owner=user, sentence=s)[0] \
             for s in sentences
     ]
 
@@ -72,7 +72,7 @@ def update_note_helper(user: User, sentence_id: int, new_note: str) -> None:
     the_sentence = Sentence.objects.get(id=sentence_id)
 
     SentenceNote.objects.update_or_create(
-        user=user, sentence=the_sentence, defaults={'note': new_note}
+        owner=user, sentence=the_sentence, defaults={'note': new_note}
     )
 
 def get_unique_slug(to_slugify: str) -> str:

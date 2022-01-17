@@ -27,10 +27,10 @@ class SentenceNote(models.Model):
 
     note = models.TextField(default='')
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('sentence', 'user')
+        unique_together = ('sentence', 'owner')
 
     def __str__(self) -> str:
         return self.note
@@ -56,7 +56,7 @@ class SentenceList(models.Model):
 class Proficiency(models.Model):
     """How proficient is a user with a given sentence?"""
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
 
     proficiency = models.IntegerField(
@@ -65,7 +65,7 @@ class Proficiency(models.Model):
     )
 
     def __str__(self) -> str:
-        return f'{self.user.id}: {self.sentence.text} - {self.proficiency}%'
+        return f'{self.owner.id}: {self.sentence.text} - {self.proficiency}%'
 
     def __lt__(self, other: Proficiency) -> bool:
         if self.proficiency == other.proficiency:
@@ -75,18 +75,18 @@ class Proficiency(models.Model):
         return self.proficiency < other.proficiency
 
     class Meta:
-        unique_together = ('user', 'sentence')
+        unique_together = ('owner', 'sentence')
         verbose_name_plural = 'proficiencies'
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return self.user.username
+        return self.owner.username
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender: UserProfile, instance: User, created: bool,
             **kwargs: Any) -> None:
         if created:
-            UserProfile.objects.create(user=instance)
+            UserProfile.objects.create(owner=instance)
