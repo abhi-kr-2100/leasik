@@ -13,6 +13,9 @@ psycopg2 = "*"
 dj-database-url = "*"
 gunicorn = "*"
 whitenoise = "*"
+djangorestframework = "*"
+markdown = "*"
+django-filter = "*"
 
 [dev-packages]
 mypy = "*"
