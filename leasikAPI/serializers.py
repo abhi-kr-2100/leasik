@@ -6,7 +6,7 @@ from leasikApp.models import Proficiency, Sentence, SentenceList, SentenceNote
 class SentenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sentence
-        fields = ['text', 'translation']
+        fields = ['id', 'text', 'translation']
 
 
 class SentenceListSerializer(serializers.ModelSerializer):
