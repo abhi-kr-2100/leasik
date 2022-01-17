@@ -12,7 +12,8 @@ class SentenceSerializer(serializers.ModelSerializer):
 class SentenceListSerializer(serializers.ModelSerializer):
     class Meta:
         model = SentenceList
-        fields = ['name', 'slug', 'description', 'sentences']
+        fields = ['id', 'name', 'slug', 'description', 'sentences']
+        read_only_fields = ['slug']
 
 
 class SentenceNoteSerializer(serializers.ModelSerializer):

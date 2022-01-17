@@ -6,6 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from leasikApp.models import SentenceList
+from leasikApp.helpers import get_unique_slug
 from .serializers import SentenceListSerializer
 from .permissions import IsOwnerOrReadonlyPublic
 
@@ -21,10 +22,13 @@ class SentenceListViewSet(ModelViewSet):
         return list(qs)
 
     def get_object(self):
-        obj = get_object_or_404(SentenceList, slug=self.kwargs['pk'])
+        obj = get_object_or_404(SentenceList, pk=self.kwargs['pk'])
         self.check_object_permissions(self.request, obj)
 
         return obj
 
     def perform_create(self, serializer: SentenceListSerializer):
-        serializer.save(owner=self.request.user)
+        owner = self.request.user
+        slug = get_unique_slug(serializer.validated_data.get('name'))
+
+        serializer.save(owner=owner, slug=slug)
