@@ -5,6 +5,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('rest_framework.urls')),
     path('', include('leasikStaticPages.urls', namespace='leasikStaticPages')),
     path('lists/', include('leasikApp.urls', namespace='leasikApp')),
     path('accounts/', include('allauth.urls')),
