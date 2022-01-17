@@ -19,10 +19,10 @@ class SentenceListSerializer(serializers.ModelSerializer):
 class SentenceNoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = SentenceNote
-        fields = ['sentence', 'note']
+        fields = ['id', 'sentence', 'note']
 
 
 class ProficiencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Proficiency
-        fields = ['sentence', 'proficiency']
+        fields = ['id', 'sentence', 'proficiency']
