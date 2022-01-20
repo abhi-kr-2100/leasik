@@ -44,7 +44,7 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """Allow the user to all sentences in a given list."""
 
     model = Sentence
-    paginate_by = 50
+    paginate_by = 20
 
     def test_func(self) -> bool:
         """Test that the user owns the list or that the list is public."""
