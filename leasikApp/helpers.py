@@ -1,17 +1,17 @@
 """Helper or utility functions for the leasikApp app."""
 
 
-from typing import List, Union
+from typing import List, Tuple, Union
+from datetime import timedelta, date
 from random import sample
 from string import ascii_letters, digits
 
 from django.db.models.query import QuerySet
-from django.db.models import F
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
 from .forms import NewSentenceForm
-from .models import Proficiency, Sentence, SentenceNote, SentenceList
+from .models import Card, Sentence, SentenceList
 
 
 def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
@@ -26,56 +26,72 @@ def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
     )[0]
 
 
-def update_proficiency_helper(user: User, sentence_id: int) -> None:
+def update_proficiency_helper(user: User, sentence_id: int, score: int) -> None:
     """Update the proficiency between the given user and sentence."""
 
     the_sentence: Sentence = Sentence.objects.get(id=sentence_id)
+    card: Card = Card.objects.get_or_create(
+        owner=user, sentence=the_sentence)[0]
     
-    Proficiency.objects.update_or_create(
-        owner=user,
-        sentence=the_sentence,
-        defaults={'proficiency': (F('proficiency') + 1) % 100}
-    )[0]
+    n, ef, i = sm2(
+        score, card.repetition_number, card.easiness_factor,
+        card.inter_repetition_interval
+    )
 
-
-def get_sentences_in_order(user: User, sentences: QuerySet[Sentence]) -> \
-        List[Sentence]:
-    """Return a copy of sentences in the correct order.
-    
-    The order is determined as follows:
-        * Less proficient sentences appear first.
-        * The relative order of equally proficient sentences is random.
-    """
-
-    # since comparisions of equal Proficiencies are randomized, we don't have
-    # to do anything to meet the second constraint on the order of the list
-    sort_key = (
-        lambda s: Proficiency.objects.get_or_create(owner=user, sentence=s)[0])
-    return sorted(
-        sentences,
-        key=sort_key
+    Card.objects.filter(id=card.id).update(
+        repetition_number=n, easiness_factor=ef, inter_repetition_interval=i,
+        last_review_date=date.today()
     )
 
 
-def get_notes_for_sentences(user: User,
-        sentences: Union[QuerySet[Sentence], List[Sentence]]) -> \
-            List[SentenceNote]:
-    """Return a list of notes for each given sentence in order."""
+def get_cards(user: User, slist: SentenceList) -> List[Card]:
+    """Return applicable cards belonging to user from slist."""
 
-    return [
-        SentenceNote.objects.get_or_create(owner=user, sentence=s)[0] \
-            for s in sentences
-    ]
+    cards = []
+
+    sentences = slist.sentences.all()
+    for s in sentences:
+        cards.append(Card.objects.get_or_create(owner=user, sentence=s)[0])
+
+    cards_up_for_review = [c for c in cards if c.is_up_for_review()]
+
+    return cards_up_for_review or cards
+
+
+def sm2(q: int, n: int, ef: float, i: timedelta) -> \
+        Tuple[int, float, timedelta]:
+    """Implementation of the SM-2 SRS algorithm.
+    
+    See https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.
+    """
+
+    if q >= 3:
+        if n == 0:
+            i = timedelta(days=1)
+        elif n == 1:
+            i = timedelta(days=6)
+        else:
+            i = timedelta(days=round(i.days * ef))
+        n += 1
+    else:
+        n = 0
+        i = timedelta(days=1)
+    
+    ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
+    if ef < 1.3:
+        ef = 1.3
+
+    return (n, ef, i)
 
 
 def update_note_helper(user: User, sentence_id: int, new_note: str) -> None:
     """Update the note of the SentenceNote between user and given sentence."""
 
     the_sentence = Sentence.objects.get(id=sentence_id)
+    card = Card.objects.get_or_create(owner=user, sentence=the_sentence)[0]
 
-    SentenceNote.objects.update_or_create(
-        owner=user, sentence=the_sentence, defaults={'note': new_note}
-    )
+    Card.objects.filter(id=card.id).update(note=new_note)
+
 
 def get_unique_slug(to_slugify: str) -> str:
     """Return a unique slug by slugifying to_slugify."""
