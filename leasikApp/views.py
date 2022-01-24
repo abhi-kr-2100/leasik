@@ -64,6 +64,15 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
         return get_cards(user, sentence_list, 20)
 
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        
+        slug = self.kwargs['slug']
+        the_list = SentenceList.objects.get(slug=slug)
+        context['title'] = the_list.name
+
+        return context
+
 
 class EditListView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     """Allow user to add and remove sentences from this list."""
