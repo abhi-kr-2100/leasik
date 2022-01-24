@@ -1,12 +1,11 @@
 """Helper or utility functions for the leasikApp app."""
 
 
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, TypeVar, Generator
 from datetime import timedelta, date
 from random import sample, shuffle
 from string import ascii_letters, digits
 
-from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
@@ -14,7 +13,9 @@ from .forms import NewSentenceForm
 from .models import Card, Sentence, SentenceList
 
 
-def batched(iter: Iterable, batch_size: int = 1) -> Tuple[Iterable, int, int]:
+T = TypeVar('T')
+def batched(iter: Sequence[T], batch_size: int = 1) -> \
+        Generator[Tuple[Sequence[T], int, int], None, None]:
     """Return iter in batches of batch_size."""
 
     n = len(iter)
@@ -62,8 +63,8 @@ def get_cards(user: User, slist: SentenceList, n: Optional[int] = None) -> \
     If n is None, return all.
     """
 
-    cards = []
-    cards_up_for_review = []
+    cards: List[Card] = []
+    cards_up_for_review: List[Card] = []
 
     sentences = list(slist.sentences.all())
     shuffle(sentences)
