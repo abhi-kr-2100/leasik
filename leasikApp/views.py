@@ -13,11 +13,11 @@ from django.http import (
     HttpResponseBadRequest, HttpResponseForbidden
 )
 
-from .models import Sentence, SentenceList
+from .models import SentenceList, Card
 from .forms import NewSentenceForm
 from .helpers import (
-    get_sentence_from_form, update_proficiency_helper, get_sentences_in_order,
-    get_notes_for_sentences, update_note_helper, get_unique_slug
+    get_sentence_from_form, update_proficiency_helper, update_note_helper,
+    get_unique_slug, get_cards
 )
 
 
@@ -43,7 +43,7 @@ class ListsView(LoginRequiredMixin, ListView):
 class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """Allow the user to all sentences in a given list."""
 
-    model = Sentence
+    model = Card
     paginate_by = 20
 
     def test_func(self) -> bool:
@@ -58,26 +58,12 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_template_names(self) -> List[str]:
         return ['leasikApp/sentence_list.html']
 
-    def get_queryset(self: SentencesListView) -> List[Sentence]:
+    def get_queryset(self: SentencesListView) -> List[Card]:
         user = self.request.user
         slug: str = self.kwargs['slug']
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
-
-        return get_sentences_in_order(user, sentence_list.sentences.all())
-
-    def get_context_data(self: SentencesListView, **kwargs: Any) -> \
-            Dict[str, Any]:
-        """Return context that contains sentences and associated notes."""
-
-        context = super().get_context_data(**kwargs)
-
-        sentences = context['object_list']
-        notes = get_notes_for_sentences(self.request.user, sentences)
-
-        context['object_list'] = zip(sentences, notes)
-
-        return context
+        return get_cards(user, sentence_list)
 
 
 class EditListView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -143,8 +129,9 @@ def update_proficiency(request: HttpRequest) -> HttpResponse:
 
     user = request.user
     sentence_id = request_data['id']
+    score = request_data['score']
 
-    update_proficiency_helper(user, sentence_id)
+    update_proficiency_helper(user, sentence_id, score)
 
     return HttpResponse(status=200)
 

@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Any
-from random import choice
+from datetime import date, timedelta
 
 from django.db import models
 from django.db.models.signals import post_save
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 
@@ -22,18 +22,43 @@ class Sentence(models.Model):
         return f'{self.text} ({self.translation})'
 
 
-class SentenceNote(models.Model):
-    """Additional notes for a sentence."""
+class Card(models.Model):
+    """A card similar to the ones in flashcard programs.
+    
+    Card is used to implement the SM-2 algorithm. See
+    https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm."""
 
-    note = models.TextField(default='')
-    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
+    repetition_number = models.IntegerField(
+        default=0, validators=[MinValueValidator(0)])
+    easiness_factor = models.FloatField(default=2.5)
+
+    # The default value for inter-repetition interval is not mentioned on the
+    # Wikipedia page for SM-2. A default of 0 has been chosen so that users can
+    # review newly added cards. It is always in whole days.
+    inter_repetition_interval = models.DurationField(
+        default=timedelta(days=0),
+        verbose_name="inter-repetition interval",
+        validators=[MinValueValidator(0)]
+    )
+
+    last_review_date = models.DateField(auto_now_add=True)
+
+    note = models.TextField(blank=True)
+
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('sentence', 'owner')
+        unique_together = ('owner', 'sentence')
 
     def __str__(self) -> str:
-        return self.note
+        return f"Card <{self.sentence.text}> of {self.owner.username}."
+
+    def is_up_for_review(self) -> bool:
+        """Does the card needs to be reviewed?"""
+
+        days_passed = self.last_review_date - date.today()
+        return days_passed >= self.inter_repetition_interval
 
 
 class SentenceList(models.Model):
@@ -51,32 +76,6 @@ class SentenceList(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-
-class Proficiency(models.Model):
-    """How proficient is a user with a given sentence?"""
-
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
-
-    proficiency = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
-    )
-
-    def __str__(self) -> str:
-        return f'{self.owner.id}: {self.sentence.text} - {self.proficiency}%'
-
-    def __lt__(self, other: Proficiency) -> bool:
-        if self.proficiency == other.proficiency:
-            # for extra randomization
-            return choice([True, False])
-            
-        return self.proficiency < other.proficiency
-
-    class Meta:
-        unique_together = ('owner', 'sentence')
-        verbose_name_plural = 'proficiencies'
 
 
 class UserProfile(models.Model):
