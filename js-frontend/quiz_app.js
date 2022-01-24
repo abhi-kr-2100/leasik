@@ -75,6 +75,7 @@ const app = Vue.createApp({
             const text = this.currentQuestion().sentence
             let utterence = new SpeechSynthesisUtterance(text)
             utterence.lang = this.selectedLanguage
+            utterence.rate = 0.75
 
             console.log(utterence)
 
