@@ -10,6 +10,23 @@
 {% block auth_content %}
 <div id="app">
     {% if object_list %}
+        <div v-if="speechSynthesisAvailable">
+            <select @change="changeSelectedLanguage($event)">
+                <option value="" selected disabled>Choose voice</option>
+                <option
+                    v-for="language in voices"
+                    :value="language.id"
+                    :key="language.id"
+                >
+                    {% verbatim %}
+                    {{ language.lang }}
+                    {% endverbatim %}
+                </option>
+            </select>
+
+            <a @click="playAudio()">Play audio</a>
+        </div>
+
         <div id="answer-box">
             <p id="pre-blank">
                 {% verbatim %}

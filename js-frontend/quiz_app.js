@@ -15,11 +15,22 @@ const app = Vue.createApp({
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
 
-            note: question_list[0].note
+            note: question_list[0].note,
+            voices: [],
+            selectedLanguage: undefined
         }
     },
 
     computed: {
+        speechSynthesisAvailable() {
+            const available = ('speechSynthesis' in window)
+            if (available) {
+                window.speechSynthesis.onvoiceschanged = this.populateVoices
+            }
+
+            return available
+        },
+
         preBlank() {
             if (this.missingWordIndexSetFor !== this.currentQuestionIndex) {
                 this.setMissingWordIndex()
@@ -40,6 +51,14 @@ const app = Vue.createApp({
     },
 
     methods: {
+        populateVoices() {
+            const voices = window.speechSynthesis.getVoices()
+            
+            for (let i = 0; i < voices.length; ++i) {
+                this.voices.push({ 'id': i, 'lang': voices[i].lang })
+            }
+        },
+
         currentQuestion() {
             return this.questions[this.currentQuestionIndex]
         },
@@ -50,6 +69,21 @@ const app = Vue.createApp({
 
             this.missingWordIndex = Math.floor(Math.random() * words.length)
             this.missingWordIndexSetFor = this.currentQuestionIndex
+        },
+
+        playAudio() {
+            const text = this.currentQuestion().sentence
+            let utterence = new SpeechSynthesisUtterance(text)
+            utterence.lang = this.selectedLanguage
+
+            console.log(utterence)
+
+            window.speechSynthesis.speak(utterence)
+        },
+
+        changeSelectedLanguage(event) {
+            const options = event.target.options
+            return this.selectedLanguage = options[options.selectedIndex].text
         },
 
         checkAnswer() {
