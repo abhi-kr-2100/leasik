@@ -48,8 +48,6 @@ INSTALLED_APPS = [
 
     'django.contrib.sites',
 
-    'rest_framework',
-
     'leasikApp',
     'leasikStaticPages',
 
@@ -172,13 +170,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-
-    'DEFAULT_PAGINATION_CLASS': 
-        'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 50
-}
