@@ -49,9 +49,11 @@ def get_sentences_in_order(user: User, sentences: QuerySet[Sentence]) -> \
 
     # since comparisions of equal Proficiencies are randomized, we don't have
     # to do anything to meet the second constraint on the order of the list
+    sort_key = (
+        lambda s: Proficiency.objects.get_or_create(owner=user, sentence=s)[0])
     return sorted(
         sentences,
-        key=lambda s: Proficiency.objects.get_or_create(owner=user, sentence=s)
+        key=sort_key
     )
 
 
