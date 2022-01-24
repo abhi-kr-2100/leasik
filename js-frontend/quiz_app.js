@@ -14,6 +14,7 @@ const app = Vue.createApp({
             userEnteredAnswer: '',
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
+            audioPlayed: false,
 
             note: question_list[0].note,
             voices: [],
@@ -80,6 +81,7 @@ const app = Vue.createApp({
             console.log(utterence)
 
             window.speechSynthesis.speak(utterence)
+            this.audioPlayed = true
         },
 
         changeSelectedLanguage(event) {
@@ -98,12 +100,14 @@ const app = Vue.createApp({
 
             if (semanticallyEqual(this.userEnteredAnswer, correctAnswer)) {
                 this.answerCorrectness = 'correct'
-                this.currentQuestion().score = 0
+                if (this.audioPlayed) {
+                    this.currentQuestion().score = 3
+                } else {
+                    this.currentQuestion().score = 5
+                }
             } else {
                 this.answerCorrectness = 'incorrect'
-                // score should normally be between 0 and 5, but for now, assign
-                // 5 for all correct answers
-                this.currentQuestion().score = 5
+                this.currentQuestion().score = 0
             }
 
             updateProficiency(this.currentQuestion())
@@ -119,6 +123,7 @@ const app = Vue.createApp({
             this.isCurrentAnswerChecked = false
             this.answerCorrectness = 'unknown'
             this.note = this.currentQuestion().note
+            this.audioPlayed = false
         },
 
         sumbitAnswer() {
