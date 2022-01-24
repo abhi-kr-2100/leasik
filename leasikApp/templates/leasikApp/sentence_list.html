@@ -102,13 +102,13 @@
 
     <script>
         const question_list = []
-        {% for sentence, note in object_list %}
+        {% for card in object_list %}
             question_list.push({
-                'id': {{ sentence.id }},
-                'sentence': "{{ sentence.text|escapejs }}",
-                'translation': "{{ sentence.translation|escapejs }}",
+                'id': {{ card.sentence.id }},
+                'sentence': "{{ card.sentence.text|escapejs }}",
+                'translation': "{{ card.sentence.translation|escapejs }}",
                 'score': 0,
-                'note': "{{ note.note|escapejs }}"
+                'note': "{{ card.note|escapejs }}"
             })
         {% endfor %}
     </script>

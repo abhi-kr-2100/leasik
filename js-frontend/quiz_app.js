@@ -63,10 +63,15 @@ const app = Vue.createApp({
 
             if (semanticallyEqual(this.userEnteredAnswer, correctAnswer)) {
                 this.answerCorrectness = 'correct'
-                updateProficiency(this.currentQuestion())
+                this.currentQuestion().score = 0
             } else {
                 this.answerCorrectness = 'incorrect'
+                // score should normally be between 0 and 5, but for now, assign
+                // 5 for all correct answers
+                this.currentQuestion().score = 5
             }
+
+            updateProficiency(this.currentQuestion())
 
             this.isCurrentAnswerChecked = true
             // set input box to the correct answer
@@ -144,7 +149,8 @@ function updateProficiency(sentence) {
     // proficiency
 
     const payload = {
-        'id': sentence.id
+        'id': sentence.id,
+        'score': sentence.score
     }
 
     const headers = {
