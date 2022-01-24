@@ -1,9 +1,9 @@
 """Helper or utility functions for the leasikApp app."""
 
 
-from typing import List, Tuple, Union
+from typing import Iterable, List, Optional, Tuple, Union
 from datetime import timedelta, date
-from random import sample
+from random import sample, shuffle
 from string import ascii_letters, digits
 
 from django.db.models.query import QuerySet
@@ -12,6 +12,17 @@ from django.template.defaultfilters import slugify
 
 from .forms import NewSentenceForm
 from .models import Card, Sentence, SentenceList
+
+
+def batched(iter: Iterable, batch_size: int = 1) -> Tuple[Iterable, int, int]:
+    """Return iter in batches of batch_size."""
+
+    n = len(iter)
+    for i in range(0, n, batch_size):
+        s = i
+        e = min(i + batch_size, n)
+
+        yield (iter[s:e], s, e)
 
 
 def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
@@ -44,16 +55,29 @@ def update_proficiency_helper(user: User, sentence_id: int, score: int) -> None:
     )
 
 
-def get_cards(user: User, slist: SentenceList) -> List[Card]:
-    """Return applicable cards belonging to user from slist."""
+def get_cards(user: User, slist: SentenceList, n: Optional[int] = None) -> \
+        List[Card]:
+    """Return n applicable cards belonging to user from slist.
+    
+    If n is None, return all.
+    """
 
     cards = []
+    cards_up_for_review = []
 
-    sentences = slist.sentences.all()
-    for s in sentences:
-        cards.append(Card.objects.get_or_create(owner=user, sentence=s)[0])
+    sentences = list(slist.sentences.all())
+    shuffle(sentences)
 
-    cards_up_for_review = [c for c in cards if c.is_up_for_review()]
+    for batch, s, e in batched(sentences, n if n is not None else 1):
+        for sentence in batch:
+            card = Card.objects.get_or_create(owner=user, sentence=sentence)[0]
+            cards.append(card)
+
+        cards_up_for_review.extend(
+            c for c in cards[s:e] if c.is_up_for_review())
+
+        if n is not None and len(cards_up_for_review) >= n:
+            return cards_up_for_review[:n]
 
     return cards_up_for_review or cards
 

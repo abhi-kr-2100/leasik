@@ -44,7 +44,6 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """Allow the user to all sentences in a given list."""
 
     model = Card
-    paginate_by = 20
 
     def test_func(self) -> bool:
         """Test that the user owns the list or that the list is public."""
@@ -63,7 +62,7 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         slug: str = self.kwargs['slug']
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
-        return get_cards(user, sentence_list)
+        return get_cards(user, sentence_list, 20)
 
 
 class EditListView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
