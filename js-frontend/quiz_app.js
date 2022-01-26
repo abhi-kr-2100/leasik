@@ -1,3 +1,5 @@
+'use strict'
+
 const app = Vue.createApp({
     data() {
         return {
@@ -66,7 +68,7 @@ const app = Vue.createApp({
 
         setMissingWordIndex() {
             const currentSentence = this.currentQuestion().sentence
-            const words = currentSentence.split(" ");
+            const words = currentSentence.split(' ');
 
             this.missingWordIndex = Math.floor(Math.random() * words.length)
             this.missingWordIndexSetFor = this.currentQuestionIndex
@@ -86,16 +88,16 @@ const app = Vue.createApp({
 
         changeSelectedLanguage(event) {
             const options = event.target.options
-            return this.selectedLanguage = options[options.selectedIndex].text
+            return (this.selectedLanguage = options[options.selectedIndex].text)
         },
 
         checkAnswer() {
             if (this.userEnteredAnswer.trim() === '') {
-                alert("Please enter something to check.")
+                alert('Please enter something to check.')
             }
 
             const currentSentence = this.currentQuestion().sentence
-            const words = currentSentence.split(" ")
+            const words = currentSentence.split(' ')
             const correctAnswer = words[this.missingWordIndex]
 
             if (semanticallyEqual(this.userEnteredAnswer, correctAnswer)) {
@@ -127,7 +129,7 @@ const app = Vue.createApp({
         },
 
         sumbitAnswer() {
-            if (this.currentQuestion().note.trim() != this.note.trim()) {
+            if (this.currentQuestion().note.trim() !== this.note.trim()) {
                 updateNote(this.currentQuestion(), this.note)
                 this.currentQuestion().note = this.note.trim()
             }
@@ -214,8 +216,8 @@ function semanticallyEqual(sent1, sent2) {
 function normalizeSentence(sentence) {
     return (
         sentence
-            .replace(/[^\p{L}\s]/gu,"")
-            .replace(/\s{2,}/g," ")
+            .replace(/[^\p{L}\s]/gu, '')
+            .replace(/\s{2,}/g, ' ')
             .toLowerCase()
     )
 }
