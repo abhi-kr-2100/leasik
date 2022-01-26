@@ -101,7 +101,7 @@ const app = Vue.createApp({
             if (semanticallyEqual(this.userEnteredAnswer, correctAnswer)) {
                 this.answerCorrectness = 'correct'
                 if (this.audioPlayed) {
-                    this.currentQuestion().score = 3
+                    this.currentQuestion().score = 1
                 } else {
                     this.currentQuestion().score = 5
                 }
