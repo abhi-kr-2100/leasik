@@ -72,10 +72,17 @@ const app = Vue.createApp({
         },
 
         setMissingWordIndex() {
-            const currentSentence = this.currentQuestion().sentence
+            const currentQuestion = this.currentQuestion()
+            const givenIndex = currentQuestion.missingWordIndex
+            const currentSentence = currentQuestion.sentence
             const words = currentSentence.split(' ');
 
-            this.missingWordIndex = Math.floor(Math.random() * words.length)
+            if (givenIndex == -1 || givenIndex >= words.length) {
+                this.missingWordIndex = Math.floor(Math.random() * words.length)
+            } else {
+                this.missingWordIndex = givenIndex
+            }
+
             this.missingWordIndexSetFor = this.currentQuestionIndex
         },
 
@@ -197,6 +204,7 @@ function updateNote(sentence, new_note) {
 
     const payload = {
         'id': sentence.id,
+        'hiddenWordPosition': sentence.missingWordIndex,
         'new_note': new_note
     }
 
@@ -219,6 +227,7 @@ function updateProficiency(sentence) {
 
     const payload = {
         'id': sentence.id,
+        'hiddenWordPosition': sentence.missingWordIndex,
         'score': sentence.score
     }
 

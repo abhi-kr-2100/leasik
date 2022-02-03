@@ -160,7 +160,8 @@
                 'sentence': "{{ card.sentence.text|escapejs }}",
                 'translation': "{{ card.sentence.translation|escapejs }}",
                 'score': 0,
-                'note': "{{ card.note|escapejs }}"
+                'note': "{{ card.note|escapejs }}",
+                'missingWordIndex': {{ card.hidden_word_position }}
             })
         {% endfor %}
     </script>
