@@ -9,15 +9,22 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from django.http import (
-    HttpRequest, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect,
-    HttpResponseBadRequest, HttpResponseForbidden
+    HttpRequest,
+    HttpResponse,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
 )
 
 from .models import Sentence, SentenceList, Card
 from .forms import NewSentenceForm
 from .helpers import (
-    get_sentence_from_form, update_proficiency_helper, update_note_helper,
-    get_unique_slug, get_cards
+    get_sentence_from_form,
+    update_proficiency_helper,
+    update_note_helper,
+    get_unique_slug,
+    get_cards,
 )
 
 
@@ -27,7 +34,7 @@ class ListsView(LoginRequiredMixin, ListView):
     model = SentenceList
 
     def get_template_names(self) -> List[str]:
-        return ['leasikApp/sentencelist_list.html']
+        return ["leasikApp/sentencelist_list.html"]
 
     def get_queryset(self: ListsView) -> List[SentenceList]:
         """Return a list of all SentenceLists that can be show to user."""
@@ -49,17 +56,17 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         """Test that the user owns the list or that the list is public."""
 
         user = self.request.user
-        slug = self.kwargs['slug']
+        slug = self.kwargs["slug"]
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
         return sentence_list.is_public or sentence_list.owner == user
 
     def get_template_names(self) -> List[str]:
-        return ['leasikApp/sentence_list.html']
+        return ["leasikApp/sentence_list.html"]
 
     def get_queryset(self: SentencesListView) -> List[Card]:
         user = self.request.user
-        slug: str = self.kwargs['slug']
+        slug: str = self.kwargs["slug"]
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
         sentences = list(sentence_list.sentences.all())
@@ -67,10 +74,10 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        
-        slug = self.kwargs['slug']
+
+        slug = self.kwargs["slug"]
         the_list = SentenceList.objects.get(slug=slug)
-        context['list_object'] = the_list
+        context["list_object"] = the_list
 
         return context
 
@@ -80,7 +87,7 @@ class BookmarkedSentencesListView(SentencesListView):
 
     def get_queryset(self: SentencesListView) -> List[Card]:
         user = self.request.user
-        slug: str = self.kwargs['slug']
+        slug: str = self.kwargs["slug"]
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
         sentences = list(sentence_list.bookmarked_sentences.all())
@@ -94,29 +101,29 @@ class EditListView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def test_func(self) -> bool:
         """Test that user has permission to edit this list."""
-        
+
         object: SentenceList = self.get_object()
         return object.owner == self.request.user
 
     def get_template_names(self: EditListView) -> List[str]:
-        return ['leasikApp/sentencelist_edit.html']
+        return ["leasikApp/sentencelist_edit.html"]
 
     def get_context_data(self: EditListView, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['form'] = NewSentenceForm
+        context["form"] = NewSentenceForm
 
         return context
 
 
 class SentenceListCreateView(LoginRequiredMixin, CreateView):
     model = SentenceList
-    fields = ['name', 'description']
-    success_url = reverse_lazy('leasikApp:home')
+    fields = ["name", "description"]
+    success_url = reverse_lazy("leasikApp:home")
 
     def form_valid(self, form):
         user = self.request.user
         slug = get_unique_slug(form.instance.name)
-        
+
         form.instance.owner = user
         form.instance.slug = slug
 
@@ -125,8 +132,8 @@ class SentenceListCreateView(LoginRequiredMixin, CreateView):
 
 @login_required
 def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
-    if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
 
     form = NewSentenceForm(request.POST)
     this_list: SentenceList = SentenceList.objects.get(pk=pk)
@@ -136,21 +143,20 @@ def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
         return HttpResponseBadRequest()
 
     this_list.sentences.add(get_sentence_from_form(form))
-    
-    return HttpResponseRedirect(reverse(
-        'leasikApp:list-edit', args=[this_list.slug]))
+
+    return HttpResponseRedirect(reverse("leasikApp:list-edit", args=[this_list.slug]))
 
 
 @login_required
 def update_proficiency(request: HttpRequest) -> HttpResponse:
-    if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
 
-    request_data = loads(request.body.decode('utf-8'))
+    request_data = loads(request.body.decode("utf-8"))
 
     user = request.user
-    sentence_id = request_data['id']
-    score = request_data['score']
+    sentence_id = request_data["id"]
+    score = request_data["score"]
 
     update_proficiency_helper(user, sentence_id, score)
 
@@ -159,14 +165,14 @@ def update_proficiency(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def update_note(request: HttpRequest) -> HttpResponse:
-    if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
 
-    request_data = loads(request.body.decode('utf-8'))
+    request_data = loads(request.body.decode("utf-8"))
 
     user = request.user
-    sentence_id = request_data['id']
-    new_note = request_data['new_note']
+    sentence_id = request_data["id"]
+    new_note = request_data["new_note"]
 
     update_note_helper(user, sentence_id, new_note)
 
@@ -175,13 +181,13 @@ def update_note(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def bookmark_sentence(request: HttpRequest) -> HttpResponse:
-    if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
 
-    request_data = loads(request.body.decode('utf-8'))
+    request_data = loads(request.body.decode("utf-8"))
 
-    sentence_id = request_data['sentence_id']
-    list_id = request_data['list_id']
+    sentence_id = request_data["sentence_id"]
+    list_id = request_data["list_id"]
 
     the_list: SentenceList = SentenceList.objects.get(pk=list_id)
     the_sentence: Sentence = Sentence.objects.get(pk=sentence_id)

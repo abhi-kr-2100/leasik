@@ -8,31 +8,35 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leasikApp', '0004_card'),
+        ("leasikApp", "0004_card"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='sentencenote',
+            name="sentencenote",
             unique_together=None,
         ),
         migrations.RemoveField(
-            model_name='sentencenote',
-            name='owner',
+            model_name="sentencenote",
+            name="owner",
         ),
         migrations.RemoveField(
-            model_name='sentencenote',
-            name='sentence',
+            model_name="sentencenote",
+            name="sentence",
         ),
         migrations.AlterField(
-            model_name='card',
-            name='inter_repetition_interval',
-            field=models.DurationField(default=datetime.timedelta(0), validators=[django.core.validators.MinValueValidator(0)], verbose_name='inter-repetition interval'),
+            model_name="card",
+            name="inter_repetition_interval",
+            field=models.DurationField(
+                default=datetime.timedelta(0),
+                validators=[django.core.validators.MinValueValidator(0)],
+                verbose_name="inter-repetition interval",
+            ),
         ),
         migrations.DeleteModel(
-            name='Proficiency',
+            name="Proficiency",
         ),
         migrations.DeleteModel(
-            name='SentenceNote',
+            name="SentenceNote",
         ),
     ]

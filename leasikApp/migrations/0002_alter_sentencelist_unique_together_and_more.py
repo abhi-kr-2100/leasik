@@ -6,27 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leasikApp', '0001_initial'),
+        ("leasikApp", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='sentencelist',
+            name="sentencelist",
             unique_together=set(),
         ),
         migrations.AddField(
-            model_name='sentencelist',
-            name='description',
+            model_name="sentencelist",
+            name="description",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='sentencelist',
-            name='is_public',
+            model_name="sentencelist",
+            name="is_public",
             field=models.BooleanField(default=True),
         ),
         migrations.AlterField(
-            model_name='sentencelist',
-            name='slug',
+            model_name="sentencelist",
+            name="slug",
             field=models.SlugField(max_length=100, unique=True),
         ),
     ]

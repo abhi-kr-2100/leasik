@@ -8,31 +8,31 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('leasikApp', '0002_alter_sentencelist_unique_together_and_more'),
+        ("leasikApp", "0002_alter_sentencelist_unique_together_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='proficiency',
-            old_name='user',
-            new_name='owner',
+            model_name="proficiency",
+            old_name="user",
+            new_name="owner",
         ),
         migrations.RenameField(
-            model_name='sentencenote',
-            old_name='user',
-            new_name='owner',
+            model_name="sentencenote",
+            old_name="user",
+            new_name="owner",
         ),
         migrations.RenameField(
-            model_name='userprofile',
-            old_name='user',
-            new_name='owner',
+            model_name="userprofile",
+            old_name="user",
+            new_name="owner",
         ),
         migrations.AlterUniqueTogether(
-            name='proficiency',
-            unique_together={('owner', 'sentence')},
+            name="proficiency",
+            unique_together={("owner", "sentence")},
         ),
         migrations.AlterUniqueTogether(
-            name='sentencenote',
-            unique_together={('sentence', 'owner')},
+            name="sentencenote",
+            unique_together={("sentence", "owner")},
         ),
     ]

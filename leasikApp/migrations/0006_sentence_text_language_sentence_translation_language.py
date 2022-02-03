@@ -7,18 +7,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leasikApp', '0005_alter_sentencenote_unique_together_and_more'),
+        ("leasikApp", "0005_alter_sentencenote_unique_together_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sentence',
-            name='text_language',
-            field=models.CharField(blank=True, max_length=2, validators=[django.core.validators.MinValueValidator(2)]),
+            model_name="sentence",
+            name="text_language",
+            field=models.CharField(
+                blank=True,
+                max_length=2,
+                validators=[django.core.validators.MinValueValidator(2)],
+            ),
         ),
         migrations.AddField(
-            model_name='sentence',
-            name='translation_language',
-            field=models.CharField(blank=True, max_length=2, validators=[django.core.validators.MinValueValidator(2)]),
+            model_name="sentence",
+            name="translation_language",
+            field=models.CharField(
+                blank=True,
+                max_length=2,
+                validators=[django.core.validators.MinValueValidator(2)],
+            ),
         ),
     ]

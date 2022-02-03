@@ -10,24 +10,57 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('leasikApp', '0003_rename_user_proficiency_owner_and_more'),
+        ("leasikApp", "0003_rename_user_proficiency_owner_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Card',
+            name="Card",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('repetition_number', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(0)])),
-                ('easiness_factor', models.FloatField(default=2.5)),
-                ('inter_repetition_interval', models.DurationField(default=0, validators=[django.core.validators.MinValueValidator(0)], verbose_name='inter-repetition interval')),
-                ('last_review_date', models.DateField(auto_now_add=True)),
-                ('note', models.TextField(blank=True)),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('sentence', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='leasikApp.sentence')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "repetition_number",
+                    models.IntegerField(
+                        default=0,
+                        validators=[django.core.validators.MinValueValidator(0)],
+                    ),
+                ),
+                ("easiness_factor", models.FloatField(default=2.5)),
+                (
+                    "inter_repetition_interval",
+                    models.DurationField(
+                        default=0,
+                        validators=[django.core.validators.MinValueValidator(0)],
+                        verbose_name="inter-repetition interval",
+                    ),
+                ),
+                ("last_review_date", models.DateField(auto_now_add=True)),
+                ("note", models.TextField(blank=True)),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "sentence",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="leasikApp.sentence",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('owner', 'sentence')},
+                "unique_together": {("owner", "sentence")},
             },
         ),
     ]

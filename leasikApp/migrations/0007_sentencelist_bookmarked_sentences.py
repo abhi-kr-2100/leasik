@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leasikApp', '0006_sentence_text_language_sentence_translation_language'),
+        ("leasikApp", "0006_sentence_text_language_sentence_translation_language"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sentencelist',
-            name='bookmarked_sentences',
-            field=models.ManyToManyField(blank=True, related_name='parent_list', to='leasikApp.Sentence'),
+            model_name="sentencelist",
+            name="bookmarked_sentences",
+            field=models.ManyToManyField(
+                blank=True, related_name="parent_list", to="leasikApp.Sentence"
+            ),
         ),
     ]

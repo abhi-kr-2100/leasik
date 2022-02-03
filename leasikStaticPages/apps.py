@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class LeasikstaticpagesConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'leasikStaticPages'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "leasikStaticPages"
