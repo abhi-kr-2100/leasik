@@ -56,7 +56,7 @@ def update_proficiency_helper(user: User, sentence_id: int, score: int) -> None:
     )
 
 
-def get_cards(user: User, slist: SentenceList, n: Optional[int] = None) -> \
+def get_cards(user: User, sentences: List[Sentence], n: Optional[int] = None) -> \
         List[Card]:
     """Return n applicable cards belonging to user from slist.
     
@@ -66,7 +66,6 @@ def get_cards(user: User, slist: SentenceList, n: Optional[int] = None) -> \
     cards: List[Card] = []
     cards_up_for_review: List[Card] = []
 
-    sentences = list(slist.sentences.all())
     shuffle(sentences)
 
     for batch, s, e in batched(sentences, n if n is not None else 1):
