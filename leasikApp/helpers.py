@@ -79,8 +79,12 @@ def get_cards(
 
     for batch, s, e in batched(sentences, n if n is not None else 1):
         for sentence in batch:
-            card = Card.objects.get_or_create(owner=user, sentence=sentence)[0]
-            cards.append(card)
+            card = Card.objects.filter(owner=user, sentence=sentence)
+            if not card.exists():
+                cards.append(Card.objects.create(owner=user, sentence=sentence))
+            else:
+                # append only one card for one sentence
+                cards.append(card.first())
 
         cards_up_for_review.extend(c for c in cards[s:e] if c.is_up_for_review())
 
@@ -145,6 +149,6 @@ def update_card_positions(user: User, translation: str, new_positions: List[int]
         the_sentence.card_set.get(hidden_word_position=-1).delete()
     except Card.DoesNotExist:
         pass
-    
+
     for p in new_positions:
         the_sentence.card_set.create(owner=user, hidden_word_position=p)
