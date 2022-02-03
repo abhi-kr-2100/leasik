@@ -13,7 +13,7 @@ from django.http import (
     HttpResponseBadRequest, HttpResponseForbidden
 )
 
-from .models import Sentence, SentenceList, Card
+from .models import Sentence, SentenceBookmark, SentenceList, Card
 from .forms import NewSentenceForm
 from .helpers import (
     get_sentence_from_form, update_proficiency_helper, update_note_helper,
@@ -83,7 +83,9 @@ class BookmarkedSentencesListView(SentencesListView):
         slug: str = self.kwargs['slug']
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
-        sentences = list(sentence_list.bookmarked_sentences.all())
+        bookmarks: SentenceBookmark = SentenceBookmark.objects.get_or_create(
+            owner=user, sentence_list=sentence_list)[0]
+        sentences = list(bookmarks.sentences.all())
         return get_cards(user, sentences, 20)
 
 
@@ -184,8 +186,12 @@ def bookmark_sentence(request: HttpRequest) -> HttpResponse:
     list_id = request_data['list_id']
 
     the_list: SentenceList = SentenceList.objects.get(pk=list_id)
+    the_user = request.user
+    the_bookmark_list: SentenceBookmark = SentenceBookmark.objects.get(
+        owner=the_user, sentence_list=the_list
+    )
     the_sentence: Sentence = Sentence.objects.get(pk=sentence_id)
 
-    the_list.bookmarked_sentences.add(the_sentence)
+    the_bookmark_list.sentences.add(the_sentence)
 
     return HttpResponse(status=200)
