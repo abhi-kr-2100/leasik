@@ -4,7 +4,7 @@
 {% load static %}
 
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ list_object.name }}{% endblock %}
 
 
 {% block auth_content %}
@@ -26,6 +26,8 @@
 
             <a @click="playAudio()">Play audio</a>
         </div>
+
+        <a @click="bookmarkSentence()">Bookmark</a>
 
         <div id="answer-box">
             <p id="pre-blank">
@@ -103,11 +105,15 @@
     <script>
         const csrfTokenSelector = '[name=csrfmiddlewaretoken]'
         const csrftoken = document.querySelector(csrfTokenSelector).value
+        const listID = {{ list_object.id }}
+
+        const bookmarkURL = "{% url 'leasikApp:bookmark-sentence' %}"
         const updateProficiencyPostURL = (
             "{% url 'leasikApp:update-proficiency' %}"
         )
         const updateNoteURL = "{% url 'leasikApp:update-note' %}"
         const quizFinishRedirectURL = "{% url 'leasikStaticPages:home-page' %}"
+        
         const hasNextPage = '{{ page_obj.has_next }}' === 'True'
         {% if page_obj.has_next %}
         const nextPageNumber = "{{ page_obj.next_page_number }}"
