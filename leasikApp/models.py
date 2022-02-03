@@ -81,12 +81,20 @@ class SentenceList(models.Model):
     is_public = models.BooleanField(default=True)
 
     sentences = models.ManyToManyField(Sentence, blank=True)
-    bookmarked_sentences = models.ManyToManyField(
-        Sentence, blank=True, related_name="parent_list"
-    )
 
     def __str__(self) -> str:
         return self.name
+
+
+class SentenceBookmark(models.Model):
+    """A bookmark relation between a SentenceList and User, and Sentences."""
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
+    sentences = models.ManyToManyField(Sentence, blank=True)
+
+    class Meta:
+        unique_together = ('owner', 'sentence_list')
 
 
 class UserProfile(models.Model):
