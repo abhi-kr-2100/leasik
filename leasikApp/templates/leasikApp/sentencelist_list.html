@@ -8,49 +8,58 @@
 
 
 {% block auth_content %}
-<a id="new-list-button" href="{% url 'leasikApp:new-list' %}">
-    Create a new list
-</a>
+<div class="block">
+</div>
 
+<div class="container is-fluid">
+    <div class="block">
+        <a class="button is-primary is-rounded"
+            href="{% url 'leasikApp:new-list' %}"
+        >
+            Create a new list
+        </a>
+    </div>
 
-<ul id="list-list">
-{% for list in object_list %}
-    <li>
-        <div class="list">
-            <h2>{{ list.name }}</h2>
-            <p>{{ list.description }}</p>
-            <div class="list-actions">
+    <div class="block">
+        {% for list in object_list %}
+        <div class="card">
+            <header class="card-header">
+                <h2 class="card-header-title">{{ list.name }}</h2>
+            </header>
+
+            <div class="card-content">
+                <div class="content">
+                    <p>{{ list.description }}</p>
+                </div>
+            </div>
+            
+            <footer class="card-footer">
                 {% if list.owner == request.user %}
-                <a class="list-delete-action">Delete</a>
+                <a class="card-footer-item button is-danger is-inverted">
+                    Delete
+                </a>
                 
                 <a href="{% url 'leasikApp:list-edit' list.slug %}"
-                    class="list-edit-action"
+                    class="card-footer-item button is-info is-inverted"
                 >
                     Edit
                 </a>
                 {% endif %}
                 
                 <a href="{% url 'leasikApp:list-detail' list.slug %}"
-                    class="list-play-action"
+                    class="card-footer-item button is-primary is-inverted"
                 >
                     Play
                 </a>
 
                 <a href="{% url 'leasikApp:list-bookmarks' list.slug %}"
-                    class="list-play-action"
+                    class="card-footer-item button is-success is-inverted"
                 >
                     Bookmarks
                 </a>
-            </div>
+            </footer>
         </div>
-    </li>
-{% endfor %}
-</ul>
-{% endblock %}
-
-
-{% block auth_stylesheets %}
-<link
-    rel="stylesheet"
-    href="{% static 'leasikApp/styles/sentencelist_list.css' %}">
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
