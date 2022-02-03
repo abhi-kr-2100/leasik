@@ -62,7 +62,7 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         slug: str = self.kwargs['slug']
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
-        sentences = sentence_list.sentences.all()
+        sentences = list(sentence_list.sentences.all())
         return get_cards(user, sentences, 20)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
@@ -83,7 +83,7 @@ class BookmarkedSentencesListView(SentencesListView):
         slug: str = self.kwargs['slug']
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
-        sentences = sentence_list.bookmarked_sentences.all()
+        sentences = list(sentence_list.bookmarked_sentences.all())
         return get_cards(user, sentences, 20)
 
 
