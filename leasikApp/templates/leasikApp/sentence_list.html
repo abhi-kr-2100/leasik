@@ -8,78 +8,107 @@
 
 
 {% block auth_content %}
-<div id="app">
+<div id="app" class="hero is-fullheight-with-navbar">
     {% if object_list %}
-        <div v-if="speechSynthesisAvailable">
-            <select @change="changeSelectedLanguage($event)">
-                <option value="" selected disabled>Choose voice</option>
-                <option
-                    v-for="language in voices"
-                    :value="language.id"
-                    :key="language.id"
-                >
-                    {% verbatim %}
-                    {{ language.lang }}
-                    {% endverbatim %}
-                </option>
-            </select>
+    <div class="hero-head">
+        <div class="block"></div>
 
-            <a @click="playAudio()">Play audio</a>
-        </div>
+        <div class="container has-text-centered">
+            <div class="block" v-if="speechSynthesisAvailable">
+                <select @change="changeSelectedLanguage($event)" class="button">
+                    <option value="" selected disabled>Choose voice</option>
+                    <option
+                        v-for="language in voices"
+                        :value="language.id"
+                        :key="language.id"
+                    >
+                        {% verbatim %}
+                        {{ language.lang }}
+                        {% endverbatim %}
+                    </option>
+                </select>
 
-        <a @click="bookmarkSentence()">Bookmark</a>
+                <a @click="playAudio()" class="button is-info">Play audio</a>
+            </div>
 
-        <div id="answer-box">
-            <p id="pre-blank">
-                {% verbatim %}
-                {{ preBlank }}
-                {% endverbatim %}
-            </p>
-            <input
-                v-model="userEnteredAnswer" :class="answerCorrectness"
-                @keyup.enter="sumbitAnswer" autofocus
-            >
-            <p id="post-blank">
-                {% verbatim %}
-                {{ postBlank }}
-                {% endverbatim %}
-            </p>
-        </div>
-
-        <div id="question-box">
-            <p id="question">
-                {% verbatim %}
-                {{ questions[currentQuestionIndex].translation }}
-                {% endverbatim %}
-            </p>
-
-            <hr>
-
-            <div id="note">
-                {% verbatim %}
-                <textarea
-                    v-model="note">{{ questions[currentQuestionIndex].note }}
-                </textarea>
-                {% endverbatim %}
+            <div class="block">
+                <a @click="bookmarkSentence()" class="button is-info">
+                    Bookmark
+                </a>
             </div>
         </div>
+    </div>
 
-        <a v-if="!isCurrentAnswerChecked" @click="sumbitAnswer()">Check</a>
-        <a
-            v-else-if="currentQuestionIndex < questions.length - 1"
-            @click="sumbitAnswer()"
-        >
-            Next
-        </a>
-        <a v-else @click="sumbitAnswer()">
-            {% if page_obj.has_next %}
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <div class="block">
+                <p class="title is-3">
+                    {% verbatim %}
+                    {{ preBlank }}
+                    {% endverbatim %}
+                </p>
+                <input
+                    v-model="userEnteredAnswer" :class="answerCorrectness"
+                    @keyup.enter="sumbitAnswer" autofocus
+                    class="title is-3 has-text-centered py-1"
+                >
+                <p class="title is-3">
+                    {% verbatim %}
+                    {{ postBlank }}
+                    {% endverbatim %}
+                </p>
+            </div>
+
+            <div class="block title is-6">
+                <p class="block">
+                    {% verbatim %}
+                    {{ questions[currentQuestionIndex].translation }}
+                    {% endverbatim %}
+                </p>
+
+                <div class="block">
+                    {% verbatim %}
+                    <textarea class="p-2"
+                        v-model="note">{{ questions[currentQuestionIndex].note }}
+                    </textarea>
+                    {% endverbatim %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-foot">
+        <div class="container has-text-centered block">
+            <a v-if="!isCurrentAnswerChecked" @click="sumbitAnswer()"
+                class="button is-primary"
+            >
+                Check
+            </a>
+            
+            <a
+                v-else-if="currentQuestionIndex < questions.length - 1"
+                @click="sumbitAnswer()" class="button is-primary"
+            >
                 Next
-            {% else %}
-                Finish
-            {% endif %}
-        </a>
+            </a>
+
+            <a v-else @click="sumbitAnswer()" class="button is-primary">
+                {% if page_obj.has_next %}
+                    Next
+                {% else %}
+                    Finish
+                {% endif %}
+            </a>
+        </div>
+
+        <div class="block"></div>
+    </div>
     {% else %}
-        <p>No sentences in this list!</p>
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <p class="title is-1">No sentences in this list!</p>
+        </div>
+    </div>
     {% endif %}
 </div>
 {% endblock %}
