@@ -79,7 +79,7 @@ def get_cards(
 
     for batch, s, e in batched(sentences, n if n is not None else 1):
         for sentence in batch:
-            card = Card.objects.filter(owner=user, sentence=sentence)
+            card = Card.objects.filter(owner=user, sentence=sentence).order_by('?')
             if not card.exists():
                 cards.append(Card.objects.create(owner=user, sentence=sentence))
             else:
@@ -145,10 +145,7 @@ def update_card_positions(user: User, translation: str, new_positions: List[int]
     """Delete card with hidden word position -1 and add cards with new positions."""
 
     the_sentence: Sentence = Sentence.objects.get(translation=translation)
-    try:
-        the_sentence.card_set.get(hidden_word_position=-1).delete()
-    except Card.DoesNotExist:
-        pass
+    the_sentence.card_set.all().delete()
 
     for p in new_positions:
         the_sentence.card_set.create(owner=user, hidden_word_position=p)
