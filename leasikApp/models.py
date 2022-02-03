@@ -79,6 +79,8 @@ class SentenceList(models.Model):
     is_public = models.BooleanField(default=True)
 
     sentences = models.ManyToManyField(Sentence, blank=True)
+    bookmarked_sentences = models.ManyToManyField(Sentence, blank=True,
+        related_name='parent_list')
 
     def __str__(self) -> str:
         return self.name
