@@ -194,9 +194,9 @@ def bookmark_sentence(request: HttpRequest) -> HttpResponse:
 
     the_list: SentenceList = SentenceList.objects.get(pk=list_id)
     the_user = request.user
-    the_bookmark_list: SentenceBookmark = SentenceBookmark.objects.get(
+    the_bookmark_list: SentenceBookmark = SentenceBookmark.objects.get_or_create(
         owner=the_user, sentence_list=the_list
-    )
+    )[0]
     the_sentence: Sentence = Sentence.objects.get(pk=sentence_id)
 
     the_bookmark_list.sentences.add(the_sentence)
