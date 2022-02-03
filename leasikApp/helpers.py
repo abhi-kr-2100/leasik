@@ -135,3 +135,16 @@ def get_unique_slug(to_slugify: str) -> str:
         slug += "".join(sample(ascii_letters + digits, 1))
 
     return slug
+
+
+def update_card_positions(user: User, translation: str, new_positions: List[int]) -> None:
+    """Delete card with hidden word position -1 and add cards with new positions."""
+
+    the_sentence: Sentence = Sentence.objects.get(translation=translation)
+    try:
+        the_sentence.card_set.get(hidden_word_position=-1).delete()
+    except Card.DoesNotExist:
+        pass
+    
+    for p in new_positions:
+        the_sentence.card_set.create(owner=user, hidden_word_position=p)
