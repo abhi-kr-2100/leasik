@@ -24,7 +24,9 @@
         {% for list in object_list %}
         <div class="card block">
             <header class="card-header">
-                <h2 class="card-header-title">{{ list.name }}</h2>
+                <h2 class="card-header-title notification is-primary">
+                    {{ list.name }}
+                </h2>
             </header>
 
             <div class="card-content">
@@ -35,25 +37,25 @@
             
             <footer class="card-footer">
                 {% if list.owner == request.user %}
-                <a class="card-footer-item button is-danger is-inverted">
+                <a class="card-footer-item button is-danger is-outlined">
                     Delete
                 </a>
                 
                 <a href="{% url 'leasikApp:list-edit' list.slug %}"
-                    class="card-footer-item button is-info is-inverted"
+                    class="card-footer-item button is-info is-outlined"
                 >
                     Edit
                 </a>
                 {% endif %}
                 
                 <a href="{% url 'leasikApp:list-detail' list.slug %}"
-                    class="card-footer-item button is-primary is-inverted"
+                    class="card-footer-item button is-primary is-outlined"
                 >
                     Play
                 </a>
 
                 <a href="{% url 'leasikApp:list-bookmarks' list.slug %}"
-                    class="card-footer-item button is-success is-inverted"
+                    class="card-footer-item button is-success is-outlined"
                 >
                     Bookmarks
                 </a>
