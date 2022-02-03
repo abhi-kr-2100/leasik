@@ -94,7 +94,7 @@ class SentenceBookmark(models.Model):
     sentences = models.ManyToManyField(Sentence, blank=True)
 
     class Meta:
-        unique_together = ('owner', 'sentence_list')
+        unique_together = ("owner", "sentence_list")
 
 
 class UserProfile(models.Model):

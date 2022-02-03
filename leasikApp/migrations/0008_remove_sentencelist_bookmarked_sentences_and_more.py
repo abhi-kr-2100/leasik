@@ -9,24 +9,47 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('leasikApp', '0007_sentencelist_bookmarked_sentences'),
+        ("leasikApp", "0007_sentencelist_bookmarked_sentences"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='sentencelist',
-            name='bookmarked_sentences',
+            model_name="sentencelist",
+            name="bookmarked_sentences",
         ),
         migrations.CreateModel(
-            name='SentenceBookmark',
+            name="SentenceBookmark",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('sentence_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='leasikApp.sentencelist')),
-                ('sentences', models.ManyToManyField(blank=True, to='leasikApp.Sentence')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "sentence_list",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="leasikApp.sentencelist",
+                    ),
+                ),
+                (
+                    "sentences",
+                    models.ManyToManyField(blank=True, to="leasikApp.Sentence"),
+                ),
             ],
             options={
-                'unique_together': {('owner', 'sentence_list')},
+                "unique_together": {("owner", "sentence_list")},
             },
         ),
     ]

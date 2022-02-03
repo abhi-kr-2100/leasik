@@ -91,7 +91,8 @@ class BookmarkedSentencesListView(SentencesListView):
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
         bookmarks: SentenceBookmark = SentenceBookmark.objects.get_or_create(
-            owner=user, sentence_list=sentence_list)[0]
+            owner=user, sentence_list=sentence_list
+        )[0]
         sentences = list(bookmarks.sentences.all())
         return get_cards(user, sentences, 20)
 
