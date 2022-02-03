@@ -13,7 +13,7 @@ from django.http import (
     HttpResponseBadRequest, HttpResponseForbidden
 )
 
-from .models import SentenceList, Card
+from .models import Sentence, SentenceList, Card
 from .forms import NewSentenceForm
 from .helpers import (
     get_sentence_from_form, update_proficiency_helper, update_note_helper,
@@ -62,16 +62,29 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         slug: str = self.kwargs['slug']
 
         sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
-        return get_cards(user, sentence_list, 20)
+        sentences = sentence_list.sentences.all()
+        return get_cards(user, sentences, 20)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         
         slug = self.kwargs['slug']
         the_list = SentenceList.objects.get(slug=slug)
-        context['title'] = the_list.name
+        context['list_object'] = the_list
 
         return context
+
+
+class BookmarkedSentencesListView(SentencesListView):
+    """Play only bookmarked sentences of a list."""
+
+    def get_queryset(self: SentencesListView) -> List[Card]:
+        user = self.request.user
+        slug: str = self.kwargs['slug']
+
+        sentence_list: SentenceList = SentenceList.objects.get(slug=slug)
+        sentences = sentence_list.bookmarked_sentences.all()
+        return get_cards(user, sentences, 20)
 
 
 class EditListView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -156,5 +169,23 @@ def update_note(request: HttpRequest) -> HttpResponse:
     new_note = request_data['new_note']
 
     update_note_helper(user, sentence_id, new_note)
+
+    return HttpResponse(status=200)
+
+
+@login_required
+def bookmark_sentence(request: HttpRequest) -> HttpResponse:
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    request_data = loads(request.body.decode('utf-8'))
+
+    sentence_id = request_data['sentence_id']
+    list_id = request_data['list_id']
+
+    the_list: SentenceList = SentenceList.objects.get(pk=list_id)
+    the_sentence: Sentence = Sentence.objects.get(pk=sentence_id)
+
+    the_list.bookmarked_sentences.add(the_sentence)
 
     return HttpResponse(status=200)

@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (
     ListsView, EditListView, SentencesListView, update_proficiency, 
-    add_new_sentence, update_note, SentenceListCreateView
+    add_new_sentence, update_note, SentenceListCreateView, bookmark_sentence,
+    BookmarkedSentencesListView
 )
 
 
@@ -19,7 +20,13 @@ urlpatterns = [
     # new note will replace the old note with the new note
     path('update_note', update_note, name='update-note'),
 
+    # post request with an authenticated user and id of the list along with the
+    # id of the sentence will add the sentence to the list's bookmarks
+    path('bookmark-sentence', bookmark_sentence, name='bookmark-sentence'),
+
     path('<slug:slug>', SentencesListView.as_view(), name='list-detail'),
+    path('<slug:slug>/bookmarks', BookmarkedSentencesListView.as_view(),
+        name='list-bookmarks'),
     path('<slug:slug>/edit', EditListView.as_view(), name='list-edit'),
     
     # post request with pk of list and the appropriate form in POST will add

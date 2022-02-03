@@ -62,6 +62,11 @@ const app = Vue.createApp({
             }
         },
 
+        bookmarkSentence() {
+            const currentSentenceID = this.currentQuestion().id
+            addBookmark(currentSentenceID)
+        },
+
         currentQuestion() {
             return this.questions[this.currentQuestionIndex]
         },
@@ -161,6 +166,28 @@ function wordSlice(text, index, pre_or_post) {
         : words.slice(index + 1)
 
     return wordsToInclude.join(' ')
+}
+
+
+function addBookmark(sentenceID) {
+    // send a POST request to Leasik's backend to add the sentence with the
+    // given ID to the current list's bookmarks
+
+    const payload = {
+        'sentence_id': sentenceID,
+        'list_id': listID
+    }
+
+    const headers = {
+        'X-CSRFToken': csrftoken
+    }
+
+    axios({
+        method: 'POST',
+        url: bookmarkURL,
+        headers: headers,
+        data: payload
+    }).catch(err => alert(`Something went wrong: ${err}`))
 }
 
 
