@@ -159,9 +159,10 @@ def update_proficiency(request: HttpRequest) -> HttpResponse:
 
     user = request.user
     sentence_id = request_data["id"]
+    hidden_word_position = request_data["hiddenWordPosition"]
     score = request_data["score"]
 
-    update_proficiency_helper(user, sentence_id, score)
+    update_proficiency_helper(user, sentence_id, hidden_word_position, score)
 
     return HttpResponse(status=200)
 
@@ -175,9 +176,10 @@ def update_note(request: HttpRequest) -> HttpResponse:
 
     user = request.user
     sentence_id = request_data["id"]
+    hidden_word_position = request_data["hiddenWordPosition"]
     new_note = request_data["new_note"]
 
-    update_note_helper(user, sentence_id, new_note)
+    update_note_helper(user, sentence_id, hidden_word_position, new_note)
 
     return HttpResponse(status=200)
 

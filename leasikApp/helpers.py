@@ -40,11 +40,14 @@ def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
     )[0]
 
 
-def update_proficiency_helper(user: User, sentence_id: int, score: int) -> None:
+def update_proficiency_helper(user: User, sentence_id: int, hidden_word_position: int,
+    score: int
+) -> None:
     """Update the proficiency between the given user and sentence."""
 
     the_sentence: Sentence = Sentence.objects.get(id=sentence_id)
-    card: Card = Card.objects.get_or_create(owner=user, sentence=the_sentence)[0]
+    card: Card = Card.objects.get_or_create(
+        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position)[0]
 
     n, ef, i = sm2(
         score,
@@ -112,11 +115,14 @@ def sm2(q: int, n: int, ef: float, i: timedelta) -> Tuple[int, float, timedelta]
     return (n, ef, i)
 
 
-def update_note_helper(user: User, sentence_id: int, new_note: str) -> None:
+def update_note_helper(user: User, sentence_id: int, hidden_word_position: int,
+    new_note: str
+) -> None:
     """Update the note of the SentenceNote between user and given sentence."""
 
     the_sentence = Sentence.objects.get(id=sentence_id)
-    card = Card.objects.get_or_create(owner=user, sentence=the_sentence)[0]
+    card = Card.objects.get_or_create(
+        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position)[0]
 
     Card.objects.filter(id=card.id).update(note=new_note)
 
