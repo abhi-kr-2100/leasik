@@ -55,9 +55,12 @@ class Card(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
+    
+    # which word in sentence to hide? -1 means hide any word randomly
+    hidden_word_position = models.SmallIntegerField(default=-1)
 
     class Meta:
-        unique_together = ("owner", "sentence")
+        unique_together = ('owner', 'sentence', 'hidden_word_position')
 
     def __str__(self) -> str:
         return f"Card <{self.sentence.text}> of {self.owner.username}."
