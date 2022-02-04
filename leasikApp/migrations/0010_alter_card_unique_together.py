@@ -8,12 +8,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('leasikApp', '0009_alter_card_unique_together_card_hidden_word_position'),
+        ("leasikApp", "0009_alter_card_unique_together_card_hidden_word_position"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='card',
-            unique_together={('owner', 'sentence', 'hidden_word_position')},
+            name="card",
+            unique_together={("owner", "sentence", "hidden_word_position")},
         ),
     ]

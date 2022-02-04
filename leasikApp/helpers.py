@@ -40,14 +40,15 @@ def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
     )[0]
 
 
-def update_proficiency_helper(user: User, sentence_id: int, hidden_word_position: int,
-    score: int
+def update_proficiency_helper(
+    user: User, sentence_id: int, hidden_word_position: int, score: int
 ) -> None:
     """Update the proficiency between the given user and sentence."""
 
     the_sentence: Sentence = Sentence.objects.get(id=sentence_id)
     card: Card = Card.objects.get_or_create(
-        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position)[0]
+        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position
+    )[0]
 
     n, ef, i = sm2(
         score,
@@ -79,7 +80,7 @@ def get_cards(
 
     for batch, s, e in batched(sentences, n if n is not None else 1):
         for sentence in batch:
-            card = Card.objects.filter(owner=user, sentence=sentence).order_by('?')
+            card = Card.objects.filter(owner=user, sentence=sentence).order_by("?")
             if not card.exists():
                 cards.append(Card.objects.create(owner=user, sentence=sentence))
             else:
@@ -119,14 +120,15 @@ def sm2(q: int, n: int, ef: float, i: timedelta) -> Tuple[int, float, timedelta]
     return (n, ef, i)
 
 
-def update_note_helper(user: User, sentence_id: int, hidden_word_position: int,
-    new_note: str
+def update_note_helper(
+    user: User, sentence_id: int, hidden_word_position: int, new_note: str
 ) -> None:
     """Update the note of the SentenceNote between user and given sentence."""
 
     the_sentence = Sentence.objects.get(id=sentence_id)
     card = Card.objects.get_or_create(
-        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position)[0]
+        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position
+    )[0]
 
     Card.objects.filter(id=card.id).update(note=new_note)
 
@@ -141,7 +143,9 @@ def get_unique_slug(to_slugify: str) -> str:
     return slug
 
 
-def update_card_positions(user: User, translation: str, new_positions: List[int]) -> None:
+def update_card_positions(
+    user: User, translation: str, new_positions: List[int]
+) -> None:
     """Delete card with hidden word position -1 and add cards with new positions."""
 
     the_sentence: Sentence = Sentence.objects.get(translation=translation)
