@@ -63,7 +63,8 @@ class Card(models.Model):
         unique_together = ('owner', 'sentence', 'hidden_word_position')
 
     def __str__(self) -> str:
-        return f"Card <{self.sentence.text}> of {self.owner.username}."
+        return (f"<{self.sentence.text}> of {self.owner.username}. "
+            f"HWP: {self.hidden_word_position}")
 
     def is_up_for_review(self) -> bool:
         """Does the card needs to be reviewed?"""
@@ -98,6 +99,9 @@ class SentenceBookmark(models.Model):
 
     class Meta:
         unique_together = ("owner", "sentence_list")
+
+    def __str__(self) -> str:
+        return f"Of {self.owner} for {self.sentence_list}."
 
 
 class UserProfile(models.Model):
