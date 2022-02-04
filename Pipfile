@@ -5,8 +5,6 @@ name = "pypi"
 
 [packages]
 django = "*"
-requests = "*"
-beautifulsoup4 = "*"
 django-allauth = "*"
 python-dotenv = "*"
 psycopg2 = "*"
