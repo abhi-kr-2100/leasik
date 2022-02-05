@@ -63,6 +63,7 @@ const app = Vue.createApp({
         bookmarkSentence() {
             const currentSentenceID = this.currentQuestion().id
             addBookmark(currentSentenceID)
+            this.currentQuestion().bookmarked = true
         },
 
         currentQuestion() {
