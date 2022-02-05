@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "rest_framework"
 ]
 
 MIDDLEWARE = [
@@ -158,3 +159,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
