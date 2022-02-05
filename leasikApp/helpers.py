@@ -19,7 +19,10 @@ T = TypeVar("T")
 def batched(
     iter: Sequence[T], batch_size: int = 1
 ) -> Generator[Tuple[Sequence[T], int, int], None, None]:
-    """Return iter in batches of batch_size."""
+    """Return iter in batches of batch_size.
+    
+    Additionally, include information about start and end index of the batch.
+    """
 
     n = len(iter)
     for i in range(0, n, batch_size):
