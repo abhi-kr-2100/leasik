@@ -79,6 +79,18 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         the_list = SentenceList.objects.get(slug=slug)
         context["list_object"] = the_list
 
+        bookmarks: SentenceBookmark = SentenceBookmark.objects.get_or_create(
+            owner=self.request.user, sentence_list=the_list
+        )[0]
+        sentences = [c.sentence for c in context["object_list"]]
+        bookmarked_sentences = [s for s in bookmarks.sentences.all() if s in sentences]
+
+        cards = context["object_list"]
+        cards_with_bookmark_status = [
+            (c, (c.sentence in bookmarked_sentences)) for c in cards
+        ]
+        context["object_list"] = cards_with_bookmark_status
+
         return context
 
 

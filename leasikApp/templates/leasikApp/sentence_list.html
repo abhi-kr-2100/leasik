@@ -32,7 +32,9 @@
             </div>
 
             <div class="block">
-                <a @click="bookmarkSentence()" class="button is-info">
+                <a @click="bookmarkSentence()" class="button is-info"
+                    v-if="!questions[currentQuestionIndex].bookmarked"
+                >
                     Bookmark
                 </a>
             </div>
@@ -154,14 +156,15 @@
 
     <script>
         const question_list = []
-        {% for card in object_list %}
+        {% for card, status in object_list %}
             question_list.push({
                 'id': {{ card.sentence.id }},
                 'sentence': "{{ card.sentence.text|escapejs }}",
                 'translation': "{{ card.sentence.translation|escapejs }}",
                 'score': 0,
                 'note': "{{ card.note|escapejs }}",
-                'missingWordIndex': {{ card.hidden_word_position }}
+                'missingWordIndex': {{ card.hidden_word_position }},
+                'bookmarked': "{{ status }}" === "True"
             })
         {% endfor %}
     </script>
