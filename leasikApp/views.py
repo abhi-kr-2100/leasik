@@ -4,6 +4,7 @@ from json import loads
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -11,7 +12,6 @@ from django.views.generic.edit import CreateView
 from django.http import (
     HttpRequest,
     HttpResponse,
-    HttpResponseNotAllowed,
     HttpResponseRedirect,
     HttpResponseBadRequest,
     HttpResponseForbidden,
@@ -86,9 +86,10 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         bookmarked_sentences = [s for s in bookmarks.sentences.all() if s in sentences]
 
         cards = context["object_list"]
-        cards_with_bookmark_status = [
-            (c, (c.sentence in bookmarked_sentences)) for c in cards
-        ]
+        cards_with_bookmark_status = zip(
+            cards,
+            [(c.sentence in bookmarked_sentences) for c in cards]
+        )
         context["object_list"] = cards_with_bookmark_status
 
         return context
@@ -146,9 +147,9 @@ class SentenceListCreateView(LoginRequiredMixin, CreateView):
 
 
 @login_required
+@require_POST
 def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
+    """Add a new Sentence to the SentenceList determined by pk."""
 
     form = NewSentenceForm(request.POST)
     this_list: SentenceList = SentenceList.objects.get(pk=pk)
@@ -163,9 +164,12 @@ def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
+@require_POST
 def update_proficiency(request: HttpRequest) -> HttpResponse:
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
+    """Update currently logged-in user's proficiency with a card of Sentence.
+    
+    The card is determined using the Sentence and the hidden word position.
+    """
 
     request_data = loads(request.body.decode("utf-8"))
 
@@ -180,9 +184,12 @@ def update_proficiency(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@require_POST
 def update_note(request: HttpRequest) -> HttpResponse:
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
+    """Update note on a card.
+    
+    The card is determined using the Sentence ID and hidden word position.
+    """
 
     request_data = loads(request.body.decode("utf-8"))
 
@@ -197,9 +204,9 @@ def update_note(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@require_POST
 def bookmark_sentence(request: HttpRequest) -> HttpResponse:
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
+    """Bookmark the given sentence."""
 
     request_data = loads(request.body.decode("utf-8"))
 
