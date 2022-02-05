@@ -87,8 +87,7 @@ class SentencesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
         cards = context["object_list"]
         cards_with_bookmark_status = zip(
-            cards,
-            [(c.sentence in bookmarked_sentences) for c in cards]
+            cards, [(c.sentence in bookmarked_sentences) for c in cards]
         )
         context["object_list"] = cards_with_bookmark_status
 
@@ -167,7 +166,7 @@ def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
 @require_POST
 def update_proficiency(request: HttpRequest) -> HttpResponse:
     """Update currently logged-in user's proficiency with a card of Sentence.
-    
+
     The card is determined using the Sentence and the hidden word position.
     """
 
@@ -187,7 +186,7 @@ def update_proficiency(request: HttpRequest) -> HttpResponse:
 @require_POST
 def update_note(request: HttpRequest) -> HttpResponse:
     """Update note on a card.
-    
+
     The card is determined using the Sentence ID and hidden word position.
     """
 
