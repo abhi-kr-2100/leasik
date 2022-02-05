@@ -10,101 +10,7 @@
 {% block auth_content %}
 <div id="app" class="hero is-fullheight-with-navbar">
     {% if object_list %}
-    <div class="hero-head">
-        <div class="block"></div>
-
-        <div class="container has-text-centered">
-            <div class="block" v-if="speechSynthesisAvailable">
-                <select @change="changeSelectedLanguage($event)" class="button">
-                    <option value="" selected disabled>Choose voice</option>
-                    <option
-                        v-for="language in voices"
-                        :value="language.id"
-                        :key="language.id"
-                    >
-                        {% verbatim %}
-                        {{ language.lang }}
-                        {% endverbatim %}
-                    </option>
-                </select>
-
-                <a @click="playAudio()" class="button is-info">Play audio</a>
-            </div>
-
-            <div class="block">
-                <a @click="bookmarkSentence()" class="button is-info"
-                    v-if="!questions[currentQuestionIndex].bookmarked"
-                >
-                    Bookmark
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="hero-body">
-        <div class="container has-text-centered">
-            <div class="block">
-                <p class="title is-3">
-                    {% verbatim %}
-                    {{ preBlank }}
-                    {% endverbatim %}
-                </p>
-                <input
-                    v-model="userEnteredAnswer" :class="answerCorrectness"
-                    @keyup.enter="sumbitAnswer" autofocus
-                    class="title is-3 has-text-centered py-1"
-                >
-                <p class="title is-3">
-                    {% verbatim %}
-                    {{ postBlank }}
-                    {% endverbatim %}
-                </p>
-            </div>
-
-            <div class="block title is-6">
-                <p class="block">
-                    {% verbatim %}
-                    {{ questions[currentQuestionIndex].translation }}
-                    {% endverbatim %}
-                </p>
-
-                <div class="block">
-                    {% verbatim %}
-                    <textarea class="p-2"
-                        v-model="note">{{ questions[currentQuestionIndex].note }}
-                    </textarea>
-                    {% endverbatim %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="hero-foot">
-        <div class="container has-text-centered block">
-            <a v-if="!isCurrentAnswerChecked" @click="sumbitAnswer()"
-                class="button is-primary"
-            >
-                Check
-            </a>
-            
-            <a
-                v-else-if="currentQuestionIndex < questions.length - 1"
-                @click="sumbitAnswer()" class="button is-primary"
-            >
-                Next
-            </a>
-
-            <a v-else @click="sumbitAnswer()" class="button is-primary">
-                {% if page_obj.has_next %}
-                    Next
-                {% else %}
-                    Finish
-                {% endif %}
-            </a>
-        </div>
-
-        <div class="block"></div>
-    </div>
+        {% include "leasikApp/sentence_list_playground.html" %}
     {% else %}
     <div class="hero-body">
         <div class="container has-text-centered">
@@ -144,19 +50,11 @@
         )
         const updateNoteURL = "{% url 'leasikApp:update-note' %}"
         const quizFinishRedirectURL = "{% url 'leasikStaticPages:home-page' %}"
-        
-        const hasNextPage = '{{ page_obj.has_next }}' === 'True'
-        {% if page_obj.has_next %}
-        const nextPageNumber = "{{ page_obj.next_page_number }}"
-        const nextPageURL = (
-            `${window.location.href.split('?')[0]}?page=${nextPageNumber}`
-        )
-        {% endif %}
     </script>
 
     <script>
         const question_list = []
-        {% for card, status in object_list %}
+        {% for card, bookmark_status in object_list %}
             question_list.push({
                 'id': {{ card.sentence.id }},
                 'sentence': "{{ card.sentence.text|escapejs }}",
@@ -164,7 +62,7 @@
                 'score': 0,
                 'note': "{{ card.note|escapejs }}",
                 'missingWordIndex': {{ card.hidden_word_position }},
-                'bookmarked': "{{ status }}" === "True"
+                'bookmarked': "{{ bookmark_status }}" === "True"
             })
         {% endfor %}
     </script>

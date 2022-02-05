@@ -3,8 +3,6 @@
 const app = Vue.createApp({
     data() {
         return {
-            hasNextPage: hasNextPage,
-
             questions: question_list,
             currentQuestionIndex: 0,
 
@@ -150,8 +148,6 @@ const app = Vue.createApp({
                 this.checkAnswer()
             } else if (this.currentQuestionIndex < this.questions.length - 1) {
                 this.showNextQuestion()
-            } else if (this.hasNextPage) {
-                window.location.href = nextPageURL
             } else {
                 window.location.href = quizFinishRedirectURL
             }
