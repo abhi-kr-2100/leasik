@@ -5,15 +5,18 @@ from leasikApp.models import Card, SentenceBookmark, SentenceList, Sentence
 from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
 from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter
 from leasikREST.serializers import (
-    CardSerializer, SentenceBookmarkSerializer, SentenceListSerializer,
-    SentenceSerializer, UserSerializer
+    CardSerializer,
+    SentenceBookmarkSerializer,
+    SentenceListSerializer,
+    SentenceSerializer,
+    UserSerializer,
 )
 
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+
 
 class CardViewSet(ModelViewSet):
     queryset = Card.objects.all()

@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 class OwnerOnly(BasePermission):
     """Allow only owner to access the object.
-    
+
     Assumes model has an `owner` attribute.
     """
 
@@ -13,7 +13,7 @@ class OwnerOnly(BasePermission):
 
 class OwnerOrPublicReadOnly(BasePermission):
     """Allow read-only access to public objects while reserving full access for owners.
-    
+
     Assumes model has an `owner` attribute and an `is_public` attribute.
     """
 

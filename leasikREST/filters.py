@@ -4,7 +4,7 @@ from rest_framework.filters import BaseFilterBackend
 
 class IsOwnerFilter(BaseFilterBackend):
     """Only allow users to see objects they own.
-    
+
     Assumes the model has an `owner` attribute.
     """
 
@@ -16,7 +16,7 @@ class IsOwnerFilter(BaseFilterBackend):
 
 class IsOwnerOrPublicFilter(BaseFilterBackend):
     """Only allow users to see public objects and the objects they own.
-    
+
     Assumes the model has an `owner` attribute and an `is_public` attribute.
     """
 
