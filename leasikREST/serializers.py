@@ -31,9 +31,15 @@ class CardSerializer(HyperlinkedModelSerializer):
         ]
 
 
+class ManySentenceSerializer(HyperlinkedModelSerializer):
+    class Meta:
+        model = Sentence
+        fields = ['id']
+
+
 class SentenceListSerializer(HyperlinkedModelSerializer):
     owner = UserSerializer()
-    sentences = SentenceSerializer(many=True)
+    sentences = ManySentenceSerializer(many=True)
 
     class Meta:
         model = SentenceList
@@ -43,7 +49,7 @@ class SentenceListSerializer(HyperlinkedModelSerializer):
 class SentenceBookmarkSerializer(HyperlinkedModelSerializer):
     owner = UserSerializer()
     sentence_list = SentenceListSerializer()
-    sentences = SentenceSerializer(many=True)
+    sentences = ManySentenceSerializer(many=True)
 
     class Meta:
         model = SentenceBookmark
