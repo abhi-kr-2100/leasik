@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer, SerializerMethodField
 
 from leasikApp.models import Card, Sentence, SentenceBookmark, SentenceList
+from leasikREST.paginations import NestedPagination
 
 
 class UserSerializer(HyperlinkedModelSerializer):
@@ -39,18 +40,38 @@ class ManySentenceSerializer(HyperlinkedModelSerializer):
 
 class SentenceListSerializer(HyperlinkedModelSerializer):
     owner = UserSerializer()
-    sentences = ManySentenceSerializer(many=True)
+    sentences = SerializerMethodField('paginated_sentences')
 
     class Meta:
         model = SentenceList
         fields = ['id', 'name', 'slug', 'description', 'owner', 'is_public', 'sentences']
 
+    def paginated_sentences(self, obj: SentenceList):
+        sentences = obj.sentences.all()
+        paginator = NestedPagination()
+        page = paginator.paginate_queryset(sentences, self.context['request'])
+        serializer = ManySentenceSerializer(page, many=True, context={
+            'request': self.context['request']
+        })
+
+        return serializer.data
+
 
 class SentenceBookmarkSerializer(HyperlinkedModelSerializer):
     owner = UserSerializer()
     sentence_list = SentenceListSerializer()
-    sentences = ManySentenceSerializer(many=True)
+    sentences = SerializerMethodField('paginated_sentences')
 
     class Meta:
         model = SentenceBookmark
         fields = ['id', 'owner', 'sentence_list', 'sentences']
+
+    def paginated_sentences(self, obj: SentenceBookmark):
+        sentences = obj.sentences.all()
+        paginator = NestedPagination()
+        page = paginator.paginate_queryset(sentences, self.context['request'])
+        serializer = ManySentenceSerializer(page, many=True, context={
+            'request': self.context['request']
+        })
+
+        return serializer.data
