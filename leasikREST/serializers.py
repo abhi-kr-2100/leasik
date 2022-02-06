@@ -19,9 +19,15 @@ class SentenceSerializer(HyperlinkedModelSerializer):
         ]
 
 
+class NestedSentenceSerializer(HyperlinkedModelSerializer):
+    class Meta:
+        model = Sentence
+        fields = ['id']
+
+
 class CardSerializer(HyperlinkedModelSerializer):
     owner = UserSerializer()
-    sentence = SentenceSerializer()
+    sentence = NestedSentenceSerializer()
     
     class Meta:
         model = Card
@@ -30,12 +36,6 @@ class CardSerializer(HyperlinkedModelSerializer):
             'last_review_date', 'note', 'owner', 'sentence',
             'hidden_word_position'
         ]
-
-
-class ManySentenceSerializer(HyperlinkedModelSerializer):
-    class Meta:
-        model = Sentence
-        fields = ['id']
 
 
 class SentenceListSerializer(HyperlinkedModelSerializer):
@@ -50,16 +50,22 @@ class SentenceListSerializer(HyperlinkedModelSerializer):
         sentences = obj.sentences.all()
         paginator = NestedPagination()
         page = paginator.paginate_queryset(sentences, self.context['request'])
-        serializer = ManySentenceSerializer(page, many=True, context={
+        serializer = NestedSentenceSerializer(page, many=True, context={
             'request': self.context['request']
         })
 
         return serializer.data
 
 
+class NestedSentenceListSerializer(HyperlinkedModelSerializer):
+    class Meta:
+        model = SentenceList
+        fields = ['id']
+
+
 class SentenceBookmarkSerializer(HyperlinkedModelSerializer):
     owner = UserSerializer()
-    sentence_list = SentenceListSerializer()
+    sentence_list = NestedSentenceListSerializer()
     sentences = SerializerMethodField('paginated_sentences')
 
     class Meta:
@@ -70,7 +76,7 @@ class SentenceBookmarkSerializer(HyperlinkedModelSerializer):
         sentences = obj.sentences.all()
         paginator = NestedPagination()
         page = paginator.paginate_queryset(sentences, self.context['request'])
-        serializer = ManySentenceSerializer(page, many=True, context={
+        serializer = NestedSentenceSerializer(page, many=True, context={
             'request': self.context['request']
         })
 
