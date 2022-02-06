@@ -14,7 +14,7 @@ class SentenceSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Sentence
         fields = [
-            'text', 'translation', 'text_language', 'translation_language',
+            'id', 'text', 'translation', 'text_language', 'translation_language',
         ]
 
 
@@ -25,7 +25,7 @@ class CardSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Card
         fields = [
-            'repetition_number', 'easiness_factor', 'inter_repetition_interval',
+            'id', 'repetition_number', 'easiness_factor', 'inter_repetition_interval',
             'last_review_date', 'note', 'owner', 'sentence',
             'hidden_word_position'
         ]
@@ -43,7 +43,7 @@ class SentenceListSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = SentenceList
-        fields = ['name', 'slug', 'description', 'owner', 'is_public', 'sentences']
+        fields = ['id', 'name', 'slug', 'description', 'owner', 'is_public', 'sentences']
 
 
 class SentenceBookmarkSerializer(HyperlinkedModelSerializer):
@@ -53,4 +53,4 @@ class SentenceBookmarkSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = SentenceBookmark
-        fields = ['owner', 'sentence_list', 'sentences']
+        fields = ['id', 'owner', 'sentence_list', 'sentences']
