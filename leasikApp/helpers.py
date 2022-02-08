@@ -152,7 +152,7 @@ def update_card_positions(
     """Delete card with hidden word position -1 and add cards with new positions."""
 
     the_sentence: Sentence = Sentence.objects.get(translation=translation)
-    the_sentence.card_set.get(hidden_word_position=-1).delete()
+    the_sentence.card_set.get_or_create(owner=user, hidden_word_position=-1)[0].delete()
 
     for p in new_positions:
         the_sentence.card_set.get_or_create(owner=user, hidden_word_position=p)
