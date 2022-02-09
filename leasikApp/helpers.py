@@ -95,7 +95,7 @@ def get_cards(
         if n is not None and len(cards_up_for_review) >= n:
             return cards_up_for_review[:n]
 
-    return cards_up_for_review or (cards[:n] if n is not None else cards)
+    return cards[:n] if n is not None else cards
 
 
 def sm2(q: int, n: int, ef: float, i: timedelta) -> Tuple[int, float, timedelta]:
