@@ -1,9 +1,6 @@
 {% extends "leasikApp/base_authorized.html" %}
 
 
-{% load static %}
-
-
 {% block title %}List List{% endblock %}
 
 
@@ -12,14 +9,6 @@
 </div>
 
 <div class="container is-fluid">
-    <div class="block">
-        <a class="button is-primary is-rounded"
-            href="{% url 'leasikApp:new-list' %}"
-        >
-            Create a new list
-        </a>
-    </div>
-
     <div class="block">
         {% for list in object_list %}
         <div class="card block">
@@ -36,18 +25,6 @@
             </div>
             
             <footer class="card-footer">
-                {% if list.owner == request.user %}
-                <a class="card-footer-item button is-danger is-outlined">
-                    Delete
-                </a>
-                
-                <a href="{% url 'leasikApp:list-edit' list.slug %}"
-                    class="card-footer-item button is-info is-outlined"
-                >
-                    Edit
-                </a>
-                {% endif %}
-                
                 <a href="{% url 'leasikApp:list-detail' list.slug %}"
                     class="card-footer-item button is-primary is-outlined"
                 >
