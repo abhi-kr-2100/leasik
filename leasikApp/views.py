@@ -5,25 +5,13 @@ from json import loads
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
-from django.http import (
-    HttpRequest,
-    HttpResponse,
-    HttpResponseRedirect,
-    HttpResponseBadRequest,
-    HttpResponseForbidden,
-)
+from django.http import HttpRequest, HttpResponse
 
 from .models import Sentence, SentenceBookmark, SentenceList, Card
-from .forms import NewSentenceForm
 from .helpers import (
-    get_sentence_from_form,
     update_proficiency_helper,
     update_note_helper,
-    get_unique_slug,
     get_cards,
 )
 
@@ -107,59 +95,6 @@ class BookmarkedSentencesListView(SentencesListView):
         )[0]
         sentences = list(bookmarks.sentences.all())
         return get_cards(user, sentences, 20)
-
-
-class EditListView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
-    """Allow user to add and remove sentences from this list."""
-
-    model = SentenceList
-
-    def test_func(self) -> bool:
-        """Test that user has permission to edit this list."""
-
-        object: SentenceList = self.get_object()
-        return object.owner == self.request.user
-
-    def get_template_names(self: EditListView) -> List[str]:
-        return ["leasikApp/sentencelist_edit.html"]
-
-    def get_context_data(self: EditListView, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["form"] = NewSentenceForm
-
-        return context
-
-
-class SentenceListCreateView(LoginRequiredMixin, CreateView):
-    model = SentenceList
-    fields = ["name", "description"]
-    success_url = reverse_lazy("leasikApp:home")
-
-    def form_valid(self, form):
-        user = self.request.user
-        slug = get_unique_slug(form.instance.name)
-
-        form.instance.owner = user
-        form.instance.slug = slug
-
-        return super().form_valid(form)
-
-
-@login_required
-@require_POST
-def add_new_sentence(request: HttpRequest, pk: int) -> HttpResponse:
-    """Add a new Sentence to the SentenceList determined by pk."""
-
-    form = NewSentenceForm(request.POST)
-    this_list: SentenceList = SentenceList.objects.get(pk=pk)
-    if this_list.owner != request.user:
-        return HttpResponseForbidden()
-    if not form.is_valid():
-        return HttpResponseBadRequest()
-
-    this_list.sentences.add(get_sentence_from_form(form))
-
-    return HttpResponseRedirect(reverse("leasikApp:list-edit", args=[this_list.slug]))
 
 
 @login_required

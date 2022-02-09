@@ -3,14 +3,11 @@
 
 from typing import List, Optional, Sequence, Tuple, TypeVar, Generator
 from datetime import timedelta, date
-from random import sample, shuffle
-from string import ascii_letters, digits
+from random import shuffle
 
 from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
 
-from .forms import NewSentenceForm
-from .models import Card, Sentence, SentenceList
+from .models import Card, Sentence
 
 
 T = TypeVar("T")
@@ -30,17 +27,6 @@ def batched(
         e = min(i + batch_size, n)
 
         yield (iter[s:e], s, e)
-
-
-def get_sentence_from_form(form: NewSentenceForm) -> Sentence:
-    """Create and return a sentence object from the given form.
-
-    If the sentence already exists, just return it.
-    """
-
-    return Sentence.objects.get_or_create(
-        text=form.cleaned_data["text"], translation=form.cleaned_data["translation"]
-    )[0]
 
 
 def update_proficiency_helper(
@@ -134,16 +120,6 @@ def update_note_helper(
     )[0]
 
     Card.objects.filter(id=card.id).update(note=new_note)
-
-
-def get_unique_slug(to_slugify: str) -> str:
-    """Return a unique slug by slugifying to_slugify."""
-
-    slug = slugify(to_slugify)
-    while SentenceList.objects.filter(slug=slug).count():
-        slug += "".join(sample(ascii_letters + digits, 1))
-
-    return slug
 
 
 def update_card_positions(
