@@ -31,6 +31,8 @@ SECRET_KEY = getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv("DJANGO_DEVELOPMENT_MODE") is not None
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
 ALLOWED_HOSTS = [getenv("DJANGO_ALLOWED_HOST")]
 
 
