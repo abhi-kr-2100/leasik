@@ -2,23 +2,6 @@
     <div class="block"></div>   <!-- for dummy space -->
 
     <div class="container has-text-centered">
-        <div class="block" v-if="speechSynthesisAvailable">
-            <select @change="changeSelectedLanguage($event)" class="button">
-                <option value="" selected disabled>Choose voice</option>
-                <option
-                    v-for="language in voices"
-                    :value="language.id"
-                    :key="language.id"
-                >
-                    {% verbatim %}
-                    {{ language.lang }}
-                    {% endverbatim %}
-                </option>
-            </select>
-
-            <a @click="playAudio()" class="button is-info">Play audio</a>
-        </div>
-
         <div class="block">
             <a @click="bookmarkSentence()" class="button is-info"
                 v-if="!questions[currentQuestionIndex].bookmarked"

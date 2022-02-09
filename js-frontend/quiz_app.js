@@ -14,24 +14,12 @@ const app = Vue.createApp({
             userEnteredAnswer: '',
             isCurrentAnswerChecked: false,
             answerCorrectness: 'unknown',
-            audioPlayed: false,
 
-            note: question_list[0].note,
-            voices: [],
-            selectedLanguage: undefined
+            note: question_list[0].note
         }
     },
 
     computed: {
-        speechSynthesisAvailable() {
-            const available = ('speechSynthesis' in window)
-            if (available) {
-                window.speechSynthesis.onvoiceschanged = this.populateVoices
-            }
-
-            return available
-        },
-
         preBlank() {
             if (this.missingWordIndexSetFor !== this.currentQuestionIndex) {
                 this.setMissingWordIndex()
@@ -52,14 +40,6 @@ const app = Vue.createApp({
     },
 
     methods: {
-        populateVoices() {
-            const voices = window.speechSynthesis.getVoices()
-            
-            for (let i = 0; i < voices.length; ++i) {
-                this.voices.push({ 'id': i, 'lang': voices[i].lang })
-            }
-        },
-
         bookmarkSentence() {
             const currentSentenceID = this.currentQuestion().id
             addBookmark(currentSentenceID)
@@ -85,23 +65,6 @@ const app = Vue.createApp({
             this.missingWordIndexSetFor = this.currentQuestionIndex
         },
 
-        playAudio() {
-            const text = this.currentQuestion().sentence
-            let utterence = new SpeechSynthesisUtterance(text)
-            utterence.lang = this.selectedLanguage
-            utterence.rate = 0.75
-
-            console.log(utterence)
-
-            window.speechSynthesis.speak(utterence)
-            this.audioPlayed = true
-        },
-
-        changeSelectedLanguage(event) {
-            const options = event.target.options
-            return (this.selectedLanguage = options[options.selectedIndex].text)
-        },
-
         checkAnswer() {
             if (this.userEnteredAnswer.trim() === '') {
                 alert('Please enter something to check.')
@@ -113,11 +76,7 @@ const app = Vue.createApp({
 
             if (semanticallyEqual(this.userEnteredAnswer, correctAnswer)) {
                 this.answerCorrectness = 'correct'
-                if (this.audioPlayed) {
-                    this.currentQuestion().score = 1
-                } else {
-                    this.currentQuestion().score = 5
-                }
+                this.currentQuestion().score = 5
             } else {
                 this.answerCorrectness = 'incorrect'
                 this.currentQuestion().score = 0
