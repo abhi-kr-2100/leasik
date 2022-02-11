@@ -48,6 +48,12 @@ class CardSerializer(ModelSerializer):
         ]
 
 
+class NestedCardSerializer(ModelSerializer):
+    class Meta:
+        model = Card
+        fields = ["id"]
+
+
 class SentenceListSerializer(ModelSerializer):
     owner = UserSerializer()
     sentences = SerializerMethodField("paginated_sentences")
