@@ -1,17 +1,17 @@
 from django.contrib.auth.models import User
-from rest_framework.serializers import HyperlinkedModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from leasikApp.models import Card, Sentence, SentenceBookmark, SentenceList
 from leasikREST.paginations import NestedPagination
 
 
-class UserSerializer(HyperlinkedModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ["id"]
 
 
-class SentenceSerializer(HyperlinkedModelSerializer):
+class SentenceSerializer(ModelSerializer):
     class Meta:
         model = Sentence
         fields = [
@@ -23,13 +23,13 @@ class SentenceSerializer(HyperlinkedModelSerializer):
         ]
 
 
-class NestedSentenceSerializer(HyperlinkedModelSerializer):
+class NestedSentenceSerializer(ModelSerializer):
     class Meta:
         model = Sentence
         fields = ["id"]
 
 
-class CardSerializer(HyperlinkedModelSerializer):
+class CardSerializer(ModelSerializer):
     owner = UserSerializer()
     sentence = NestedSentenceSerializer()
 
@@ -48,7 +48,7 @@ class CardSerializer(HyperlinkedModelSerializer):
         ]
 
 
-class SentenceListSerializer(HyperlinkedModelSerializer):
+class SentenceListSerializer(ModelSerializer):
     owner = UserSerializer()
     sentences = SerializerMethodField("paginated_sentences")
 
@@ -75,13 +75,13 @@ class SentenceListSerializer(HyperlinkedModelSerializer):
         return serializer.data
 
 
-class NestedSentenceListSerializer(HyperlinkedModelSerializer):
+class NestedSentenceListSerializer(ModelSerializer):
     class Meta:
         model = SentenceList
         fields = ["id"]
 
 
-class SentenceBookmarkSerializer(HyperlinkedModelSerializer):
+class SentenceBookmarkSerializer(ModelSerializer):
     owner = UserSerializer()
     sentence_list = NestedSentenceListSerializer()
     sentences = SerializerMethodField("paginated_sentences")
