@@ -1,14 +1,19 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import { render } from 'react-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
 import App from './App'
-import reportWebVitals from './reportWebVitals'
+import Home from './routes/Home'
+import SentenceLists from './routes/SentenceLists'
 
 
-ReactDOM.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
+render(
+    <BrowserRouter>
+        <Routes>
+            <Route path='/' element={ <App /> }>
+                <Route index element={ <Home /> } />
+                <Route path='/lists' element={ <SentenceLists /> } />
+            </Route>
+        </Routes>
+    </BrowserRouter>,
     document.getElementById('root')
-);
-
-reportWebVitals(console.log);
+)
