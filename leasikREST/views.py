@@ -30,11 +30,11 @@ class CardViewSet(ModelViewSet):
     permission_classes = [OwnerOnly]
     filter_backends = [IsOwnerFilter]
 
-    @action(detail=False, url_path='playlist/(?P<list_pk>[^/.]+)')
+    @action(detail=False, url_path="playlist/(?P<list_pk>[^/.]+)")
     def playlist(self, request: Request, list_pk: int) -> Response:
         """Return Cards from given list that the logged-in user should play."""
 
-        num_cards = int(request.query_params.get('num_cards', api_settings.PAGE_SIZE))
+        num_cards = int(request.query_params.get("num_cards", api_settings.PAGE_SIZE))
         sentence_list: SentenceList = SentenceList.objects.get(pk=list_pk)
         sentences = list(sentence_list.sentences.all())
 
