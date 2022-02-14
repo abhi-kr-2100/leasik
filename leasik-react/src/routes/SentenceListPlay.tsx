@@ -1,6 +1,9 @@
 import { Component, ReactElement, ReactNode } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { getToken } from '../authentication/utils'
+import axios from 'axios'
+
 
 export type SentenceListPlayProps = {
     sentenceListId: number
@@ -12,20 +15,25 @@ export type SentenceListPlayState = {
     }>
 
     currentCardIndex: number
+
+    token: string
 }
 
 
 export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceListPlayState> {
     state = {
         cards: [],
-        currentCardIndex: 0
+        currentCardIndex: 0,
+        token: getToken() || ''
     }
 
     componentDidMount() {
         const getCardsURL = `http://127.0.0.1:8000/api/v1/cards/playlist/${this.props.sentenceListId}/`
-        fetch(getCardsURL)
-            .then(resp => resp.json())
-            .then(data => this.setState({ cards: data, currentCardIndex: 0 }))
+        axios.get(getCardsURL, {
+            headers: {
+                "Authorization": `Token ${this.state.token}`
+            }
+        }).then(resp => this.setState({ cards: resp.data, currentCardIndex: 0 }))
     }
 
     render(): ReactNode {
