@@ -33,7 +33,6 @@ export class SentenceList extends Component<SentenceListPropsType, {}> {
                 <p>{ this.props.description }</p>
                 <div>
                     <Link to={`/lists/${ this.props.sentenceListId }`}>Play</Link>
-                    <Link to={`/lists/${ this.props.sentenceListId }/bookmarks`}>Bookmarks</Link>
                 </div>
             </div>
         )
