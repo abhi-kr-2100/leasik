@@ -15,8 +15,8 @@ export type SentenceListType = {
 }
 
 export type SentenceListPropsType = {
+    sentenceListId: number,
     name: string,
-    slug: string,
     description: string
 }
 
@@ -32,8 +32,8 @@ export class SentenceList extends Component<SentenceListPropsType, {}> {
                 <h2>{ this.props.name }</h2>
                 <p>{ this.props.description }</p>
                 <div>
-                    <Link to={`/lists/${ this.props.slug }`}>Play</Link>
-                    <Link to={`/lists/${ this.props.slug }/bookmarks`}>Bookmarks</Link>
+                    <Link to={`/lists/${ this.props.sentenceListId }`}>Play</Link>
+                    <Link to={`/lists/${ this.props.sentenceListId }/bookmarks`}>Bookmarks</Link>
                 </div>
             </div>
         )
@@ -58,8 +58,8 @@ export default class SentenceLists extends Component {
                 { this.state.sentenceLists.map(sl => (
                     <SentenceList
                         key={ sl.id }
+                        sentenceListId={ sl.id }
                         name={ sl.name }
-                        slug={ sl.slug }
                         description={ sl.description }
                     />
                 )) }
