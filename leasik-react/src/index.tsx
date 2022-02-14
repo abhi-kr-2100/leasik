@@ -13,7 +13,7 @@ render(
         <Routes>
             <Route path='/' element={ <App /> }>
                 <Route index element={ <Home /> } />
-                <Route path='/login' element={ <Login /> } />
+                <Route path='/login' element={ <Login successURL='/lists' /> } />
                 <Route path='/lists' element={ <SentenceLists /> } />
                 <Route path='/lists/:listId' element={ <SentenceListPlayRouterComponent /> } />
                 <Route path="*" element={

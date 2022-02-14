@@ -1,19 +1,42 @@
 import axios from 'axios'
 import { Component, FormEvent, ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { setToken } from '../authentication/utils'
 
 
-export type LoginStateType = {
+export default function Login(props: { successURL: string }) {
+    const navigate = useNavigate()
+
+    return <LoginCls navigate={ navigate } successURL={ props.successURL } />
+}
+
+
+type LoginPropsType = {
+    navigate: (path: string) => void
+    successURL: string
+}
+
+type LoginStateType = {
     username: string
     password: string
 }
 
-export default class Login extends Component<{}, LoginStateType> {
+class LoginCls extends Component<LoginPropsType, LoginStateType> {
+    state = {
+        username: '',
+        password: ''
+    }
+
     async handleSubmit(e: FormEvent<EventTarget>): Promise<void> {
         e.preventDefault()
         const token = await loginUser(this.state)
-        setToken(token.token)
+        if ('error' in token) {
+            alert("Login failed. Please make sure your credentials are correct or try again later.")
+        } else {
+            setToken(token.token)
+            this.props.navigate(this.props.successURL)
+        }
     }
 
     render(): ReactNode {
@@ -36,22 +59,13 @@ export default class Login extends Component<{}, LoginStateType> {
     }
 }
 
-export class LoginWrapper extends Component {
-    render(): ReactNode {
-        return (
-            <div>
-                <h1>Please log in to continue...</h1>
-                <Login />
-            </div>
-        )
-    }
-}
-
-export async function loginUser(credentials: { username: string, password: string }): Promise<{ token: string }> {
+async function loginUser(credentials: { username: string, password: string }): Promise<{ token: string } | { error: string }> {
     const loginURL = 'http://127.0.0.1:8000/api/v1/api-token-auth/'
 
     return axios.post(loginURL, {
         username: credentials.username,
         password: credentials.password
-    }).then(resp => resp.data)
+    })
+        .then(resp => resp.data)
+        .catch(reason => { return { error: reason } })
 }
