@@ -1,5 +1,7 @@
+import axios from 'axios'
 import { Component, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { getToken } from '../authentication/utils'
 
 
 export type SentenceListType = {
@@ -45,10 +47,16 @@ export default class SentenceLists extends Component {
 
     componentDidMount() {
         const getSentenceListsURL = 'http://127.0.0.1:8000/api/v1/lists/'
-        fetch(getSentenceListsURL)
-            .then(resp => resp.json())
+        const token = getToken()
+        const headers = token !== null ? { "Authorization": `Token ${token}` } : undefined
+
+        axios.get(getSentenceListsURL, {
+            headers: headers
+        })
+            .then(resp => resp.data)
             .then(data => data['results'])
             .then(sentenceLists => this.setState({ sentenceLists }))
+            .catch(reason => alert("Please login again or try again later."))
     }
 
     render(): ReactNode {
