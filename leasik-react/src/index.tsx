@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import App from './App'
 import Home from './routes/Home'
+import SentenceListPlayRouterComponent from './routes/SentenceListPlay'
 import SentenceLists from './routes/SentenceLists'
 
 
@@ -12,6 +13,7 @@ render(
             <Route path='/' element={ <App /> }>
                 <Route index element={ <Home /> } />
                 <Route path='/lists' element={ <SentenceLists /> } />
+                <Route path='/lists/:listId' element={ <SentenceListPlayRouterComponent /> } />
             </Route>
         </Routes>
     </BrowserRouter>,
