@@ -30,12 +30,26 @@ export type SentenceListsStateType = {
 export class SentenceList extends Component<SentenceListPropsType, {}> {
     render(): ReactNode {
         return (
-            <div>
-                <h2>{ this.props.name }</h2>
-                <p>{ this.props.description }</p>
-                <div>
-                    <Link to={`/lists/${ this.props.sentenceListId }`}>Play</Link>
+            <div className='card block'>
+                <header className="card-header">
+                    <h2 className="card-header-title notification is-primary">
+                        { this.props.name }
+                    </h2>
+                </header>
+
+                <div className="card-content">
+                    <div className="content">
+                        <p>{ this.props.description }</p>
+                    </div>
                 </div>
+
+                <footer className="card-footer">
+                    <Link to={ `/lists/${ this.props.sentenceListId }` }
+                        className="card-footer-item button is-primary is-outlined"
+                    >
+                        Play
+                    </Link>
+                </footer>
             </div>
         )
     }
@@ -62,14 +76,17 @@ export default class SentenceLists extends Component {
     render(): ReactNode {
         return (
             <div>
-                { this.state.sentenceLists.map(sl => (
-                    <SentenceList
-                        key={ sl.id }
-                        sentenceListId={ sl.id }
-                        name={ sl.name }
-                        description={ sl.description }
-                    />
-                )) }
+                <div className='block'></div>
+                <div className='container is-fluid'>
+                    { this.state.sentenceLists.map(sl => (
+                        <SentenceList
+                            key={ sl.id }
+                            sentenceListId={ sl.id }
+                            name={ sl.name }
+                            description={ sl.description }
+                        />
+                    )) }
+                </div>
             </div>
         )
     }

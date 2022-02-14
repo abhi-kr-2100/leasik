@@ -6,9 +6,11 @@ export default class App extends Component {
     render(): ReactNode {
         return (
             <div>
-                <nav>
-                    <NavLink to="/">Home</NavLink>
-                    <NavLink to="/lists">Lists</NavLink>
+                <nav className="navbar is-primary">
+                    <div className='navbar-brand is-primary'>
+                        <NavLink className='navbar-item' to="/">Home</NavLink>
+                        <NavLink className='navbar-item' to="/lists">Lists</NavLink>
+                    </div>
                 </nav>
                 
                 <Outlet />
