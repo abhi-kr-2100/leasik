@@ -13,10 +13,10 @@ export type SentenceListPlayState = {
     cards: Array<{
         id: number
     }>
-
     currentCardIndex: number
 
-    token: string
+    token: string | null
+    loading: boolean
 }
 
 
@@ -24,19 +24,38 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
     state = {
         cards: [],
         currentCardIndex: 0,
-        token: getToken() || ''
+        token: getToken(),
+        loading: false
     }
 
     componentDidMount() {
+        if (!this.state.token) {
+            return;
+        }
+
         const getCardsURL = `http://127.0.0.1:8000/api/v1/cards/playlist/${this.props.sentenceListId}/`
+        this.setState({ loading: true })
         axios.get(getCardsURL, {
             headers: {
                 "Authorization": `Token ${this.state.token}`
             }
         }).then(resp => this.setState({ cards: resp.data, currentCardIndex: 0 }))
+            .then(_ => this.setState({ loading: false }))
     }
 
     render(): ReactNode {
+        if (!this.state.token) {
+            return <p>Pleae login first.</p>
+        }
+
+        if (this.state.loading) {
+            return <p>Loading...</p>
+        }
+
+        if (this.state.cards.length === 0) {
+            return <p>List is empty!</p>
+        }
+
         if (this.state.currentCardIndex === this.state.cards.length) {
             return this.renderFinishScreen()
         }
