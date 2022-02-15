@@ -28,12 +28,12 @@ class IsOwnerOrPublicFilter(BaseFilterBackend):
 
 class SentenceListFilter(BaseFilterBackend):
     """Display if object has `sentence_list__id` equal to query parameter.
-    
+
     The query parameter is passed as `sentence_list`.
     """
 
     def filter_queryset(self, request, queryset, view):
-        sentence_list_id = request.query_params.get('sentence_list')
+        sentence_list_id = request.query_params.get("sentence_list")
         if sentence_list_id is not None:
             return queryset.filter(sentence_list__id=sentence_list_id)
         return queryset

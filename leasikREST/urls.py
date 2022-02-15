@@ -20,6 +20,4 @@ router.register("users", UserViewSet)
 
 app_name = "leasikREST"
 urlpatterns = [path("", include(router.urls))]
-urlpatterns += [
-    path('api-token-auth/', obtain_auth_token)
-]
+urlpatterns += [path("api-token-auth/", obtain_auth_token)]

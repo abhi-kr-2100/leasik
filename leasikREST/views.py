@@ -44,34 +44,29 @@ class CardViewSet(ModelViewSet):
 
         return Response(CardSerializer(cards, many=True).data)
 
-    @action(methods=['POST'], detail=True)
+    @action(methods=["POST"], detail=True)
     def updateUsingSM2(self, request: Request, pk: int) -> Response:
         card: Card = self.get_object()
-        score = request.data.get('score')
+        score = request.data.get("score")
 
         if score is None:
-            return Response(
-                { 'error': 'score is required' },
-                status=HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "score is required"}, status=HTTP_400_BAD_REQUEST)
 
         if not isinstance(score, int):
             return Response(
-                { 'error': 'score must be an integer' },
-                status=HTTP_400_BAD_REQUEST
+                {"error": "score must be an integer"}, status=HTTP_400_BAD_REQUEST
             )
 
         if not 0 <= score <= 5:
             return Response(
-                { 'error': 'score must be in range [0, 5]' },
-                status=HTTP_400_BAD_REQUEST
+                {"error": "score must be in range [0, 5]"}, status=HTTP_400_BAD_REQUEST
             )
 
         n, ef, i = sm2(
             score,
             card.repetition_number,
             card.easiness_factor,
-            card.inter_repetition_interval
+            card.inter_repetition_interval,
         )
 
         Card.objects.filter(pk=pk).update(
@@ -81,7 +76,7 @@ class CardViewSet(ModelViewSet):
             last_review_date=date.today(),
         )
 
-        return Response({ 'status': 'Updated' })
+        return Response({"status": "Updated"})
 
 
 class SentenceBookmarkViewSet(ModelViewSet):
@@ -90,36 +85,52 @@ class SentenceBookmarkViewSet(ModelViewSet):
     permission_classes = [OwnerOnly]
     filter_backends = [IsOwnerFilter, SentenceListFilter]
 
-    @action(detail=False, url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)")
-    def isBookmarked(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
+    @action(
+        detail=False,
+        url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)",
+    )
+    def isBookmarked(
+        self, request: Request, list_pk: int, sentence_pk: int
+    ) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: SentenceBookmark = SentenceBookmark.objects.get(
-            owner=request.user, sentence_list=sentence_list)
+            owner=request.user, sentence_list=sentence_list
+        )
         sentence = Sentence.objects.get(pk=sentence_pk)
 
-        return Response({ 'result': sentence in bookmark.sentences.all() })
+        return Response({"result": sentence in bookmark.sentences.all()})
 
-    @action(methods=['POST'], detail=False, url_path="add/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)")
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_path="add/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)",
+    )
     def add(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: SentenceBookmark = SentenceBookmark.objects.get(
-            owner=request.user, sentence_list=sentence_list)
+            owner=request.user, sentence_list=sentence_list
+        )
         sentence = Sentence.objects.get(pk=sentence_pk)
 
         bookmark.sentences.add(sentence)
 
-        return Response({ 'status': 'created' })
+        return Response({"status": "created"})
 
-    @action(methods=['DELETE'], detail=False, url_path="remove/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)")
+    @action(
+        methods=["DELETE"],
+        detail=False,
+        url_path="remove/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)",
+    )
     def remove(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: SentenceBookmark = SentenceBookmark.objects.get(
-            owner=request.user, sentence_list=sentence_list)
+            owner=request.user, sentence_list=sentence_list
+        )
         sentence = Sentence.objects.get(pk=sentence_pk)
 
         bookmark.sentences.remove(sentence)
 
-        return Response({ 'status': 'removed' })
+        return Response({"status": "removed"})
 
 
 class SentenceListViewSet(ModelViewSet):
