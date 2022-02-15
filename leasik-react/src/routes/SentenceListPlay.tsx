@@ -5,6 +5,26 @@ import { getToken } from '../authentication/utils'
 import axios from 'axios'
 
 
+export type RawCard = {
+    id: number
+    repetition_number: number
+    easiness_facotr: number
+    inter_repetition_interval: string
+    last_review_date: string
+    note: string
+    owner: {
+        id: number
+    }
+    sentence: {
+        id: number
+        text: string
+        translation: string
+        text_language: string
+        translation_language: string
+    }
+    hidden_word_position: number
+}
+
 export type Card = {
     id: number
     repetition_number: number
@@ -21,6 +41,7 @@ export type Card = {
         translation: string
         text_language: string
         translation_language: string
+        bookmarked: boolean
     }
     hidden_word_position: number
 }
@@ -63,16 +84,35 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
         }
 
         const getCardsURL = `http://127.0.0.1:8000/api/v1/cards/playlist/${this.props.sentenceListId}/`
+        let cards: Array<Card> = []
         this.setState({ loading: true })
         axios.get(getCardsURL, {
             headers: {
                 "Authorization": `Token ${this.state.token}`
             }
         })
-            .then(resp => getCardData(resp.data))
-            .then(cards => this.setState({ cards: cards, currentCardIndex: 0, loading: false }))
+            .then(resp => resp.data)
+            .then(data => getRawCardData(data))
+            .then(rawCards => Promise.all(rawCards.map(c => getCardData(c, this.props.sentenceListId, this.state.token).then(
+                card => cards.push(card)
+            ))))
+            .then(_ => this.setState({ cards: cards, currentCardIndex: 0, loading: false }))
 
-        function getCardData(cards: Array<Card>): Array<Card> {
+        function getCardData(card: RawCard, sentenceListId: number, token: string | null): Promise<Card> {
+            const isBookmarkedURL = `http://127.0.0.1:8000/api/v1/bookmarks/isBookmarked/${sentenceListId}/${card.sentence.id}/`
+            return axios.get(isBookmarkedURL, {
+                headers: {
+                    'Authorization': `Token ${token}`
+                }
+            })
+                .then(resp => resp.data)
+                .then(data => data["result"])
+                .then(isBookmarked => {
+                    return { ...card, sentence: { ...card.sentence, bookmarked: isBookmarked } }
+                })
+        }
+
+        function getRawCardData(cards: Array<RawCard>): Array<RawCard> {
             return cards.map(c => {
                 if (c.hidden_word_position !== -1) {
                     return c
@@ -126,6 +166,16 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
             >
                 <div className='hero-head'>
                     <div className='block'></div>
+
+                    <div className='container has-text-centered'>
+                        <div className='block'>
+                            {
+                                !cardToRender.sentence.bookmarked ? 
+                                    <button className='button is-info'>Bookmark</button> :
+                                    <button className='button is-danger'>Remove Bookmark</button>
+                            }
+                        </div>
+                    </div>
                 </div>
 
                 <div className='hero-body'>
