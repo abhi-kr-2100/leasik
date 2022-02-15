@@ -31,7 +31,7 @@ class NestedSentenceSerializer(ModelSerializer):
 
 class CardSerializer(ModelSerializer):
     owner = UserSerializer()
-    sentence = NestedSentenceSerializer()
+    sentence = SentenceSerializer()
 
     class Meta:
         model = Card

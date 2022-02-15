@@ -11,7 +11,6 @@ from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
 from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter
 from leasikREST.serializers import (
     CardSerializer,
-    NestedCardSerializer,
     SentenceBookmarkSerializer,
     SentenceListSerializer,
     SentenceSerializer,
@@ -40,7 +39,7 @@ class CardViewSet(ModelViewSet):
 
         cards = get_cards(request.user, sentences, num_cards)
 
-        return Response(NestedCardSerializer(cards, many=True).data)
+        return Response(CardSerializer(cards, many=True).data)
 
 
 class SentenceBookmarkViewSet(ModelViewSet):
