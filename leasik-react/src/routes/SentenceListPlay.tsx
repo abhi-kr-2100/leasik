@@ -3,33 +3,9 @@ import { useParams } from 'react-router-dom'
 
 import { getToken } from '../authentication/utils'
 import axios from 'axios'
+import { Card } from '../models/core'
+import { RawCard } from '../models/aux'
 
-
-export type Sentence = {
-    id: number
-    text: string
-    translation: string
-    text_language: string
-    translation_language: string
-}
-
-export type RawCard = {
-    id: number
-    repetition_number: number
-    easiness_facotr: number
-    inter_repetition_interval: string
-    last_review_date: string
-    note: string
-    owner: {
-        id: number
-    }
-    sentence: Sentence
-    hidden_word_position: number
-}
-
-export interface Card extends RawCard {
-    sentence: Sentence & { bookmarked: boolean }
-}
 
 export type SentenceListPlayProps = {
     sentenceListId: number

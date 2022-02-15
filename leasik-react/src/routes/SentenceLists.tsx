@@ -1,20 +1,9 @@
 import axios from 'axios'
 import { Component, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+
 import { getToken } from '../authentication/utils'
-
-
-export type SentenceListType = {
-    id: number,
-    name: string,
-    slug: string,
-    description: string,
-    owner: {
-        id: number
-    },
-    is_public: boolean,
-    sentences: Array<{ id: number }>
-}
+import { SentenceListType } from '../models/core'
 
 export type SentenceListPropsType = {
     sentenceListId: number,
