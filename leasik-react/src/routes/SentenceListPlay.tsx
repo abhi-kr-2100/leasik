@@ -34,7 +34,12 @@ export type SentenceListPlayState = {
     currentCardIndex: number
 
     token: string | null
+
     loading: boolean
+    checked: boolean
+    answerStatus: "unchecked" | "correct" | "incorrect"
+
+    userInput: string
 }
 
 
@@ -42,8 +47,14 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
     state = {
         cards: [],
         currentCardIndex: 0,
+
         token: getToken(),
-        loading: false
+        
+        loading: false,
+        checked: false,
+        answerStatus: "unchecked" as "unchecked" | "correct" | "incorrect",
+
+        userInput: ''
     }
 
     componentDidMount() {
@@ -57,8 +68,23 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
             headers: {
                 "Authorization": `Token ${this.state.token}`
             }
-        }).then(resp => this.setState({ cards: resp.data, currentCardIndex: 0 }))
-            .then(_ => this.setState({ loading: false }))
+        })
+            .then(resp => getCardData(resp.data))
+            .then(cards => this.setState({ cards: cards, currentCardIndex: 0, loading: false }))
+
+        function getCardData(cards: Array<Card>): Array<Card> {
+            return cards.map(c => {
+                if (c.hidden_word_position !== -1) {
+                    return c
+                }
+    
+                const words = c.sentence.text.split(" ").filter(w => w !== '')
+                const hiddenWordPosition = Math.floor(Math.random() * words.length)
+                c.hidden_word_position = hiddenWordPosition
+    
+                return c
+            })
+        }
     }
 
     render(): ReactNode {
@@ -89,11 +115,15 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
         const cardToRender: Card = this.state.cards[cardIndex]
         const sentenceText = cardToRender.sentence.text
         const words = sentenceText.split(" ").filter(i => i !== '')
-        const hiddenWordPosition = cardToRender.hidden_word_position === -1 ?
-            Math.floor(Math.random() * words.length) : cardToRender.hidden_word_position
-        
+        const hiddenWordPosition = cardToRender.hidden_word_position
+        const correctAnswer = words[hiddenWordPosition]
+
         return (
-            <div>
+            <div onKeyPress={ e => {
+                    e.key === 'Enter' ? this.handleSumbit(correctAnswer) : noop()
+                    function noop() {}
+                } }
+            >
                 <div className='hero-head'>
                     <div className='block'></div>
                 </div>
@@ -104,7 +134,18 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                             <p className='title is-3'>
                                 { words.slice(0, hiddenWordPosition).join(' ') }
                             </p>
-                            <input className='title is-3 has-text-centered py-1' />
+                            <input
+                                onChange={ e => this.setState({ userInput: e.target.value }) }
+                                value={ this.state.userInput }
+                                className={
+                                    'title has-text-centered input ' +
+                                    ((this.state.answerStatus !== 'unchecked') ?
+                                        (this.state.answerStatus === 'correct' ? 'is-success' : 'is-danger') :
+                                        'is-static')
+                                }
+
+                                autoFocus
+                            />
                             <p className='title is-3'>
                                 { words.slice(hiddenWordPosition + 1).join(' ') }
                             </p>
@@ -123,13 +164,48 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
 
                 <div className='hero-footer'>
                     <div className='container has-text-centered block'>
-                        <button className='button is-primary'>Check</button>
+                        <button className='button is-primary' onClick={ _ => this.handleSumbit(correctAnswer) }>
+                            { this.state.checked ? 'Next' : 'Check' }
+                        </button>
                     </div>
 
                     <div className='block'></div>
                 </div>
             </div>
         )
+    }
+
+    handleSumbit(correctAnswer: string) {
+        if (this.state.checked) {
+            const nextCardIndex = this.state.currentCardIndex + 1
+            this.setState({
+                currentCardIndex: nextCardIndex,
+                checked: false,
+                answerStatus: "unchecked",
+                userInput: ''
+            })
+
+            return
+        }
+
+        if (closeEnough(this.state.userInput, correctAnswer)) {
+            this.setState({ answerStatus: "correct", checked: true, userInput: correctAnswer })
+        } else {
+            this.setState({ answerStatus: "incorrect", checked: true, userInput: correctAnswer })
+        }
+
+        function closeEnough(s1: string, s2: string): boolean {
+            return normalizeSentence(s1) === normalizeSentence(s2)
+
+            function normalizeSentence(s: string): string {
+                return (
+                    s
+                        .replace(/[^\p{L}\s]/gu, '')
+                        .replace(/\s{2,}/g, ' ')
+                        .toLowerCase()
+                )
+            }
+        }
     }
 }
 
