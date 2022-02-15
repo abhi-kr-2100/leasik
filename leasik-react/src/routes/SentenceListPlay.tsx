@@ -87,6 +87,11 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
 
     renderCardScreen(cardIndex: number): ReactNode {
         const cardToRender: Card = this.state.cards[cardIndex]
+        const sentenceText = cardToRender.sentence.text
+        const words = sentenceText.split(" ").filter(i => i !== '')
+        const hiddenWordPosition = cardToRender.hidden_word_position === -1 ?
+            Math.floor(Math.random() * words.length) : cardToRender.hidden_word_position
+        
         return (
             <div>
                 <div className='hero-head'>
@@ -96,7 +101,13 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                 <div className='hero-body'>
                     <div className='container has-text-centered'>
                         <div className='block'>
-                            <p className='title is-3'>{ cardToRender.sentence.text }</p>
+                            <p className='title is-3'>
+                                { words.slice(0, hiddenWordPosition).join(' ') }
+                            </p>
+                            <input className='title is-3 has-text-centered py-1' />
+                            <p className='title is-3'>
+                                { words.slice(hiddenWordPosition + 1).join(' ') }
+                            </p>
                         </div>
 
                         <div className='block'>
