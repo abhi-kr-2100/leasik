@@ -90,6 +90,15 @@ class SentenceBookmarkViewSet(ModelViewSet):
     permission_classes = [OwnerOnly]
     filter_backends = [IsOwnerFilter]
 
+    @action(detail=False, url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)")
+    def isBookmarked(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
+        sentence_list = SentenceList.objects.get(pk=list_pk)
+        bookmark: SentenceBookmark = SentenceBookmark.objects.get(
+            owner=request.user, sentence_list=sentence_list)
+        sentence = Sentence.objects.get(pk=sentence_pk)
+
+        return Response({ 'result': sentence in bookmark.sentences.all() })
+
 
 class SentenceListViewSet(ModelViewSet):
     queryset = SentenceList.objects.all()
