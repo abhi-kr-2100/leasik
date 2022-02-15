@@ -99,6 +99,28 @@ class SentenceBookmarkViewSet(ModelViewSet):
 
         return Response({ 'result': sentence in bookmark.sentences.all() })
 
+    @action(methods=['POST'], detail=False, url_path="add/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)")
+    def add(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
+        sentence_list = SentenceList.objects.get(pk=list_pk)
+        bookmark: SentenceBookmark = SentenceBookmark.objects.get(
+            owner=request.user, sentence_list=sentence_list)
+        sentence = Sentence.objects.get(pk=sentence_pk)
+
+        bookmark.sentences.add(sentence)
+
+        return Response({ 'status': 'created' })
+
+    @action(methods=['DELETE'], detail=False, url_path="remove/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)")
+    def remove(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
+        sentence_list = SentenceList.objects.get(pk=list_pk)
+        bookmark: SentenceBookmark = SentenceBookmark.objects.get(
+            owner=request.user, sentence_list=sentence_list)
+        sentence = Sentence.objects.get(pk=sentence_pk)
+
+        bookmark.sentences.remove(sentence)
+
+        return Response({ 'status': 'removed' })
+
 
 class SentenceListViewSet(ModelViewSet):
     queryset = SentenceList.objects.all()
