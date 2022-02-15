@@ -117,7 +117,7 @@ class SentenceBookmarkViewSet(ModelViewSet):
             owner=request.user, sentence_list=sentence_list)
         sentence = Sentence.objects.get(pk=sentence_pk)
 
-        bookmark.sentence_list.remove(sentence)
+        bookmark.sentences.remove(sentence)
 
         return Response({ 'status': 'removed' })
 
