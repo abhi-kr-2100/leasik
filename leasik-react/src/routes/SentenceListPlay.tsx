@@ -188,11 +188,21 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
             return
         }
 
-        if (closeEnough(this.state.userInput, correctAnswer)) {
+        const currentCard: Card = this.state.cards[this.state.currentCardIndex]
+        const proficiencyUpdateURL = `http://127.0.0.1:8000/api/v1/cards/${currentCard.id}/updateUsingSM2/`
+
+        const score = closeEnough(this.state.userInput, correctAnswer) ? 5 : 0
+        if (score !== 0) {
             this.setState({ answerStatus: "correct", checked: true, userInput: correctAnswer })
         } else {
             this.setState({ answerStatus: "incorrect", checked: true, userInput: correctAnswer })
         }
+
+        axios.post(proficiencyUpdateURL, { 'score': score }, {
+            headers: {
+                'Authorization': `Token ${this.state.token}`
+            }
+        }).catch(err => alert(`Couldn't update proficiency: ${err}`))
 
         function closeEnough(s1: string, s2: string): boolean {
             return normalizeSentence(s1) === normalizeSentence(s2)
