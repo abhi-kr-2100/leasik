@@ -5,6 +5,14 @@ import { getToken } from '../authentication/utils'
 import axios from 'axios'
 
 
+export type Sentence = {
+    id: number
+    text: string
+    translation: string
+    text_language: string
+    translation_language: string
+}
+
 export type RawCard = {
     id: number
     repetition_number: number
@@ -15,35 +23,12 @@ export type RawCard = {
     owner: {
         id: number
     }
-    sentence: {
-        id: number
-        text: string
-        translation: string
-        text_language: string
-        translation_language: string
-    }
+    sentence: Sentence
     hidden_word_position: number
 }
 
-export type Card = {
-    id: number
-    repetition_number: number
-    easiness_facotr: number
-    inter_repetition_interval: string
-    last_review_date: string
-    note: string
-    owner: {
-        id: number
-    }
-    sentence: {
-        id: number
-        text: string
-        translation: string
-        text_language: string
-        translation_language: string
-        bookmarked: boolean
-    }
-    hidden_word_position: number
+export interface Card extends RawCard {
+    sentence: Sentence & { bookmarked: boolean }
 }
 
 export type SentenceListPlayProps = {
@@ -78,36 +63,51 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
         userInput: ''
     }
 
+    constructor(props: SentenceListPlayProps) {
+        super(props)
+
+        axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1/'
+        axios.defaults.headers.common['Authorization'] = `Token ${this.state.token}`
+    }
+
     componentDidMount() {
         if (!this.state.token) {
             return;
         }
 
-        const getCardsURL = `http://127.0.0.1:8000/api/v1/cards/playlist/${this.props.sentenceListId}/`
-        let cards: Array<Card> = []
+        const getCardsURL = `/cards/playlist/${this.props.sentenceListId}/`
+        const cards: Array<Card> = []
+
         this.setState({ loading: true })
-        axios.get(getCardsURL, {
-            headers: {
-                "Authorization": `Token ${this.state.token}`
-            }
-        })
+        axios.get(getCardsURL)
             .then(resp => resp.data)
             .then(data => getRawCardData(data))
-            .then(rawCards => Promise.all(rawCards.map(c => getCardData(c, this.props.sentenceListId, this.state.token).then(
-                card => cards.push(card)
-            ))))
+            .then(
+                // convert RawCards to Cards one-by-one using getCardData, and
+                // add it to the cards array
+                rawCards => Promise.all(
+                    rawCards.map(
+                        c => getCardData(
+                            c,
+                            this.props.sentenceListId,
+                            this.state.token
+                        ).then(card => cards.push(card))
+                    )
+                )
+            )
             .then(_ => this.setState({ cards: cards, currentCardIndex: 0, loading: false }))
 
-        function getCardData(card: RawCard, sentenceListId: number, token: string | null): Promise<Card> {
-            const isBookmarkedURL = `http://127.0.0.1:8000/api/v1/bookmarks/isBookmarked/${sentenceListId}/${card.sentence.id}/`
-            return axios.get(isBookmarkedURL, {
-                headers: {
-                    'Authorization': `Token ${token}`
-                }
-            })
+        function getCardData(
+                card: RawCard,
+                sentenceListId: number,
+                token: string | null
+        ): Promise<Card> {
+            const isBookmarkedURL = `/bookmarks/isBookmarked/${sentenceListId}/${card.sentence.id}/`
+            return axios.get(isBookmarkedURL)
                 .then(resp => resp.data)
                 .then(data => data["result"])
                 .then(isBookmarked => {
+                    // convert RawCard to Card by adding bookmarked to sentence property
                     return { ...card, sentence: { ...card.sentence, bookmarked: isBookmarked } }
                 })
         }
@@ -189,9 +189,18 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                                 value={ this.state.userInput }
                                 className={
                                     'title has-text-centered input ' +
-                                    ((this.state.answerStatus !== 'unchecked') ?
-                                        (this.state.answerStatus === 'correct' ? 'is-success' : 'is-danger') :
-                                        'is-static')
+                                    (() => {
+                                        if (this.state.answerStatus === 'unchecked') {
+                                            return 'is-static'
+                                        }
+
+                                        switch (this.state.answerStatus) {
+                                        case 'correct':
+                                            return 'is-success'
+                                        case 'incorrect':
+                                            return 'is-danger'
+                                        } 
+                                    })()
                                 }
 
                                 autoFocus
