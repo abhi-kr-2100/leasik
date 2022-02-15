@@ -1,12 +1,15 @@
+from datetime import date
+
 from django.contrib.auth.models import User
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.settings import api_settings
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from leasikApp.models import Card, SentenceBookmark, SentenceList, Sentence
-from leasikApp.helpers import get_cards
+from leasikApp.helpers import get_cards, sm2
 from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
 from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter
 from leasikREST.serializers import (
@@ -40,6 +43,45 @@ class CardViewSet(ModelViewSet):
         cards = get_cards(request.user, sentences, num_cards)
 
         return Response(CardSerializer(cards, many=True).data)
+
+    @action(methods=['POST'], detail=True)
+    def updateUsingSM2(self, request: Request, pk: int) -> Response:
+        card: Card = self.get_object()
+        score = request.data.get('score')
+
+        if score is None:
+            return Response(
+                { 'error': 'score is required' },
+                status=HTTP_400_BAD_REQUEST
+            )
+
+        if not isinstance(score, int):
+            return Response(
+                { 'error': 'score must be an integer' },
+                status=HTTP_400_BAD_REQUEST
+            )
+
+        if not 0 <= score <= 5:
+            return Response(
+                { 'error': 'score must be in range [0, 5]' },
+                status=HTTP_400_BAD_REQUEST
+            )
+
+        n, ef, i = sm2(
+            score,
+            card.repetition_number,
+            card.easiness_factor,
+            card.inter_repetition_interval
+        )
+
+        Card.objects.filter(pk=pk).update(
+            repetition_number=n,
+            easiness_factor=ef,
+            inter_repetition_interval=i,
+            last_review_date=date.today(),
+        )
+
+        return Response({ 'status': 'Updated' })
 
 
 class SentenceBookmarkViewSet(ModelViewSet):
