@@ -11,7 +11,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from leasikApp.models import Card, SentenceBookmark, SentenceList, Sentence
 from leasikApp.helpers import get_cards, sm2
 from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
-from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter
+from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter, SentenceListFilter
 from leasikREST.serializers import (
     CardSerializer,
     SentenceBookmarkSerializer,
@@ -88,7 +88,7 @@ class SentenceBookmarkViewSet(ModelViewSet):
     queryset = SentenceBookmark.objects.all()
     serializer_class = SentenceBookmarkSerializer
     permission_classes = [OwnerOnly]
-    filter_backends = [IsOwnerFilter]
+    filter_backends = [IsOwnerFilter, SentenceListFilter]
 
     @action(detail=False, url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)")
     def isBookmarked(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
