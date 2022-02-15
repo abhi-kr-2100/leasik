@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { getToken } from '../authentication/utils'
 import axios from 'axios'
 import { Card } from '../models/core'
-import { RawCard } from '../models/aux'
+import { RawCard, Sentence } from '../models/aux'
 
 
 export type SentenceListPlayProps = {
@@ -147,8 +147,18 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                         <div className='block'>
                             {
                                 !cardToRender.sentence.bookmarked ? 
-                                    <button className='button is-info'>Bookmark</button> :
-                                    <button className='button is-danger'>Remove Bookmark</button>
+                                    <button
+                                        onClick={_ => this.addBookmark()}
+                                        className='button is-info'
+                                    >
+                                        Bookmark
+                                    </button> :
+                                    <button
+                                        onClick={_ => this.removeBookmark()}
+                                        className='button is-danger'
+                                    >
+                                        Remove Bookmark
+                                    </button>
                             }
                         </div>
                     </div>
@@ -251,6 +261,20 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                 )
             }
         }
+    }
+
+    addBookmark() {
+        const cards: Array<Card> = this.state.cards.slice()
+        cards[this.state.currentCardIndex].sentence.bookmarked = true
+
+        this.setState({ cards: cards })
+    }
+
+    removeBookmark() {
+        const cards: Array<Card> = this.state.cards.slice()
+        cards[this.state.currentCardIndex].sentence.bookmarked = false
+
+        this.setState({ cards: cards })
     }
 }
 
