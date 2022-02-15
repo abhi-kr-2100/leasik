@@ -264,17 +264,29 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
     }
 
     addBookmark() {
+        const sentenceListId = this.props.sentenceListId
+        const sentenceId = (this.state.cards[this.state.currentCardIndex] as Card).sentence.id
+        const addBookmarkURL = `/bookmarks/add/${sentenceListId}/${sentenceId}/`
+        
         const cards: Array<Card> = this.state.cards.slice()
         cards[this.state.currentCardIndex].sentence.bookmarked = true
 
-        this.setState({ cards: cards })
+        axios.post(addBookmarkURL)
+            .then(_ => this.setState({ cards: cards }))
+            .catch(err => alert(`Couldn't create bookmark: ${err}`))
     }
 
     removeBookmark() {
+        const sentenceListId = this.props.sentenceListId
+        const sentenceId = (this.state.cards[this.state.currentCardIndex] as Card).sentence.id
+        const removeBookmarkURL = `/bookmarks/remove/${sentenceListId}/${sentenceId}/`
+        
         const cards: Array<Card> = this.state.cards.slice()
         cards[this.state.currentCardIndex].sentence.bookmarked = false
 
-        this.setState({ cards: cards })
+        axios.delete(removeBookmarkURL)
+            .then(_ => this.setState({ cards: cards }))
+            .catch(err => alert(`Couldn't remove bookmark: ${err}`))
     }
 }
 
