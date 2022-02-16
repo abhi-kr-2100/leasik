@@ -1,6 +1,5 @@
 db.sqlite3
 __pycache__
 node_modules
-static/frontend/js/*.js
 .env
 staticfiles

@@ -5,12 +5,9 @@ name = "pypi"
 
 [packages]
 django = "*"
-django-allauth = "*"
 python-dotenv = "*"
 psycopg2 = "*"
 dj-database-url = "*"
-gunicorn = "*"
-whitenoise = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
 

@@ -2,7 +2,7 @@
 
 
 from typing import List, Optional, Sequence, Tuple, TypeVar, Generator
-from datetime import timedelta, date
+from datetime import timedelta
 from random import shuffle
 
 from django.contrib.auth.models import User
@@ -27,31 +27,6 @@ def batched(
         e = min(i + batch_size, n)
 
         yield (iter[s:e], s, e)
-
-
-def update_proficiency_helper(
-    user: User, sentence_id: int, hidden_word_position: int, score: int
-) -> None:
-    """Update the proficiency between the given user and sentence."""
-
-    the_sentence: Sentence = Sentence.objects.get(id=sentence_id)
-    card: Card = Card.objects.get_or_create(
-        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position
-    )[0]
-
-    n, ef, i = sm2(
-        score,
-        card.repetition_number,
-        card.easiness_factor,
-        card.inter_repetition_interval,
-    )
-
-    Card.objects.filter(id=card.id).update(
-        repetition_number=n,
-        easiness_factor=ef,
-        inter_repetition_interval=i,
-        last_review_date=date.today(),
-    )
 
 
 def get_cards(
@@ -107,28 +82,3 @@ def sm2(q: int, n: int, ef: float, i: timedelta) -> Tuple[int, float, timedelta]
         ef = 1.3
 
     return (n, ef, i)
-
-
-def update_note_helper(
-    user: User, sentence_id: int, hidden_word_position: int, new_note: str
-) -> None:
-    """Update the note of the SentenceNote between user and given sentence."""
-
-    the_sentence = Sentence.objects.get(id=sentence_id)
-    card = Card.objects.get_or_create(
-        owner=user, sentence=the_sentence, hidden_word_position=hidden_word_position
-    )[0]
-
-    Card.objects.filter(id=card.id).update(note=new_note)
-
-
-def update_card_positions(
-    user: User, translation: str, new_positions: List[int]
-) -> None:
-    """Delete card with hidden word position -1 and add cards with new positions."""
-
-    the_sentence: Sentence = Sentence.objects.get(translation=translation)
-    the_sentence.card_set.get_or_create(owner=user, hidden_word_position=-1)[0].delete()
-
-    for p in new_positions:
-        the_sentence.card_set.get_or_create(owner=user, hidden_word_position=p)
