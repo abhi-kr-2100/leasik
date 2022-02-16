@@ -45,12 +45,11 @@ def get_cards(
     for batch, s, e in batched(sentences, n if n is not None else 1):
         for sentence in batch:
             card = Card.objects.filter(owner=user, sentence=sentence).order_by("?")
-            if not card.exists():
-                cards.append(Card.objects.create(owner=user, sentence=sentence))
+            if (first_card := card.first()) is not None:
+                cards.append(first_card)
             else:
-                # append only one card for one sentence
-                cards.append(card.first())
-
+                cards.append(Card.objects.create(owner=user, sentence=sentence))
+            
         cards_up_for_review.extend(c for c in cards[s:e] if c.is_up_for_review())
 
         if n is not None and len(cards_up_for_review) >= n:
