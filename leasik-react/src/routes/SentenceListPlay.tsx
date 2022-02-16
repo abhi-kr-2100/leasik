@@ -84,7 +84,7 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                 .then(data => data["result"])
                 .then(isBookmarked => {
                     // convert RawCard to Card by adding bookmarked to sentence property
-                    return { ...card, sentence: { ...card.sentence, bookmarked: isBookmarked } }
+                    return { ...card, isBookmarked: isBookmarked }
                 })
         }
 
@@ -146,7 +146,7 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                     <div className='container has-text-centered'>
                         <div className='block'>
                             {
-                                !cardToRender.sentence.bookmarked ? 
+                                !cardToRender.isBookmarked ? 
                                     <button
                                         onClick={_ => this.addBookmark()}
                                         className='button is-info'
@@ -268,7 +268,7 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
         const addBookmarkURL = `/bookmarks/add/${sentenceListId}/${cardId}/`
         
         const cards: Array<Card> = this.state.cards.slice()
-        cards[this.state.currentCardIndex].sentence.bookmarked = true
+        cards[this.state.currentCardIndex].isBookmarked = true
 
         axios.post(addBookmarkURL)
             .then(_ => this.setState({ cards: cards }))
@@ -281,7 +281,7 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
         const removeBookmarkURL = `/bookmarks/remove/${sentenceListId}/${cardId}/`
         
         const cards: Array<Card> = this.state.cards.slice()
-        cards[this.state.currentCardIndex].sentence.bookmarked = false
+        cards[this.state.currentCardIndex].isBookmarked = false
 
         axios.delete(removeBookmarkURL)
             .then(_ => this.setState({ cards: cards }))

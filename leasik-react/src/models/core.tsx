@@ -1,4 +1,4 @@
-import { Sentence, RawCard } from './aux'
+import { RawCard } from './aux'
 
 
 export type SentenceListType = {
@@ -13,6 +13,4 @@ export type SentenceListType = {
     sentences: Array<{ id: number }>
 }
 
-export interface Card extends RawCard {
-    sentence: Sentence & { bookmarked: boolean }
-}
+export type Card = RawCard & { isBookmarked: boolean }
