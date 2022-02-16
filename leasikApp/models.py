@@ -92,7 +92,7 @@ class SentenceList(models.Model):
         return self.name
 
 
-class SentenceBookmark(models.Model):
+class Bookmark(models.Model):
     """A bookmark relation between a SentenceList and User, and Cards."""
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
