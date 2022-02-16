@@ -90,18 +90,8 @@ class NestedSentenceListSerializer(ModelSerializer):
 class SentenceBookmarkSerializer(ModelSerializer):
     owner = UserSerializer()
     sentence_list = NestedSentenceListSerializer()
-    sentences = SerializerMethodField("paginated_sentences")
+    cards = CardSerializer(many=True)
 
     class Meta:
         model = SentenceBookmark
-        fields = ["id", "owner", "sentence_list", "sentences"]
-
-    def paginated_sentences(self, obj: SentenceBookmark):
-        sentences = obj.sentences.all()
-        paginator = NestedPagination()
-        page = paginator.paginate_queryset(sentences, self.context["request"])
-        serializer = NestedSentenceSerializer(
-            page, many=True, context={"request": self.context["request"]}
-        )
-
-        return serializer.data
+        fields = ["id", "owner", "sentence_list", "cards"]

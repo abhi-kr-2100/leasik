@@ -93,11 +93,11 @@ class SentenceList(models.Model):
 
 
 class SentenceBookmark(models.Model):
-    """A bookmark relation between a SentenceList and User, and Sentences."""
+    """A bookmark relation between a SentenceList and User, and Cards."""
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
-    sentences = models.ManyToManyField(Sentence, blank=True)
+    cards = models.ManyToManyField(Card, blank=True)
 
     class Meta:
         unique_together = ("owner", "sentence_list")

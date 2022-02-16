@@ -78,7 +78,7 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                 sentenceListId: number,
                 token: string | null
         ): Promise<Card> {
-            const isBookmarkedURL = `/bookmarks/isBookmarked/${sentenceListId}/${card.sentence.id}/`
+            const isBookmarkedURL = `/bookmarks/isBookmarked/${sentenceListId}/${card.id}/`
             return axios.get(isBookmarkedURL)
                 .then(resp => resp.data)
                 .then(data => data["result"])
@@ -264,8 +264,8 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
 
     addBookmark() {
         const sentenceListId = this.props.sentenceListId
-        const sentenceId = (this.state.cards[this.state.currentCardIndex] as Card).sentence.id
-        const addBookmarkURL = `/bookmarks/add/${sentenceListId}/${sentenceId}/`
+        const cardId = (this.state.cards[this.state.currentCardIndex] as Card).id
+        const addBookmarkURL = `/bookmarks/add/${sentenceListId}/${cardId}/`
         
         const cards: Array<Card> = this.state.cards.slice()
         cards[this.state.currentCardIndex].sentence.bookmarked = true
@@ -277,8 +277,8 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
 
     removeBookmark() {
         const sentenceListId = this.props.sentenceListId
-        const sentenceId = (this.state.cards[this.state.currentCardIndex] as Card).sentence.id
-        const removeBookmarkURL = `/bookmarks/remove/${sentenceListId}/${sentenceId}/`
+        const cardId = (this.state.cards[this.state.currentCardIndex] as Card).id
+        const removeBookmarkURL = `/bookmarks/remove/${sentenceListId}/${cardId}/`
         
         const cards: Array<Card> = this.state.cards.slice()
         cards[this.state.currentCardIndex].sentence.bookmarked = false

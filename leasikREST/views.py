@@ -87,48 +87,48 @@ class SentenceBookmarkViewSet(ModelViewSet):
 
     @action(
         detail=False,
-        url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)",
+        url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
     )
     def isBookmarked(
-        self, request: Request, list_pk: int, sentence_pk: int
+        self, request: Request, list_pk: int, card_pk: int
     ) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: SentenceBookmark = SentenceBookmark.objects.get(
             owner=request.user, sentence_list=sentence_list
         )
-        sentence = Sentence.objects.get(pk=sentence_pk)
+        card = Card.objects.get(pk=card_pk)
 
-        return Response({"result": sentence in bookmark.sentences.all()})
+        return Response({"result": card in bookmark.cards.all()})
 
     @action(
         methods=["POST"],
         detail=False,
-        url_path="add/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)",
+        url_path="add/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
     )
-    def add(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
+    def add(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: SentenceBookmark = SentenceBookmark.objects.get(
             owner=request.user, sentence_list=sentence_list
         )
-        sentence = Sentence.objects.get(pk=sentence_pk)
+        card = Card.objects.get(pk=card_pk)
 
-        bookmark.sentences.add(sentence)
+        bookmark.cards.add(card)
 
         return Response({"status": "created"})
 
     @action(
         methods=["DELETE"],
         detail=False,
-        url_path="remove/(?P<list_pk>[^/.]+)/(?P<sentence_pk>[^/.]+)",
+        url_path="remove/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
     )
-    def remove(self, request: Request, list_pk: int, sentence_pk: int) -> Response:
+    def remove(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: SentenceBookmark = SentenceBookmark.objects.get(
             owner=request.user, sentence_list=sentence_list
         )
-        sentence = Sentence.objects.get(pk=sentence_pk)
+        card = Card.objects.get(pk=card_pk)
 
-        bookmark.sentences.remove(sentence)
+        bookmark.cards.remove(card)
 
         return Response({"status": "removed"})
 
