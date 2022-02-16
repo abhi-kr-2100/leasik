@@ -5,7 +5,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from leasikREST.views import (
     CardViewSet,
     SentenceViewSet,
-    SentenceBookmarkViewSet,
+    BookmarkViewSet,
     SentenceListViewSet,
     UserViewSet,
 )
@@ -14,7 +14,7 @@ from leasikREST.views import (
 router = DefaultRouter()
 router.register("cards", CardViewSet)
 router.register("sentences", SentenceViewSet)
-router.register("bookmarks", SentenceBookmarkViewSet)
+router.register("bookmarks", BookmarkViewSet)
 router.register("lists", SentenceListViewSet)
 router.register("users", UserViewSet)
 
