@@ -1,70 +1,78 @@
 import axios from 'axios'
-import { Component, FormEvent, ReactNode } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { setToken } from '../authentication/utils'
 
 
-export default function Login(props: { successURL: string }) {
+function LoginForm(
+    props: {
+        setUsername: (arg0: string) => any
+        setPassword: (arg0: string) => any
+        onSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
+    }
+) {
+    const {
+        setUsername,
+        setPassword,
+        onSubmit 
+    } = props
+
+    return (
+        <form>
+            <label>
+                <p>Username</p>
+                <input onChange={ e => setUsername(e.target.value) } />
+            </label>
+            <label>
+                <p>Password</p>
+                <input type="password" onChange={ e => setPassword(e.target.value) } />
+            </label>
+
+            <div>
+                <button type='submit' onClick={ e => onSubmit(e) }>Submit</button>
+            </div>
+        </form>
+    )
+}
+
+
+export default function Login(props: { redirectURL: string }) {
+    const { redirectURL } = props
+
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+
     const navigate = useNavigate()
 
-    return <LoginCls navigate={ navigate } successURL={ props.successURL } />
-}
+    return (
+        <LoginForm
+            setUsername={ setUsername }
+            setPassword={ setPassword }
+            onSubmit={ login }
+        />
+    )
 
-
-type LoginPropsType = {
-    navigate: (path: string) => void
-    successURL: string
-}
-
-type LoginStateType = {
-    username: string
-    password: string
-}
-
-class LoginCls extends Component<LoginPropsType, LoginStateType> {
-    state = {
-        username: '',
-        password: ''
-    }
-
-    async handleSubmit(e: FormEvent<EventTarget>): Promise<void> {
+    async function login(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         e.preventDefault()
-        const token = await loginUser(this.state)
+        
+        const token = await getTokenFromCredentials(username, password)
+
         if ('error' in token) {
-            alert("Login failed. Please make sure your credentials are correct or try again later.")
+            alert("Login failed.")
         } else {
             setToken(token.token)
-            this.props.navigate(this.props.successURL)
+            navigate(redirectURL)
         }
-    }
-
-    render(): ReactNode {
-        return (
-            <form>
-                <label>
-                    <p>Username</p>
-                    <input onChange={ e => this.setState({ username: e.target.value }) } />
-                </label>
-                <label>
-                    <p>Password</p>
-                    <input type="password" onChange={ e => this.setState({ password: e.target.value }) } />
-                </label>
-
-                <div>
-                    <button type='submit' onClick={ e => this.handleSubmit(e) }>Submit</button>
-                </div>
-            </form>
-        )
     }
 }
 
-async function loginUser(credentials: { username: string, password: string }): Promise<{ token: string } | { error: string }> {
+async function getTokenFromCredentials(username: string, password: string) {
     const loginURL = 'http://127.0.0.1:8000/api/v1/api-token-auth/'
 
     return axios.post(loginURL, {
-        username: credentials.username,
-        password: credentials.password
+        username: username,
+        password: password
     })
         .then(resp => resp.data)
         .catch(reason => { return { error: reason } })
