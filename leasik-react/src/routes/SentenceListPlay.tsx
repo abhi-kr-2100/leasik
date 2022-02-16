@@ -174,21 +174,20 @@ export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceL
                                 onChange={ e => this.setState({ userInput: e.target.value }) }
                                 value={ this.state.userInput }
                                 className={
-                                    'title has-text-centered input ' +
+                                    'title has-text-centered input is-static ' +
                                     (() => {
-                                        if (this.state.answerStatus === 'unchecked') {
-                                            return 'is-static'
-                                        }
-
                                         switch (this.state.answerStatus) {
                                         case 'correct':
-                                            return 'is-success'
+                                            return 'has-text-success'
                                         case 'incorrect':
-                                            return 'is-danger'
+                                            return 'has-text-danger'
+                                        default:
+                                            return ''
                                         } 
                                     })()
                                 }
 
+                                readOnly={ this.state.answerStatus !== 'unchecked' }
                                 autoFocus
                             />
                             <p className='title is-3'>
