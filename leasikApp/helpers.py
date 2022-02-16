@@ -49,7 +49,7 @@ def get_cards(
                 cards.append(first_card)
             else:
                 cards.append(Card.objects.create(owner=user, sentence=sentence))
-            
+
         cards_up_for_review.extend(c for c in cards[s:e] if c.is_up_for_review())
 
         if n is not None and len(cards_up_for_review) >= n:

@@ -89,9 +89,7 @@ class SentenceBookmarkViewSet(ModelViewSet):
         detail=False,
         url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
     )
-    def isBookmarked(
-        self, request: Request, list_pk: int, card_pk: int
-    ) -> Response:
+    def isBookmarked(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: SentenceBookmark = SentenceBookmark.objects.get(
             owner=request.user, sentence_list=sentence_list

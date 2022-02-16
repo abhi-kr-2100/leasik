@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leasikApp', '0010_alter_card_unique_together'),
+        ("leasikApp", "0010_alter_card_unique_together"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='sentencebookmark',
-            name='sentences',
+            model_name="sentencebookmark",
+            name="sentences",
         ),
         migrations.AddField(
-            model_name='sentencebookmark',
-            name='cards',
-            field=models.ManyToManyField(blank=True, to='leasikApp.Card'),
+            model_name="sentencebookmark",
+            name="cards",
+            field=models.ManyToManyField(blank=True, to="leasikApp.Card"),
         ),
     ]
