@@ -3,16 +3,10 @@ import { Link } from 'react-router-dom'
 
 import { getSentenceLists } from '../apiCalls'
 import { getToken } from '../authentication/utils'
-import { SentenceListType } from '../models/core'
+import { SentenceListType } from '../models'
 
 
-function SentenceList(props: {
-    sentenceListID: number
-    name: string
-    description: string
-}) {
-    const { sentenceListID, name, description } = props
-
+function SentenceList({ id, name, description }: SentenceListType) {
     return (
         <div className='card block'>
             <header className="card-header">
@@ -26,7 +20,7 @@ function SentenceList(props: {
             </div>
 
             <footer className="card-footer">
-                <Link to={ `/lists/${ sentenceListID }` }
+                <Link to={ `/lists/${ id }` }
                     className="card-footer-item button is-primary is-outlined"
                 >
                     Play
@@ -59,7 +53,7 @@ export default function SentenceLists() {
                 { sentences.map(sl => (
                     <SentenceList
                         key={ sl.id }
-                        sentenceListID={ sl.id }
+                        id={ sl.id }
                         name={ sl.name }
                         description={ sl.description }
                     />
