@@ -48,8 +48,7 @@ export default function SentenceLists() {
 
     return (
         <div>
-            <div className='block'></div>
-            <div className='container is-fluid'>
+            <div className='container is-fluid pt-5'>
                 { sentences.map(sl => (
                     <SentenceList
                         key={ sl.id }
