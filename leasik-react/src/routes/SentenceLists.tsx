@@ -1,7 +1,7 @@
-import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { getSentenceLists } from '../apiCalls'
 import { getToken } from '../authentication/utils'
 import { SentenceListType } from '../models/core'
 
@@ -42,14 +42,9 @@ export default function SentenceLists() {
 
     useEffect(
         () => {
-            const getSentenceListsURL = 'http://127.0.0.1:8000/api/v1/lists/'
             const token = getToken()
-            const headers = token !== null ? { "Authorization": `Token ${token}` } : undefined
 
-            axios.get(getSentenceListsURL, {
-                headers: headers
-            })
-                .then(resp => resp.data)
+            getSentenceLists(token)
                 .then(data => data['results'])
                 .then(sentenceLists => setSentences(sentenceLists))
                 .catch(reason => alert("Please login again or try again later."))

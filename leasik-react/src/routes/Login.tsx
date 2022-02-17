@@ -1,7 +1,7 @@
-import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { getTokenFromCredentials } from '../apiCalls'
 import { setToken } from '../authentication/utils'
 
 
@@ -65,15 +65,4 @@ export default function Login(props: { redirectURL: string }) {
             navigate(redirectURL)
         }
     }
-}
-
-async function getTokenFromCredentials(username: string, password: string) {
-    const loginURL = 'http://127.0.0.1:8000/api/v1/api-token-auth/'
-
-    return axios.post(loginURL, {
-        username: username,
-        password: password
-    })
-        .then(resp => resp.data)
-        .catch(reason => { return { error: reason } })
 }
