@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { getTokenFromCredentials } from '../apiCalls'
+import { getTokenFromCredentials } from '../utilities/apiCalls'
 import { setToken } from '../utilities/authentication'
 
 

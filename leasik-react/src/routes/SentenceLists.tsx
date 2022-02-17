@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { getSentenceLists } from '../apiCalls'
+import { getSentenceLists } from '../utilities/apiCalls'
 import { getToken } from '../utilities/authentication'
-import { SentenceListType } from '../models'
+import { SentenceListType } from '../utilities/models'
 
 
 function SentenceList({ id, name, description }: SentenceListType) {
