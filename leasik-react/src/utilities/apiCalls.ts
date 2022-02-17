@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { CardType, SentenceListType } from './models'
 
 
 function getAxios(token?: string | null) {
@@ -13,11 +14,13 @@ function getAxios(token?: string | null) {
 
 
 async function processAPIResult(result: Promise<any>) {
-    return result.then(resp => resp.data).catch(reason => { return { error: reason } })
+    return result.then(resp => resp.data)
 }
 
 
-export async function getTokenFromCredentials(username: string, password: string) {
+export async function getTokenFromCredentials(
+    username: string, password: string
+): Promise<{ token: string }> {
     const loginURL = '/api-token-auth/'
 
     return processAPIResult(
@@ -29,21 +32,27 @@ export async function getTokenFromCredentials(username: string, password: string
 }
 
 
-export async function getPlaylist(token: string, sentenceListID: number) {
+export async function getPlaylist(
+    token: string, sentenceListID: number
+): Promise<Array<CardType>> {
     const getPlaylistURL = `/cards/playlist/${sentenceListID}/`
 
     return processAPIResult(getAxios(token).get(getPlaylistURL))
 }
 
 
-export async function isBookmarked(token: string, sentenceListID: number, cardID: number) {
+export async function isBookmarked(
+    token: string, sentenceListID: number, cardID: number
+): Promise<{ result: boolean }> {
     const isBookmarkedURL = `/bookmarks/isBookmarked/${sentenceListID}/${cardID}/`
 
     return processAPIResult(getAxios(token).get(isBookmarkedURL))
 }
 
 
-export async function getSentenceLists(token?: string | null) {
+export async function getSentenceLists(
+    token?: string | null
+): Promise<Array<SentenceListType>> {
     const sentenceListURL = '/lists/'
 
     return processAPIResult(getAxios(token).get(sentenceListURL))
