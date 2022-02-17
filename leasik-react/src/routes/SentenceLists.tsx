@@ -39,7 +39,6 @@ export default function SentenceLists() {
             const token = getToken()
 
             getSentenceLists(token)
-                .then(data => data['results'])
                 .then(sentenceLists => setSentences(sentenceLists))
                 .catch(error => alert(`Unexpected error: ${error.reason}`))
         },

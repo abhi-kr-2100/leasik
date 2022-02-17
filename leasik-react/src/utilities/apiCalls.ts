@@ -55,7 +55,7 @@ export async function getSentenceLists(
 ): Promise<Array<SentenceListType>> {
     const sentenceListURL = '/lists/'
 
-    return processAPIResult(getAxios(token).get(sentenceListURL))
+    return processAPIResult(getAxios(token).get(sentenceListURL)).then(data => data["results"])
 }
 
 
