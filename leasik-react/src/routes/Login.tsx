@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { getTokenFromCredentials } from '../apiCalls'
-import { setToken } from '../authentication/utils'
+import { setToken } from '../utilities/authentication'
 
 
 function LoginForm(

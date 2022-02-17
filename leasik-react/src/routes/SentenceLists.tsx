@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { getSentenceLists } from '../apiCalls'
-import { getToken } from '../authentication/utils'
+import { getToken } from '../utilities/authentication'
 import { SentenceListType } from '../models'
 
 
