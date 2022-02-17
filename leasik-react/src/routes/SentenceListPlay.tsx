@@ -1,304 +1,325 @@
-import { Component, ReactElement, ReactNode } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { getToken } from '../authentication/utils'
-import axios from 'axios'
-import { Card } from '../models/core'
-import { RawCard, Sentence } from '../models/aux'
+import { getPlaylist, isBookmarked, addBookmark, removeBookmark } from '../utilities/apiCalls'
+import { getToken } from '../utilities/authentication'
+import { CardType } from '../utilities/models'
+import { getWords, convertToConcreteCard, semanticallyEqual } from '../utilities/utilFunctions'
 
 
-export type SentenceListPlayProps = {
-    sentenceListId: number
-}
+type AugmentedCardType = CardType & { isBookmarked: boolean }
+type answerStatusType = "unchecked" | "correct" | "incorrect"
 
-export type SentenceListPlayState = {
-    cards: Array<Card>
-    currentCardIndex: number
 
-    token: string | null
-
-    loading: boolean
-    checked: boolean
-    answerStatus: "unchecked" | "correct" | "incorrect"
-
-    userInput: string
+async function toAugmentedCard(
+    card: CardType, sentenceListId: number, token: string
+): Promise<AugmentedCardType> {
+    return isBookmarked(token, sentenceListId, card.id)
+        .then(data => data["result"])
+        .then(isBookmarked => {
+            return { ...card, isBookmarked: isBookmarked }
+        })
 }
 
 
-export class SentenceListPlay extends Component<SentenceListPlayProps, SentenceListPlayState> {
-    state = {
-        cards: [],
-        currentCardIndex: 0,
+type BookmarkButtonPropsType = { card: AugmentedCardType, onBookmark: () => any }
+function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
+    return (
+        <div className='block'>
+            <button
+                onClick={ onBookmark }
+                className={ `button is-${card.isBookmarked ? 'danger' : 'info'}` }
+            >
+                { card.isBookmarked ? 'Remove ' : '' } Bookmark
+            </button>
+        </div>
+    )
+}
 
-        token: getToken(),
-        
-        loading: false,
-        checked: false,
-        answerStatus: "unchecked" as "unchecked" | "correct" | "incorrect",
 
-        userInput: ''
+type UtilityButtonsPropsType = { card: AugmentedCardType, onBookmark: () => any }
+function UtilityButtons({ card, onBookmark }: UtilityButtonsPropsType) {
+    return (
+        <div className='container has-text-centered'>
+            <BookmarkButton
+                card={ card }
+                onBookmark={ onBookmark }
+            />
+        </div>
+    )
+}
+
+
+type AnswerButtonsPropsType = {
+    answerStatus: answerStatusType
+    onAnswerCheck: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
+    onNext: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
+}
+function AnswerButtons({ answerStatus, onAnswerCheck, onNext }: AnswerButtonsPropsType) {
+    const submitFunction = (answerStatus === 'unchecked') ? onAnswerCheck : onNext
+
+    return (
+        <div className='container has-text-centered block'>
+            <button className='button is-primary' onClick={ e => submitFunction(e) }>
+                { answerStatus === 'unchecked' ? 'Check' : 'Next'  }
+            </button>
+        </div>
+    )
+}
+
+
+type QuestionPropsType = {
+    card: AugmentedCardType
+    answerStatus: answerStatusType
+    currentInput: string
+    onInputChange: (arg0: string) => any
+    onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any
+}
+function Question(
+    { card, answerStatus, currentInput, onInputChange, onEnterKeyPress }: QuestionPropsType
+) {
+    const words = getWords(card.sentence.text)
+    const preBlank = words.slice(0, card.hidden_word_position).join(' ')
+    const postBlank = words.slice(card.hidden_word_position + 1).join(' ')
+
+    const statusToClassName = {
+        'correct': 'has-text-success',
+        'incorrect': 'has-text-danger',
+        'unchecked': ''
     }
 
-    constructor(props: SentenceListPlayProps) {
-        super(props)
-
-        axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1/'
-        axios.defaults.headers.common['Authorization'] = `Token ${this.state.token}`
-    }
-
-    componentDidMount() {
-        if (!this.state.token) {
-            return;
-        }
-
-        const getCardsURL = `/cards/playlist/${this.props.sentenceListId}/`
-        const cards: Array<Card> = []
-
-        this.setState({ loading: true })
-        axios.get(getCardsURL)
-            .then(resp => resp.data)
-            .then(data => getRawCardData(data))
-            .then(
-                // convert RawCards to Cards one-by-one using getCardData, and
-                // add it to the cards array
-                rawCards => Promise.all(
-                    rawCards.map(
-                        c => getCardData(
-                            c,
-                            this.props.sentenceListId,
-                            this.state.token
-                        ).then(card => cards.push(card))
-                    )
-                )
-            )
-            .then(_ => this.setState({ cards: cards, currentCardIndex: 0, loading: false }))
-
-        function getCardData(
-                card: RawCard,
-                sentenceListId: number,
-                token: string | null
-        ): Promise<Card> {
-            const isBookmarkedURL = `/bookmarks/isBookmarked/${sentenceListId}/${card.id}/`
-            return axios.get(isBookmarkedURL)
-                .then(resp => resp.data)
-                .then(data => data["result"])
-                .then(isBookmarked => {
-                    // convert RawCard to Card by adding bookmarked to sentence property
-                    return { ...card, sentence: { ...card.sentence, bookmarked: isBookmarked } }
-                })
-        }
-
-        function getRawCardData(cards: Array<RawCard>): Array<RawCard> {
-            return cards.map(c => {
-                if (c.hidden_word_position !== -1) {
-                    return c
+    return (
+        <div className='block'>
+            <p className='title is-3'>{ preBlank }</p>
+            <input
+                value={ currentInput }
+                onChange={ e => onInputChange(e.target.value) }
+                onKeyPress={ e => e.key === 'Enter' ? onEnterKeyPress(e) : null }
+                className={
+                    `title has-text-centered input is-static ${ statusToClassName[answerStatus] }` 
                 }
+
+                readOnly={ answerStatus !== 'unchecked' }
+                autoFocus
+            />
+            <p className='title is-3'>{ postBlank }</p>
+        </div>
+    )
+}
+
+
+type QuestionHintPropsType = { card: CardType }
+function QuestionHint({ card }: QuestionHintPropsType) {
+    return (
+        <div className='block'>
+            <p className='title is-6'>{ card.sentence.translation }</p>
+            <div className='block'>
+                <textarea className='p-2' defaultValue={ card.note } />
+            </div>
+        </div>
+    )
+}
+
+
+type QuestionAreaPropsType = {
+    card: AugmentedCardType
+    answerStatus: answerStatusType
+    currentInput: string
+    onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any
+    onInputChange: (arg0: string) => any
+}
+function QuestionArea(
+    { card, answerStatus, currentInput, onEnterKeyPress, onInputChange }: QuestionAreaPropsType
+) {
+    return (
+        <div className='container has-text-centered'>
+            <Question
+                card={ card }
+                answerStatus={ answerStatus }
+                currentInput={ currentInput }
+                onEnterKeyPress={ onEnterKeyPress }
+                onInputChange={ onInputChange }
+            />
+
+            <QuestionHint card={ card } />
+        </div>
+    )
+}
+
+
+type QuizDisplayPropsType = {
+    card: AugmentedCardType
+    onBookmark: () => any
+    answerStatus: answerStatusType
+    currentInput: string
+    onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any
+    onInputChange: (arg0: string) => any
+    onAnswerCheck: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
+    onNext: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
+}
+function QuizDisplay(props: QuizDisplayPropsType) {
+    const { 
+        card,
+        onBookmark,
+        answerStatus,
+        currentInput,
+        onEnterKeyPress,
+        onInputChange,
+        onAnswerCheck,
+        onNext 
+    } = props
+
+    return (
+        <div className='pt-5'>
+            <div className='hero-head'>
+                <UtilityButtons
+                    card={ card }
+                    onBookmark={ onBookmark }
+                />
+            </div>
+            
+            <div className='hero-body'>
+                <QuestionArea
+                    card={ card }
+                    currentInput={ currentInput }
+                    answerStatus={ answerStatus }
+                    onEnterKeyPress={ onEnterKeyPress }
+                    onInputChange={ onInputChange }
+                />
+            </div>
+
+            <div className='hero-footer'>
+                <AnswerButtons
+                    answerStatus={ answerStatus }
+                    onAnswerCheck={ onAnswerCheck }
+                    onNext={ onNext }
+                />
+            </div>
+        </div>
+    )
+}
+
+
+export default function SentenceListPlay() {
+    const params = useParams()
+    const sentenceListID = parseInt(params.listId || '')
+    const token = getToken()
+
+    const [cards, setCards] = useState<Array<AugmentedCardType>>([])
+    const [currentCardIndex, setCurrentCardIndex] = useState(0)
+    const [areCardsLoading, setAreCardsLoading] = useState(false)
+    const [userInput, setUserInput] = useState('')
+    const [currentCardAnswerStatus, setCurrentCardAnswerStatus] = (
+        useState<answerStatusType>("unchecked")
+    )
+
+    useEffect(
+        () => {
+            if (!token) {
+                return
+            }
+
+            setAreCardsLoading(true)
+            fetchCards(token)
+                .then(cards => {
+                    setCards(cards)
+                    setAreCardsLoading(false)
+                })
+                
+            
+            async function fetchCards(token: string) {
+                return getPlaylist(token, sentenceListID)
+                    .then(cards => cards.map(card => convertToConcreteCard(card)))
+                    .then(normalCards => Promise.all(normalCards.map(
+                        card => toAugmentedCard(card, sentenceListID, token)
+                    )))
+            }
+        },
+        [sentenceListID, token]
+    )
+
     
-                const words = c.sentence.text.split(" ").filter(w => w !== '')
-                const hiddenWordPosition = Math.floor(Math.random() * words.length)
-                c.hidden_word_position = hiddenWordPosition
-    
-                return c
-            })
-        }
+    if (token === null) {
+        return <p>Pleae login first.</p>
     }
 
-    render(): ReactNode {
-        if (!this.state.token) {
-            return <p>Pleae login first.</p>
-        }
-
-        if (this.state.loading) {
-            return <p>Loading...</p>
-        }
-
-        if (this.state.cards.length === 0) {
-            return <p>List is empty!</p>
-        }
-
-        if (this.state.currentCardIndex === this.state.cards.length) {
-            return this.renderFinishScreen()
-        }
-
-        return this.renderCardScreen(this.state.currentCardIndex)
+    if (areCardsLoading) {
+        return <p>Loading...</p>
     }
 
-    renderFinishScreen(): ReactNode {
+    if (cards.length === 0) {
+        return <p>List is empty!</p>
+    }
+
+    if (currentCardIndex === cards.length) {
         return <div>Quiz finished!</div>
     }
 
-    renderCardScreen(cardIndex: number): ReactNode {
-        const cardToRender: Card = this.state.cards[cardIndex]
-        const sentenceText = cardToRender.sentence.text
-        const words = sentenceText.split(" ").filter(i => i !== '')
-        const hiddenWordPosition = cardToRender.hidden_word_position
-        const correctAnswer = words[hiddenWordPosition]
+    return (
+        <QuizDisplay
+            answerStatus={ currentCardAnswerStatus }
+            card={ cards[currentCardIndex] }
+            currentInput={ userInput }
+            onAnswerCheck={ checkAnswer }
+            onBookmark={ toggleBookmarkStatusOfCurrentCard }
+            onEnterKeyPress={ enterCheckAndNext }
+            onInputChange={ setUserInput }
+            onNext={ nextCard }
+        />
+    )
 
-        return (
-            <div onKeyPress={ e => {
-                    e.key === 'Enter' ? this.handleSumbit(correctAnswer) : noop()
-                    function noop() {}
-                } }
-            >
-                <div className='hero-head'>
-                    <div className='block'></div>
-
-                    <div className='container has-text-centered'>
-                        <div className='block'>
-                            {
-                                !cardToRender.sentence.bookmarked ? 
-                                    <button
-                                        onClick={_ => this.addBookmark()}
-                                        className='button is-info'
-                                    >
-                                        Bookmark
-                                    </button> :
-                                    <button
-                                        onClick={_ => this.removeBookmark()}
-                                        className='button is-danger'
-                                    >
-                                        Remove Bookmark
-                                    </button>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div className='hero-body'>
-                    <div className='container has-text-centered'>
-                        <div className='block'>
-                            <p className='title is-3'>
-                                { words.slice(0, hiddenWordPosition).join(' ') }
-                            </p>
-                            <input
-                                onChange={ e => this.setState({ userInput: e.target.value }) }
-                                value={ this.state.userInput }
-                                className={
-                                    'title has-text-centered input is-static ' +
-                                    (() => {
-                                        switch (this.state.answerStatus) {
-                                        case 'correct':
-                                            return 'has-text-success'
-                                        case 'incorrect':
-                                            return 'has-text-danger'
-                                        default:
-                                            return ''
-                                        } 
-                                    })()
-                                }
-
-                                readOnly={ this.state.answerStatus !== 'unchecked' }
-                                autoFocus
-                            />
-                            <p className='title is-3'>
-                                { words.slice(hiddenWordPosition + 1).join(' ') }
-                            </p>
-                        </div>
-
-                        <div className='block'>
-                            <p className='title is-6'>{ cardToRender.sentence.translation }</p>
-                            <div className='block'>
-                                <textarea className='p-2'>
-                                    { cardToRender.note }
-                                </textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className='hero-footer'>
-                    <div className='container has-text-centered block'>
-                        <button className='button is-primary' onClick={ _ => this.handleSumbit(correctAnswer) }>
-                            { this.state.checked ? 'Next' : 'Check' }
-                        </button>
-                    </div>
-
-                    <div className='block'></div>
-                </div>
-            </div>
-        )
-    }
-
-    handleSumbit(correctAnswer: string) {
-        if (this.state.checked) {
-            const nextCardIndex = this.state.currentCardIndex + 1
-            this.setState({
-                currentCardIndex: nextCardIndex,
-                checked: false,
-                answerStatus: "unchecked",
-                userInput: ''
-            })
-
+    function toggleBookmarkStatusOfCurrentCard() {
+        if (token === null) {
+            // this should never happen as this function should only be called
+            // from a part of the code where token is available
             return
         }
 
-        const currentCard: Card = this.state.cards[this.state.currentCardIndex]
-        const proficiencyUpdateURL = `http://127.0.0.1:8000/api/v1/cards/${currentCard.id}/updateUsingSM2/`
+        const cardsCopy = cards.slice()
+        const currentCard = cardsCopy[currentCardIndex]
+        const apiFunction = currentCard.isBookmarked ? removeBookmark : addBookmark
 
-        const score = closeEnough(this.state.userInput, correctAnswer) ? 5 : 0
-        if (score !== 0) {
-            this.setState({ answerStatus: "correct", checked: true, userInput: correctAnswer })
+        return  apiFunction(token, sentenceListID, currentCard.id)
+            .then(_ => currentCard.isBookmarked = !currentCard.isBookmarked)
+            .then(_ => setCards(cardsCopy))
+    }
+
+    function checkAnswerCore() {
+        const currentCard = cards[currentCardIndex]
+        const correctAnswer = getWords(currentCard.sentence.text)[currentCard.hidden_word_position]
+
+        if (semanticallyEqual(userInput, correctAnswer)) {
+            setCurrentCardAnswerStatus('correct')
         } else {
-            this.setState({ answerStatus: "incorrect", checked: true, userInput: correctAnswer })
+            setCurrentCardAnswerStatus('incorrect')
         }
 
-        axios.post(proficiencyUpdateURL, { 'score': score }, {
-            headers: {
-                'Authorization': `Token ${this.state.token}`
-            }
-        }).catch(err => alert(`Couldn't update proficiency: ${err}`))
+        setUserInput(correctAnswer)
+    }
 
-        function closeEnough(s1: string, s2: string): boolean {
-            return normalizeSentence(s1) === normalizeSentence(s2)
+    function checkAnswer(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        e.preventDefault()
+        checkAnswerCore()
+    }
 
-            function normalizeSentence(s: string): string {
-                return (
-                    s
-                        .replace(/[^\p{L}\s]/gu, '')
-                        .replace(/\s{2,}/g, ' ')
-                        .toLowerCase()
-                )
-            }
+    function nextCardCore() {
+        setCurrentCardIndex(currentCardIndex + 1)
+        setUserInput('')
+        setCurrentCardAnswerStatus('unchecked')
+    }
+
+    function nextCard(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        e.preventDefault()
+        nextCardCore()
+    }
+
+    function enterCheckAndNext(e: React.KeyboardEvent<HTMLInputElement>) {
+        e.preventDefault()
+
+        if (currentCardAnswerStatus === 'unchecked') {
+            checkAnswerCore()
+        } else {
+            nextCardCore()
         }
     }
-
-    addBookmark() {
-        const sentenceListId = this.props.sentenceListId
-        const cardId = (this.state.cards[this.state.currentCardIndex] as Card).id
-        const addBookmarkURL = `/bookmarks/add/${sentenceListId}/${cardId}/`
-        
-        const cards: Array<Card> = this.state.cards.slice()
-        cards[this.state.currentCardIndex].sentence.bookmarked = true
-
-        axios.post(addBookmarkURL)
-            .then(_ => this.setState({ cards: cards }))
-            .catch(err => alert(`Couldn't create bookmark: ${err}`))
-    }
-
-    removeBookmark() {
-        const sentenceListId = this.props.sentenceListId
-        const cardId = (this.state.cards[this.state.currentCardIndex] as Card).id
-        const removeBookmarkURL = `/bookmarks/remove/${sentenceListId}/${cardId}/`
-        
-        const cards: Array<Card> = this.state.cards.slice()
-        cards[this.state.currentCardIndex].sentence.bookmarked = false
-
-        axios.delete(removeBookmarkURL)
-            .then(_ => this.setState({ cards: cards }))
-            .catch(err => alert(`Couldn't remove bookmark: ${err}`))
-    }
-}
-
-
-// this is required because we need to use hooks to obtain props for SentenceListPlay
-export default function SentenceListPlayRouterComponent(): ReactElement {
-    const { listId } = useParams()
-
-    if (listId !== undefined)
-        return (
-            <SentenceListPlay sentenceListId={ parseInt(listId) } />
-        )
-    return (
-        <div>Error: listId was undefined.</div>
-    )
 }

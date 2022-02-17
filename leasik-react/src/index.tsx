@@ -1,7 +1,7 @@
 import { render } from 'react-dom'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import App from './App'
+import App from './routes/App'
 import Home from './routes/Home'
 import Login from './routes/Login'
 import SentenceListPlayRouterComponent from './routes/SentenceListPlay'
@@ -13,7 +13,7 @@ render(
         <Routes>
             <Route path='/' element={ <App /> }>
                 <Route index element={ <Home /> } />
-                <Route path='/login' element={ <Login successURL='/lists' /> } />
+                <Route path='/login' element={ <Login redirectURL='/lists' /> } />
                 <Route path='/lists' element={ <SentenceLists /> } />
                 <Route path='/lists/:listId' element={ <SentenceListPlayRouterComponent /> } />
                 <Route path="*" element={

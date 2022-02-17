@@ -8,13 +8,13 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
-from leasikApp.models import Card, SentenceBookmark, SentenceList, Sentence
+from leasikApp.models import Card, Bookmark, SentenceList, Sentence
 from leasikApp.helpers import get_cards, sm2
 from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
 from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter, SentenceListFilter
 from leasikREST.serializers import (
     CardSerializer,
-    SentenceBookmarkSerializer,
+    BookmarkSerializer,
     SentenceListSerializer,
     SentenceSerializer,
     UserSerializer,
@@ -79,9 +79,9 @@ class CardViewSet(ModelViewSet):
         return Response({"status": "Updated"})
 
 
-class SentenceBookmarkViewSet(ModelViewSet):
-    queryset = SentenceBookmark.objects.all()
-    serializer_class = SentenceBookmarkSerializer
+class BookmarkViewSet(ModelViewSet):
+    queryset = Bookmark.objects.all()
+    serializer_class = BookmarkSerializer
     permission_classes = [OwnerOnly]
     filter_backends = [IsOwnerFilter, SentenceListFilter]
 
@@ -91,7 +91,7 @@ class SentenceBookmarkViewSet(ModelViewSet):
     )
     def isBookmarked(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
-        bookmark: SentenceBookmark = SentenceBookmark.objects.get(
+        bookmark: Bookmark = Bookmark.objects.get(
             owner=request.user, sentence_list=sentence_list
         )
         card = Card.objects.get(pk=card_pk)
@@ -105,7 +105,7 @@ class SentenceBookmarkViewSet(ModelViewSet):
     )
     def add(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
-        bookmark: SentenceBookmark = SentenceBookmark.objects.get(
+        bookmark: Bookmark = Bookmark.objects.get(
             owner=request.user, sentence_list=sentence_list
         )
         card = Card.objects.get(pk=card_pk)
@@ -121,7 +121,7 @@ class SentenceBookmarkViewSet(ModelViewSet):
     )
     def remove(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
-        bookmark: SentenceBookmark = SentenceBookmark.objects.get(
+        bookmark: Bookmark = Bookmark.objects.get(
             owner=request.user, sentence_list=sentence_list
         )
         card = Card.objects.get(pk=card_pk)

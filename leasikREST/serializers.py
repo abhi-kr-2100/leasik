@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from leasikApp.models import Card, Sentence, SentenceBookmark, SentenceList
+from leasikApp.models import Card, Sentence, Bookmark, SentenceList
 from leasikREST.paginations import NestedPagination
 
 
@@ -87,11 +87,11 @@ class NestedSentenceListSerializer(ModelSerializer):
         fields = ["id"]
 
 
-class SentenceBookmarkSerializer(ModelSerializer):
+class BookmarkSerializer(ModelSerializer):
     owner = UserSerializer()
     sentence_list = NestedSentenceListSerializer()
     cards = CardSerializer(many=True)
 
     class Meta:
-        model = SentenceBookmark
+        model = Bookmark
         fields = ["id", "owner", "sentence_list", "cards"]
