@@ -41,7 +41,7 @@ export default function SentenceLists() {
             getSentenceLists(token)
                 .then(data => data['results'])
                 .then(sentenceLists => setSentences(sentenceLists))
-                .catch(reason => alert("Please login again or try again later."))
+                .catch(error => alert(`Unexpected error: ${error.reason}`))
         },
         []
     )
