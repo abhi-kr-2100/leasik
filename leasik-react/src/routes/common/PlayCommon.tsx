@@ -1,8 +1,19 @@
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { CardType } from '../../utilities/models'
-import { getWords, semanticallyEqual } from '../../utilities/utilFunctions'
-import { removeBookmark, addBookmark, updateProficiency } from '../../utilities/apiCalls'
+import { getToken } from '../../utilities/authentication'
+import {
+    getWords,
+    semanticallyEqual,
+    convertToConcreteCard
+} from '../../utilities/utilFunctions'
+import {
+    removeBookmark,
+    addBookmark,
+    updateProficiency,
+    isBookmarked
+} from '../../utilities/apiCalls'
 
 
 export type AugmentedCardType = CardType & { isBookmarked: boolean }
@@ -203,20 +214,69 @@ function QuizDisplay({
 }
 
 
-type GeneralListPlayPropsType = {
-    token: string
-    sentenceListID: number
-    initialCards: AugmentedCardType[]
+type GeneralListPlayCorePropsType = {
+    initialCards: Promise<CardType[]>
+    assumeDefaultBookmarkValue?: boolean
 }
-export default function GeneralListPlay(
-    { token, sentenceListID, initialCards }: GeneralListPlayPropsType
+function GeneralListPlayCore(
+    {initialCards, assumeDefaultBookmarkValue }: GeneralListPlayCorePropsType
 ) {
-    const [cards, setCards] = useState(initialCards)
+    const params = useParams()
+    const sentenceListID = parseInt((params.listId !== undefined) ? params.listId : '')
+    const token = getToken()
+
+    const [isLoading, setIsLoading] = useState(false)
+    const [cards, setCards] = useState<AugmentedCardType[]>([])
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     const [userInput, setUserInput] = useState('')
     const [currentCardAnswerStatus, setCurrentCardAnswerStatus] = (
         useState<answerStatusType>("unchecked")
     )
+
+    useEffect(
+        () => {
+            if (token === null) {
+                return
+            }
+
+            setIsLoading(true)
+            initialCards
+                .then(normalCards => normalCards.map(convertToConcreteCard))
+                .then(concreteCards => Promise.all(concreteCards.map(toAugmentedCard)))
+                .then(setCards)
+                .catch(err => alert(`Couldn't load cards. ${err}`))
+                .finally(() => setIsLoading(false))
+
+            function toAugmentedCard(normalCard: CardType): Promise<AugmentedCardType> {
+                if (token === null) {
+                    return Promise.reject("Token is null.")
+                }
+
+                if (assumeDefaultBookmarkValue) {
+                    return new Promise(
+                        resolve => resolve({
+                            ...normalCard,
+                            isBookmarked: assumeDefaultBookmarkValue
+                        })
+                    )
+                }
+
+                return (
+                    isBookmarked(token, sentenceListID, normalCard.id)
+                        .then(bookmarkStatus => ({ ...normalCard, isBookmarked: bookmarkStatus }))
+                )
+            }
+        },
+        [token, initialCards, sentenceListID, assumeDefaultBookmarkValue]
+    )
+
+    if (token === null) {
+        return <div>Please log in first.</div>
+    }
+
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
 
     if (currentCardIndex === cards.length) {
         return <div>Quiz finished!</div>
@@ -236,6 +296,10 @@ export default function GeneralListPlay(
     )
 
     async  function toggleBookmarkStatusOfCurrentCard() {
+        if (token === null) {
+            return Promise.reject("Token is null")
+        }
+
         const cardsCopy = cards.slice()
         const currentCard = cardsCopy[currentCardIndex]
         const apiFunction = currentCard.isBookmarked ? removeBookmark : addBookmark
@@ -247,6 +311,10 @@ export default function GeneralListPlay(
     }
 
     function checkAnswerCore() {
+        if (token === null) {
+            return Promise.reject("Token is null.")
+        }
+
         const currentCard = cards[currentCardIndex]
         const correctAnswer = getWords(currentCard.sentence.text)[currentCard.hidden_word_position]
 
@@ -289,4 +357,29 @@ export default function GeneralListPlay(
             nextCardCore()
         }
     }
+}
+
+
+type GeneralListPlayPropsType = {
+    getInitialCards: (token: string, sentenceListID: number) => Promise<CardType[]>
+    assumeDefaultBookmarkValue?: boolean
+}
+export default function GeneralListPlay(
+    { getInitialCards, assumeDefaultBookmarkValue }: GeneralListPlayPropsType
+) {
+    const params = useParams()
+    const sentenceListID = parseInt((params.listId !== undefined) ? params.listId : '')
+    const token = getToken()
+
+    if (token === null) {
+        return <div>Please log in first.</div>
+    }
+
+    const initialCards = getInitialCards(token, sentenceListID)
+    return (
+        <GeneralListPlayCore
+            initialCards={ initialCards }
+            assumeDefaultBookmarkValue={ assumeDefaultBookmarkValue }
+        />
+    )
 }
