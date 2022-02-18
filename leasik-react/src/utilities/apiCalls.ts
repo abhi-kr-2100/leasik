@@ -42,6 +42,15 @@ export async function getPlaylist(
 }
 
 
+export async function getBookmarksForList(
+    token: string, sentenceListID: number
+): Promise<CardType[]> {
+    const getBookmarksForListURL = `/bookmarks/forList/${sentenceListID}/`
+
+    return processAPIResult(getAxios(token).get(getBookmarksForListURL))
+}
+
+
 export async function updateProficiency(token: string, cardID: number, score: 0|1|2|3|4|5) {
     const updateProficiencyURL = `/cards/${cardID}/updateUsingSM2/`
 

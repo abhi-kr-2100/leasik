@@ -77,6 +77,16 @@ class BookmarkViewSet(ModelViewSet):
     permission_classes = [OwnerOnly]
     filter_backends = [IsOwnerFilter, SentenceListFilter]
 
+    @action(detail=False, url_path="forList/(?P<list_pk>[^/.]+)")
+    def forList(self, request: Request, list_pk: int) -> Response:
+        sentence_list = SentenceList.objects.get(pk=list_pk)
+        bookmark: Bookmark = Bookmark.objects.get(
+            owner=request.user, sentence_list=sentence_list
+        )
+        cards = bookmark.cards.all()
+
+        return Response(CardSerializer(cards, many=True).data)
+
     @action(
         detail=False,
         url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
