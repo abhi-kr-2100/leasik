@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { getPlaylist, isBookmarked, addBookmark, removeBookmark } from '../utilities/apiCalls'
 import { getToken } from '../utilities/authentication'
 import { CardType } from '../utilities/models'
-import { getWords, convertToConcreteCard, semanticallyEqual } from '../utilities/utilFunctions'
+import {
+    getWords,
+    convertToConcreteCard,
+    semanticallyEqual
+} from '../utilities/utilFunctions'
+import {
+    getPlaylist,
+    isBookmarked,
+    addBookmark,
+    removeBookmark,
+    updateProficiency
+} from '../utilities/apiCalls'
 
 
 type AugmentedCardType = CardType & { isBookmarked: boolean }
@@ -318,13 +328,20 @@ export default function SentenceListPlay() {
         const currentCard = cards[currentCardIndex]
         const correctAnswer = getWords(currentCard.sentence.text)[currentCard.hidden_word_position]
 
-        if (semanticallyEqual(userInput, correctAnswer)) {
-            setCurrentCardAnswerStatus('correct')
-        } else {
+        const score = semanticallyEqual(userInput, correctAnswer) ? 5 : 0
+        
+        if (score === 0) {
             setCurrentCardAnswerStatus('incorrect')
+        } else {
+            setCurrentCardAnswerStatus('correct')
         }
 
         setUserInput(correctAnswer)
+        
+        if (token !== null) {
+            updateProficiency(token, currentCard.id, score)
+                .catch(err => alert(`Couldn't update card proficiency. ${err}`))
+        }
     }
 
     function checkAnswer(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
