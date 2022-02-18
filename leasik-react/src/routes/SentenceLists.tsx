@@ -29,6 +29,12 @@ function SentenceList({ sentenceList }: SentenceListPropsType) {
                 >
                     Play
                 </Link>
+                <Link
+                    to={ `/lists/${ id }/bookmarks` }
+                    className="card-footer-item button is-success is-outlined"
+                >
+                    Bookmarks
+                </Link>
             </footer>
         </div>
     )
