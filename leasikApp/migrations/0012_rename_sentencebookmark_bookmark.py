@@ -8,12 +8,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('leasikApp', '0011_remove_sentencebookmark_sentences_and_more'),
+        ("leasikApp", "0011_remove_sentencebookmark_sentences_and_more"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='SentenceBookmark',
-            new_name='Bookmark',
+            old_name="SentenceBookmark",
+            new_name="Bookmark",
         ),
     ]

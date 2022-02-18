@@ -17,5 +17,5 @@ router.register("lists", SentenceListViewSet)
 app_name = "leasikREST"
 urlpatterns = [
     path("", include(router.urls)),
-    path("api-token-auth/", obtain_auth_token)
+    path("api-token-auth/", obtain_auth_token),
 ]
