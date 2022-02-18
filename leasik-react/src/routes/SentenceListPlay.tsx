@@ -16,8 +16,8 @@ async function toAugmentedCard(
 ): Promise<AugmentedCardType> {
     return isBookmarked(token, sentenceListId, card.id)
         .then(data => data["result"])
-        .then(isBookmarked => {
-            return { ...card, isBookmarked: isBookmarked }
+        .then(bookmarkStatus => {
+            return { ...card, isBookmarked: bookmarkStatus }
         })
 }
 
@@ -221,15 +221,21 @@ export default function SentenceListPlay() {
             }
 
             setAreCardsLoading(true)
-            fetchCards(token)
-                .then(cards => setCards(cards))
+            fetchCards()
+                .then(loadedCards => setCards(loadedCards))
                 .catch(() => setErrorLoadingCards(true))
                 .finally(() => setAreCardsLoading(false))
                 
             
-            async function fetchCards(token: string) {
+            async function fetchCards() {
+                if (token === null) {
+                    // this should never happen because fetchCards should only
+                    // be called by code that has verified that token is valid
+                    return []
+                }
+
                 return getPlaylist(token, sentenceListID)
-                    .then(cards => cards.map(card => convertToConcreteCard(card)))
+                    .then(loadedCards => loadedCards.map(card => convertToConcreteCard(card)))
                     .then(normalCards => Promise.all(normalCards.map(
                         card => toAugmentedCard(card, sentenceListID, token)
                     )))
