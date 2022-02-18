@@ -208,6 +208,7 @@ export default function SentenceListPlay() {
     const [cards, setCards] = useState<Array<AugmentedCardType>>([])
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     const [areCardsLoading, setAreCardsLoading] = useState(false)
+    const [errorLoadingCards, setErrorLoadingCards] = useState(false)
     const [userInput, setUserInput] = useState('')
     const [currentCardAnswerStatus, setCurrentCardAnswerStatus] = (
         useState<answerStatusType>("unchecked")
@@ -221,10 +222,9 @@ export default function SentenceListPlay() {
 
             setAreCardsLoading(true)
             fetchCards(token)
-                .then(cards => {
-                    setCards(cards)
-                    setAreCardsLoading(false)
-                })
+                .then(cards => setCards(cards))
+                .catch(() => setErrorLoadingCards(true))
+                .finally(() => setAreCardsLoading(false))
                 
             
             async function fetchCards(token: string) {
@@ -241,6 +241,10 @@ export default function SentenceListPlay() {
     
     if (token === null) {
         return <p>Pleae login first.</p>
+    }
+
+    if (errorLoadingCards) {
+        return <p>Couldn't load cards. :(</p>
     }
 
     if (areCardsLoading) {
