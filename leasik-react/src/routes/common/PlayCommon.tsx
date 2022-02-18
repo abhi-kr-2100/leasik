@@ -23,14 +23,19 @@ type answerStatusType = "unchecked" | "correct" | "incorrect"
 type BookmarkButtonPropsType = { card: AugmentedCardType, onBookmark: () => any }
 function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
     return (
-        <div className='block'>
-            <button
-                onClick={ onBookmark }
-                className={ `button is-${card.isBookmarked ? 'danger' : 'info'}` }
-            >
-                { card.isBookmarked ? 'Remove ' : '' } Bookmark
-            </button>
-        </div>
+        <button
+            onClick={ onBookmark }
+            className={ `button is-${card.isBookmarked ? 'danger' : 'info'}` }
+        >
+            { card.isBookmarked ? 'Remove ' : '' } Bookmark
+        </button>
+    )
+}
+
+
+function EditCardsButton() {
+    return (
+        <button className='button is-info'>Edit Cards</button>
     )
 }
 
@@ -38,11 +43,14 @@ function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
 type UtilityButtonsPropsType = { card: AugmentedCardType, onBookmark: () => any }
 function UtilityButtons({ card, onBookmark }: UtilityButtonsPropsType) {
     return (
-        <div className='container has-text-centered'>
-            <BookmarkButton
-                card={ card }
-                onBookmark={ onBookmark }
-            />
+        <div className='container'>
+            <div className='buttons is-centered'>
+                <BookmarkButton
+                    card={ card }
+                    onBookmark={ onBookmark }
+                />
+                <EditCardsButton />
+            </div>
         </div>
     )
 }
