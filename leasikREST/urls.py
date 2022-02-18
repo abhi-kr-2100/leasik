@@ -4,20 +4,18 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from leasikREST.views import (
     CardViewSet,
-    SentenceViewSet,
     BookmarkViewSet,
     SentenceListViewSet,
-    UserViewSet,
 )
 
 
 router = DefaultRouter()
 router.register("cards", CardViewSet)
-router.register("sentences", SentenceViewSet)
 router.register("bookmarks", BookmarkViewSet)
 router.register("lists", SentenceListViewSet)
-router.register("users", UserViewSet)
 
 app_name = "leasikREST"
-urlpatterns = [path("", include(router.urls))]
-urlpatterns += [path("api-token-auth/", obtain_auth_token)]
+urlpatterns = [
+    path("", include(router.urls)),
+    path("api-token-auth/", obtain_auth_token)
+]

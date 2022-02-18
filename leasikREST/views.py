@@ -1,6 +1,5 @@
 from datetime import date
 
-from django.contrib.auth.models import User
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.settings import api_settings
@@ -8,7 +7,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
-from leasikApp.models import Card, Bookmark, SentenceList, Sentence
+from leasikApp.models import Card, Bookmark, SentenceList
 from leasikApp.helpers import get_cards, sm2
 from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
 from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter, SentenceListFilter
@@ -16,14 +15,7 @@ from leasikREST.serializers import (
     CardSerializer,
     BookmarkSerializer,
     SentenceListSerializer,
-    SentenceSerializer,
-    UserSerializer,
 )
-
-
-class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 
 class CardViewSet(ModelViewSet):
@@ -136,8 +128,3 @@ class SentenceListViewSet(ModelViewSet):
     serializer_class = SentenceListSerializer
     permission_classes = [OwnerOrPublicReadOnly]
     filter_backends = [IsOwnerOrPublicFilter]
-
-
-class SentenceViewSet(ModelViewSet):
-    queryset = Sentence.objects.all()
-    serializer_class = SentenceSerializer
