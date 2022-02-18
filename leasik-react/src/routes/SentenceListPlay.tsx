@@ -286,6 +286,7 @@ export default function SentenceListPlay() {
         return  apiFunction(token, sentenceListID, currentCard.id)
             .then(_ => currentCard.isBookmarked = !currentCard.isBookmarked)
             .then(_ => setCards(cardsCopy))
+            .catch(err => alert(`Couldn't toggle bookmark. ${err}`))
     }
 
     function checkAnswerCore() {
