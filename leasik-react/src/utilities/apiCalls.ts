@@ -52,7 +52,8 @@ export async function getBookmarksForList(
 }
 
 
-export async function updateProficiency(token: string, cardID: number, score: 0|1|2|3|4|5) {
+type SM2ScoreType = 0|1|2|3|4|5 // possible scores under the SM-2 algorithm
+export async function updateProficiency(token: string, cardID: number, score: SM2ScoreType) {
     const updateProficiencyURL = `/cards/${cardID}/updateUsingSM2/`
 
     return processAPIResult(getAxios(token).post(updateProficiencyURL, {

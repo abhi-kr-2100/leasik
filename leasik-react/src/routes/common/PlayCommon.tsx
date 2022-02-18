@@ -116,7 +116,7 @@ function Question(
                 className={ allClasses }
 
                 readOnly={ answerStatus !== 'unchecked' }
-                autoFocus
+                autoFocus={ true }
             />
             <p className='title is-3'>{ postBlank }</p>
         </div>
