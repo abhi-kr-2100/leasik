@@ -6,7 +6,10 @@ import { getToken } from '../utilities/authentication'
 import { SentenceListType } from '../utilities/models'
 
 
-function SentenceList({ id, name, description }: SentenceListType) {
+type SentenceListPropsType = { sentenceList: SentenceListType }
+function SentenceList({ sentenceList }: SentenceListPropsType) {
+    const { id, name, description } = sentenceList
+
     return (
         <div className='card block'>
             <header className="card-header">
@@ -20,7 +23,8 @@ function SentenceList({ id, name, description }: SentenceListType) {
             </div>
 
             <footer className="card-footer">
-                <Link to={ `/lists/${ id }` }
+                <Link
+                    to={ `/lists/${ id }` }
                     className="card-footer-item button is-primary is-outlined"
                 >
                     Play
@@ -32,14 +36,14 @@ function SentenceList({ id, name, description }: SentenceListType) {
 
 
 export default function SentenceLists() {
-    const [sentences, setSentences] = useState<Array<SentenceListType>>([])
+    const [sentenceLists, setSentenceLists] = useState<SentenceListType[]>([])
 
     useEffect(
         () => {
             const token = getToken()
 
             getSentenceLists(token)
-                .then(sentenceLists => setSentences(sentenceLists))
+                .then(setSentenceLists)
                 .catch(error => alert(`Couldn't load sentence lists! ${error}`))
         },
         []
@@ -48,14 +52,7 @@ export default function SentenceLists() {
     return (
         <div>
             <div className='container is-fluid pt-5'>
-                { sentences.map(sl => (
-                    <SentenceList
-                        key={ sl.id }
-                        id={ sl.id }
-                        name={ sl.name }
-                        description={ sl.description }
-                    />
-                )) }
+                { sentenceLists.map(sl => <SentenceList key={ sl.id } sentenceList={ sl } />) }
             </div>
         </div>
     )

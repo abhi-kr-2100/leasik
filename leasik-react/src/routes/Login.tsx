@@ -5,41 +5,41 @@ import { getTokenFromCredentials } from '../utilities/apiCalls'
 import { setToken } from '../utilities/authentication'
 
 
-function LoginForm(
-    props: {
-        setUsername: (arg0: string) => any
-        setPassword: (arg0: string) => any
-        onSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
+type LoginFormPropsType = {
+    setUsername: (arg0: string) => any
+    setPassword: (arg0: string) => any
+    onSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
+}
+function LoginForm({ setUsername, setPassword, onSubmit }: LoginFormPropsType) {
+    function onUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
+        return setUsername(e.target.value)
     }
-) {
-    const {
-        setUsername,
-        setPassword,
-        onSubmit 
-    } = props
+
+    function onPasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+        return setPassword(e.target.value)
+    }
 
     return (
         <form>
             <label>
                 <p>Username</p>
-                <input onChange={ e => setUsername(e.target.value) } />
+                <input onChange={ onUsernameChange } />
             </label>
             <label>
                 <p>Password</p>
-                <input type="password" onChange={ e => setPassword(e.target.value) } />
+                <input type="password" onChange={ onPasswordChange } />
             </label>
 
             <div>
-                <button type='submit' onClick={ e => onSubmit(e) }>Submit</button>
+                <button type='submit' onClick={ onSubmit }>Submit</button>
             </div>
         </form>
     )
 }
 
 
-export default function Login(props: { redirectURL: string }) {
-    const { redirectURL } = props
-
+type LoginPropsType = { redirectURL: string }
+export default function Login({ redirectURL }: LoginPropsType) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 

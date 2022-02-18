@@ -16,9 +16,7 @@ render(
                 <Route path='/login' element={ <Login redirectURL='/lists' /> } />
                 <Route path='/lists' element={ <SentenceLists /> } />
                 <Route path='/lists/:listId' element={ <SentenceListPlayRouterComponent /> } />
-                <Route path="*" element={
-                    <p>404</p>
-                } />
+                <Route path="*" element={ <p>404</p> } />
             </Route>
         </Routes>
     </BrowserRouter>,

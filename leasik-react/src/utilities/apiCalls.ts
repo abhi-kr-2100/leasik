@@ -4,7 +4,8 @@ import { CardType, SentenceListType } from './models'
 
 function getAxios(token?: string | null) {
     const baseURL = 'http://127.0.0.1:8000/api/v1/'
-    const headers = token ? { 'Authorization': `Token ${token}` } : undefined
+    const headers = (token !== undefined && token !== null) ? 
+        { 'Authorization': `Token ${token}` } : undefined
 
     return axios.create({
         baseURL: baseURL,
@@ -34,7 +35,7 @@ export async function getTokenFromCredentials(
 
 export async function getPlaylist(
     token: string, sentenceListID: number
-): Promise<Array<CardType>> {
+): Promise<CardType[]> {
     const getPlaylistURL = `/cards/playlist/${sentenceListID}/`
 
     return processAPIResult(getAxios(token).get(getPlaylistURL))
@@ -52,7 +53,7 @@ export async function isBookmarked(
 
 export async function getSentenceLists(
     token?: string | null
-): Promise<Array<SentenceListType>> {
+): Promise<SentenceListType[]> {
     const sentenceListURL = '/lists/'
 
     return processAPIResult(getAxios(token).get(sentenceListURL)).then(data => data["results"])

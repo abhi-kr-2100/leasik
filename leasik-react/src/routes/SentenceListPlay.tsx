@@ -11,17 +11,6 @@ type AugmentedCardType = CardType & { isBookmarked: boolean }
 type answerStatusType = "unchecked" | "correct" | "incorrect"
 
 
-async function toAugmentedCard(
-    card: CardType, sentenceListId: number, token: string
-): Promise<AugmentedCardType> {
-    return isBookmarked(token, sentenceListId, card.id)
-        .then(data => data["result"])
-        .then(bookmarkStatus => {
-            return { ...card, isBookmarked: bookmarkStatus }
-        })
-}
-
-
 type BookmarkButtonPropsType = { card: AugmentedCardType, onBookmark: () => any }
 function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
     return (
@@ -57,11 +46,12 @@ type AnswerButtonsPropsType = {
 }
 function AnswerButtons({ answerStatus, onAnswerCheck, onNext }: AnswerButtonsPropsType) {
     const submitFunction = (answerStatus === 'unchecked') ? onAnswerCheck : onNext
+    const buttonText = (answerStatus === 'unchecked') ? 'Check' : 'Next'
 
     return (
         <div className='container has-text-centered block'>
-            <button className='button is-primary' onClick={ e => submitFunction(e) }>
-                { answerStatus === 'unchecked' ? 'Check' : 'Next'  }
+            <button className='button is-primary' onClick={ submitFunction }>
+                { buttonText }
             </button>
         </div>
     )
@@ -79,6 +69,11 @@ function Question(
     { card, answerStatus, currentInput, onInputChange, onEnterKeyPress }: QuestionPropsType
 ) {
     const words = getWords(card.sentence.text)
+
+    // `Question`s are fill-in-the-blanks type questions.
+    // `card.hidden_word_position` determines the blank, and `preBlank` and
+    // `postBlank` are parts of the sentence that occur before and after the
+    // blank
     const preBlank = words.slice(0, card.hidden_word_position).join(' ')
     const postBlank = words.slice(card.hidden_word_position + 1).join(' ')
 
@@ -88,16 +83,28 @@ function Question(
         'unchecked': ''
     }
 
+    const baseClasses = 'title has-text-centered input is-static'
+    const additionalClasses = statusToClassName[answerStatus]
+    const allClasses = `${baseClasses} ${additionalClasses}`
+
+    function onKeyPress(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') {
+            return onEnterKeyPress(e)
+        }
+    }
+
+    function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+        return onInputChange(e.target.value)
+    }
+
     return (
         <div className='block'>
             <p className='title is-3'>{ preBlank }</p>
             <input
                 value={ currentInput }
-                onChange={ e => onInputChange(e.target.value) }
-                onKeyPress={ e => e.key === 'Enter' ? onEnterKeyPress(e) : null }
-                className={
-                    `title has-text-centered input is-static ${ statusToClassName[answerStatus] }` 
-                }
+                onChange={ onChange }
+                onKeyPress={ onKeyPress }
+                className={ allClasses }
 
                 readOnly={ answerStatus !== 'unchecked' }
                 autoFocus
@@ -202,10 +209,10 @@ function QuizDisplay(props: QuizDisplayPropsType) {
 
 export default function SentenceListPlay() {
     const params = useParams()
-    const sentenceListID = parseInt(params.listId || '')
+    const sentenceListID = parseInt((params.listId !== undefined) ? params.listId : '')
     const token = getToken()
 
-    const [cards, setCards] = useState<Array<AugmentedCardType>>([])
+    const [cards, setCards] = useState<AugmentedCardType[]>([])
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     const [areCardsLoading, setAreCardsLoading] = useState(false)
     const [errorLoadingCards, setErrorLoadingCards] = useState(false)
@@ -222,7 +229,7 @@ export default function SentenceListPlay() {
 
             setAreCardsLoading(true)
             fetchCards()
-                .then(loadedCards => setCards(loadedCards))
+                .then(setCards)
                 .catch(() => setErrorLoadingCards(true))
                 .finally(() => setAreCardsLoading(false))
                 
@@ -231,14 +238,26 @@ export default function SentenceListPlay() {
                 if (token === null) {
                     // this should never happen because fetchCards should only
                     // be called by code that has verified that token is valid
-                    return []
+                    return Promise.reject("Token is null.")
                 }
 
                 return getPlaylist(token, sentenceListID)
-                    .then(loadedCards => loadedCards.map(card => convertToConcreteCard(card)))
-                    .then(normalCards => Promise.all(normalCards.map(
-                        card => toAugmentedCard(card, sentenceListID, token)
-                    )))
+                    .then(loadedCards => loadedCards.map(convertToConcreteCard))
+                    .then(normalCards => Promise.all(normalCards.map(toAugmentedCard)))
+            }
+
+            async function toAugmentedCard(card: CardType): Promise<AugmentedCardType> {
+                if (token === null) {
+                    // this should never happen because fetchCards should only
+                    // be called by code that has verified that token is valid
+                    return Promise.reject("Token is null.")
+                }
+
+                return isBookmarked(token, sentenceListID, card.id)
+                    .then(data => data["result"])
+                    .then(bookmarkStatus => {
+                        return { ...card, isBookmarked: bookmarkStatus }
+                    })
             }
         },
         [sentenceListID, token]
@@ -278,11 +297,11 @@ export default function SentenceListPlay() {
         />
     )
 
-    function toggleBookmarkStatusOfCurrentCard() {
+    async  function toggleBookmarkStatusOfCurrentCard() {
         if (token === null) {
             // this should never happen as this function should only be called
             // from a part of the code where token is available
-            return
+            return Promise.reject("Token is null.")
         }
 
         const cardsCopy = cards.slice()
