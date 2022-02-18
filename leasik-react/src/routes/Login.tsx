@@ -56,13 +56,12 @@ export default function Login({ redirectURL }: LoginPropsType) {
     async function login(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         e.preventDefault()
         
-        const token = await getTokenFromCredentials(username, password)
-
-        if ('error' in token) {
-            alert("Login failed.")
-        } else {
-            setToken(token.token)
+        try {
+            const token = await getTokenFromCredentials(username, password)
+            setToken(token)
             navigate(redirectURL)
+        } catch(err) {
+            alert(`Login failed. ${err}`)
         }
     }
 }

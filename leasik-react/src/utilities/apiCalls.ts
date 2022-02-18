@@ -21,7 +21,7 @@ async function processAPIResult(result: Promise<any>) {
 
 export async function getTokenFromCredentials(
     username: string, password: string
-): Promise<{ token: string }> {
+): Promise<string> {
     const loginURL = '/api-token-auth/'
 
     return processAPIResult(
@@ -30,6 +30,7 @@ export async function getTokenFromCredentials(
             password: password
         })
     )
+        .then(resp => resp.token)
 }
 
 
