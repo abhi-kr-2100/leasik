@@ -63,10 +63,11 @@ export async function updateProficiency(token: string, cardID: number, score: 0|
 
 export async function isBookmarked(
     token: string, sentenceListID: number, cardID: number
-): Promise<{ result: boolean }> {
+): Promise<boolean> {
     const isBookmarkedURL = `/bookmarks/isBookmarked/${sentenceListID}/${cardID}/`
 
     return processAPIResult(getAxios(token).get(isBookmarkedURL))
+            .then(resp => resp.result)
 }
 
 
