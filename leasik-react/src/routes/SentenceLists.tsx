@@ -40,7 +40,7 @@ export default function SentenceLists() {
 
             getSentenceLists(token)
                 .then(sentenceLists => setSentences(sentenceLists))
-                .catch(error => alert(`Unexpected error: ${error.reason}`))
+                .catch(error => alert(`Couldn't load sentence lists! ${error}`))
         },
         []
     )
