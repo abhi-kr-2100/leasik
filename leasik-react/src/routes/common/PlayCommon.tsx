@@ -14,7 +14,8 @@ import {
     removeBookmark,
     addBookmark,
     updateProficiency,
-    isBookmarked
+    isBookmarked,
+    replaceWithNewCards
 } from '../../utilities/apiCalls'
 
 
@@ -424,8 +425,17 @@ function GeneralListPlayCore(
         />
     )
 
-    function saveEditToCards(wordIndicesToSave: number[]) {
-        alert(`Feature not implemented yet. Selected word indices: ${wordIndicesToSave}`)
+    async function saveEditToCards(wordIndicesToSave: number[]): Promise<any> {
+        if (token === null) {
+            return Promise.reject("Token is null")
+        }
+
+        const currentCard = cards[currentCardIndex]
+
+        return (
+            replaceWithNewCards(token, currentCard.id, wordIndicesToSave)
+                .catch(err => alert(`Couldn't update cards. ${err}`))
+        )
     }
 
     async  function toggleBookmarkStatusOfCurrentCard() {
