@@ -62,6 +62,17 @@ export async function updateProficiency(token: string, cardID: number, score: SM
 }
 
 
+export async function replaceWithNewCards(
+    token: string, cardID: number, newHiddenWordPositions: number[]
+) {
+    const replaceWithNewCardsURL = `/cards/${cardID}/replaceWithNewCards/`
+
+    return processAPIResult(getAxios(token).post(replaceWithNewCardsURL, {
+        hiddenWordPositions: newHiddenWordPositions
+    }))
+}
+
+
 export async function isBookmarked(
     token: string, sentenceListID: number, cardID: number
 ): Promise<boolean> {

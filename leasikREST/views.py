@@ -1,4 +1,5 @@
 from datetime import date
+from typing import List
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
@@ -35,6 +36,22 @@ class CardViewSet(ModelViewSet):
         cards = get_cards(request.user, sentences, num_cards)
 
         return Response(CardSerializer(cards, many=True).data)
+
+    @action(methods=["POST"], detail=True)
+    def replaceWithNewCards(self, request: Request, pk: int) -> Response:
+        owner = request.user
+
+        card: Card = self.get_object()
+        hidden_word_positions: List[int] = request.data.get("hiddenWordPositions")
+
+        sentence = card.sentence
+        sentence.card_set.all().delete()
+        sentence.card_set.bulk_create(
+            Card(owner=owner, sentence=sentence, hidden_word_position=h)
+            for h in hidden_word_positions
+        )
+
+        return Response({"status": "Created"})
 
     @action(methods=["POST"], detail=True)
     def updateUsingSM2(self, request: Request, pk: int) -> Response:
