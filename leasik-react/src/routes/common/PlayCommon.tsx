@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { Dialog, ToggleButton, ToggleButtonGroup } from '@mui/material'
+
 import { CardType } from '../../utilities/models'
 import { getToken } from '../../utilities/authentication'
 import {
@@ -33,15 +35,117 @@ function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
 }
 
 
-function EditCardsButton() {
+type EditCardsButtonPropsType = {
+    card: CardType
+    onStartEditingCards: () => any
+    onSaveEdits: (wordIndicesToSave: number[]) => any
+    onCancelEdits: () => any
+}
+function EditCardsButton(
+    { card, onStartEditingCards, onSaveEdits, onCancelEdits }: EditCardsButtonPropsType
+) {
+    const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false)
+
     return (
-        <button className='button is-info'>Edit Cards</button>
+        <div>
+            <button className='button is-info' onClick={ openDialogBoxAndStartEditProcess }>
+                Edit Cards
+            </button>
+            <EditCardsDialogBox
+                card={ card }
+                open={ isDialogBoxOpen }
+                /* onClose implies cancel because action should only be saved
+                    if user explicity clicks the save button. Click outside the
+                    box is considered a cancel.
+                 */
+                onClose={ onClickToCancelAction }
+                onCancel={ onClickToCancelAction }
+                onSave={ onClickToSaveAction }
+            />
+        </div>
     )
+
+    function openDialogBoxAndStartEditProcess() {
+        onStartEditingCards()
+        setIsDialogBoxOpen(true)
+    }
+
+    function onClickToCancelAction() {
+        onCancelEdits()
+        setIsDialogBoxOpen(false)
+    }
+
+    function onClickToSaveAction(wordIndicesToSave: number[]) {
+        onSaveEdits(wordIndicesToSave)
+        setIsDialogBoxOpen(false)
+    }
 }
 
 
-type UtilityButtonsPropsType = { card: AugmentedCardType, onBookmark: () => any }
-function UtilityButtons({ card, onBookmark }: UtilityButtonsPropsType) {
+type EditCardsDialogBoxPropsType = {
+    card: CardType
+    open: boolean
+    onClose: () => any
+    onCancel: () => any
+    onSave: (wordIndicesToSave: number[]) => any
+}
+function EditCardsDialogBox(
+    { card, open, onClose, onCancel, onSave }: EditCardsDialogBoxPropsType
+) {
+    const words = getWords(card.sentence.text)
+    const wordSelectButtons = words.map((w, i) => (
+        <ToggleButton value={ i }>
+            { w }
+        </ToggleButton>
+    ))
+
+    const [selectedWordIndices, setSelectedWordIndices] = useState<number[]>([])
+
+    return (
+        <Dialog onClose={ onClose } open={ open }>
+            <ToggleButtonGroup
+                orientation='vertical'
+                value={ selectedWordIndices }
+                onChange={ onSelect }
+            >
+                { wordSelectButtons }
+            </ToggleButtonGroup>
+
+            <div>
+                <button className='button is-danger' onClick={ onCancel }>
+                    Cancel
+                </button>
+                <button className='button is-success' onClick={ saveSelectedWordIndices }>
+                    Save
+                </button>
+            </div>
+        </Dialog>
+    )
+
+    function onSelect(e: React.MouseEvent<HTMLElement>, newSelectedWordIndices: number[]) {
+        setSelectedWordIndices(newSelectedWordIndices)
+    }
+
+    function saveSelectedWordIndices() {
+        return onSave(selectedWordIndices)
+    }
+}
+
+
+type UtilityButtonsPropsType = {
+    card: AugmentedCardType
+    onBookmark: () => any
+    onStartEditingCards: () => any
+    onCancelEditingCards: () => any
+    onSaveEditingCards: (wordIndicesToSave: number[]) => any
+}
+function UtilityButtons({
+    card,
+    onBookmark,
+    onStartEditingCards,
+    onCancelEditingCards,
+    onSaveEditingCards
+}: UtilityButtonsPropsType) {
     return (
         <div className='container'>
             <div className='buttons is-centered'>
@@ -49,7 +153,12 @@ function UtilityButtons({ card, onBookmark }: UtilityButtonsPropsType) {
                     card={ card }
                     onBookmark={ onBookmark }
                 />
-                <EditCardsButton />
+                <EditCardsButton
+                    card={ card }
+                    onStartEditingCards={ onStartEditingCards }
+                    onCancelEdits={ onCancelEditingCards }
+                    onSaveEdits={ onSaveEditingCards }
+                />
             </div>
         </div>
     )
@@ -174,6 +283,9 @@ function QuestionArea(
 type QuizDisplayPropsType = {
     card: AugmentedCardType
     onBookmark: () => any
+    onStartEditingCards: () => any
+    onCancelEditingCards: () => any
+    onSaveEditingCards: (wordIndicesToSave: number[]) => any
     answerStatus: answerStatusType
     currentInput: string
     onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any
@@ -184,6 +296,9 @@ type QuizDisplayPropsType = {
 function QuizDisplay({
     card,
     onBookmark,
+    onStartEditingCards,
+    onCancelEditingCards,
+    onSaveEditingCards,
     answerStatus,
     currentInput,
     onEnterKeyPress,
@@ -197,6 +312,9 @@ function QuizDisplay({
                 <UtilityButtons
                     card={ card }
                     onBookmark={ onBookmark }
+                    onStartEditingCards={ onStartEditingCards }
+                    onCancelEditingCards={ onCancelEditingCards }
+                    onSaveEditingCards={ onSaveEditingCards }
                 />
             </div>
             
@@ -297,11 +415,18 @@ function GeneralListPlayCore(
             currentInput={ userInput }
             onAnswerCheck={ checkAnswer }
             onBookmark={ toggleBookmarkStatusOfCurrentCard }
+            onStartEditingCards={ () => {} }
+            onCancelEditingCards={ () => {} }
+            onSaveEditingCards={ saveEditToCards }
             onEnterKeyPress={ enterCheckAndNext }
             onInputChange={ setUserInput }
             onNext={ nextCard }
         />
     )
+
+    function saveEditToCards(wordIndicesToSave: number[]) {
+        alert(`Feature not implemented yet. Selected word indices: ${wordIndicesToSave}`)
+    }
 
     async  function toggleBookmarkStatusOfCurrentCard() {
         if (token === null) {
