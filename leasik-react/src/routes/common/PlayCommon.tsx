@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { Dialog, ToggleButton, ToggleButtonGroup } from '@mui/material'
 
-import { CardType } from '../../utilities/models'
+import { CardInterface, SentenceType } from '../../utilities/models'
 import { getToken } from '../../utilities/authentication'
 import {
     getWords,
@@ -19,11 +19,40 @@ import {
 } from '../../utilities/apiCalls'
 
 
-export type AugmentedCardType = CardType & { isBookmarked: boolean }
+interface AugmentedCardInterface extends CardInterface {
+    isBookmarked: boolean
+    isDeletedOnServer: boolean
+}
+
+class AugmentedCard implements AugmentedCardInterface {
+    id: number
+    note: string
+    sentence: SentenceType
+    hidden_word_position: number
+    isBookmarked: boolean
+    isDeletedOnServer: boolean
+
+    constructor(
+        id: number,
+        note: string,
+        sentence: SentenceType,
+        hidden_word_position: number,
+        isBookmarked: boolean,
+        isDeletedOnServer: boolean = false
+    ) {
+        this.id = id
+        this.note = note
+        this.sentence = sentence
+        this.hidden_word_position = hidden_word_position
+        this.isBookmarked = isBookmarked
+        this.isDeletedOnServer = isDeletedOnServer
+    }
+}
+
 type answerStatusType = "unchecked" | "correct" | "incorrect"
 
 
-type BookmarkButtonPropsType = { card: AugmentedCardType, onBookmark: () => any }
+type BookmarkButtonPropsType = { card: AugmentedCard, onBookmark: () => any }
 function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
     return (
         <button
@@ -37,7 +66,7 @@ function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
 
 
 type EditCardsButtonPropsType = {
-    card: CardType
+    card: CardInterface
     onStartEditingCards: () => any
     onSaveEdits: (wordIndicesToSave: number[]) => any
     onCancelEdits: () => any
@@ -84,7 +113,7 @@ function EditCardsButton(
 
 
 type EditCardsDialogBoxPropsType = {
-    card: CardType
+    card: CardInterface
     open: boolean
     onClose: () => any
     onCancel: () => any
@@ -134,7 +163,7 @@ function EditCardsDialogBox(
 
 
 type UtilityButtonsPropsType = {
-    card: AugmentedCardType
+    card: AugmentedCard
     onBookmark: () => any
     onStartEditingCards: () => any
     onCancelEditingCards: () => any
@@ -186,7 +215,7 @@ function AnswerButtons({ answerStatus, onAnswerCheck, onNext }: AnswerButtonsPro
 
 
 type QuestionPropsType = {
-    card: AugmentedCardType
+    card: AugmentedCard
     answerStatus: answerStatusType
     currentInput: string
     onInputChange: (arg0: string) => any
@@ -242,7 +271,7 @@ function Question(
 }
 
 
-type QuestionHintPropsType = { card: CardType }
+type QuestionHintPropsType = { card: CardInterface }
 function QuestionHint({ card }: QuestionHintPropsType) {
     return (
         <div className='block'>
@@ -256,7 +285,7 @@ function QuestionHint({ card }: QuestionHintPropsType) {
 
 
 type QuestionAreaPropsType = {
-    card: AugmentedCardType
+    card: AugmentedCard
     answerStatus: answerStatusType
     currentInput: string
     onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any
@@ -282,7 +311,7 @@ function QuestionArea(
 
 
 type QuizDisplayPropsType = {
-    card: AugmentedCardType
+    card: AugmentedCard
     onBookmark: () => any
     onStartEditingCards: () => any
     onCancelEditingCards: () => any
@@ -342,7 +371,7 @@ function QuizDisplay({
 
 
 type GeneralListPlayCorePropsType = {
-    initialCards: Promise<CardType[]>
+    initialCards: Promise<CardInterface[]>
     assumeDefaultBookmarkValue?: boolean
 }
 function GeneralListPlayCore(
@@ -353,7 +382,7 @@ function GeneralListPlayCore(
     const token = getToken()
 
     const [isLoading, setIsLoading] = useState(false)
-    const [cards, setCards] = useState<AugmentedCardType[]>([])
+    const [cards, setCards] = useState<AugmentedCard[]>([])
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     const [userInput, setUserInput] = useState('')
     const [currentCardAnswerStatus, setCurrentCardAnswerStatus] = (
@@ -374,23 +403,34 @@ function GeneralListPlayCore(
                 .catch(err => alert(`Couldn't load cards. ${err}`))
                 .finally(() => setIsLoading(false))
 
-            function toAugmentedCard(normalCard: CardType): Promise<AugmentedCardType> {
+            function toAugmentedCard(normalCard: CardInterface): Promise<AugmentedCard> {
                 if (token === null) {
                     return Promise.reject("Token is null.")
                 }
 
                 if (assumeDefaultBookmarkValue) {
-                    return new Promise(
-                        resolve => resolve({
-                            ...normalCard,
-                            isBookmarked: assumeDefaultBookmarkValue
-                        })
+                    return Promise.resolve(
+                        new AugmentedCard(
+                            normalCard.id,
+                            normalCard.note,
+                            normalCard.sentence,
+                            normalCard.hidden_word_position,
+                            assumeDefaultBookmarkValue
+                        )
                     )
                 }
 
                 return (
                     isBookmarked(token, sentenceListID, normalCard.id)
-                        .then(bookmarkStatus => ({ ...normalCard, isBookmarked: bookmarkStatus }))
+                        .then(bookmarkStatus => (
+                            new AugmentedCard(
+                                normalCard.id,
+                                normalCard.note,
+                                normalCard.sentence,
+                                normalCard.hidden_word_position,
+                                bookmarkStatus
+                            )
+                        ))
                 )
             }
         },
@@ -431,9 +471,19 @@ function GeneralListPlayCore(
         }
 
         const currentCard = cards[currentCardIndex]
+        if (currentCard.isDeletedOnServer) {
+            alert("Card has been deleted on the server.")
+            return
+        }
+
+        const currentCardUpdated = { ...currentCard, isDeletedOnServer: true }
+        const cardsCopy = cards.slice(0, currentCardIndex)
+                            .concat(currentCardUpdated)
+                            .concat(cards.slice(currentCardIndex + 1))
 
         return (
-            replaceWithNewCards(token, currentCard.id, wordIndicesToSave)
+            replaceWithNewCards(token, currentCardUpdated.id, wordIndicesToSave)
+                .then(_ => setCards(cardsCopy))
                 .catch(err => alert(`Couldn't update cards. ${err}`))
         )
     }
@@ -445,6 +495,11 @@ function GeneralListPlayCore(
 
         const cardsCopy = cards.slice()
         const currentCard = cardsCopy[currentCardIndex]
+        if (currentCard.isDeletedOnServer) {
+            alert("Card has been deleted from the server.")
+            return
+        }
+
         const apiFunction = currentCard.isBookmarked ? removeBookmark : addBookmark
 
         return  apiFunction(token, sentenceListID, currentCard.id)
@@ -470,9 +525,11 @@ function GeneralListPlayCore(
         }
 
         setUserInput(correctAnswer)
-        
-        updateProficiency(token, currentCard.id, score)
-            .catch(err => alert(`Couldn't update card proficiency. ${err}`))
+
+        if (!currentCard.isDeletedOnServer) {
+            updateProficiency(token, currentCard.id, score)
+                .catch(err => alert(`Couldn't update card proficiency. ${err}`))
+        }
     }
 
     function checkAnswer(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -504,7 +561,7 @@ function GeneralListPlayCore(
 
 
 type GeneralListPlayPropsType = {
-    getInitialCards: (token: string, sentenceListID: number) => Promise<CardType[]>
+    getInitialCards: (token: string, sentenceListID: number) => Promise<CardInterface[]>
     assumeDefaultBookmarkValue?: boolean
 }
 export default function GeneralListPlay(

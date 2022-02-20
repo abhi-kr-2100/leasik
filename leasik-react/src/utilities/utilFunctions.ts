@@ -1,4 +1,4 @@
-import { CardType } from './models'
+import { CardInterface } from './models'
 
 
 export function getWords(s: string) {
@@ -6,7 +6,7 @@ export function getWords(s: string) {
 }
 
 
-export function convertToConcreteCard(card: CardType): CardType {
+export function convertToConcreteCard(card: CardInterface): CardInterface {
     // select a random hidden_word_position, if it's -1
     if (card.hidden_word_position !== -1) {
         return { ...card }

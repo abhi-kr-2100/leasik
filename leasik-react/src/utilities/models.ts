@@ -4,7 +4,7 @@ export type SentenceType = {
 }
 
 
-export type CardType = {
+export interface CardInterface {
     id: number
     note: string
     sentence: SentenceType

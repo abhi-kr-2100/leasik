@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { CardType, SentenceListType } from './models'
+import { CardInterface, SentenceListType } from './models'
 
 
 function getAxios(token?: string | null) {
@@ -36,7 +36,7 @@ export async function getTokenFromCredentials(
 
 export async function getPlaylist(
     token: string, sentenceListID: number
-): Promise<CardType[]> {
+): Promise<CardInterface[]> {
     const getPlaylistURL = `/cards/playlist/${sentenceListID}/`
 
     return processAPIResult(getAxios(token).get(getPlaylistURL))
@@ -45,7 +45,7 @@ export async function getPlaylist(
 
 export async function getBookmarksForList(
     token: string, sentenceListID: number
-): Promise<CardType[]> {
+): Promise<CardInterface[]> {
     const getBookmarksForListURL = `/bookmarks/forList/${sentenceListID}/`
 
     return processAPIResult(getAxios(token).get(getBookmarksForListURL))
