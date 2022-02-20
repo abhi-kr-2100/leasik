@@ -7,7 +7,8 @@ module.exports = {
         "eslint:recommended",
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:promise/recommended"
+        "plugin:promise/recommended",
+        "plugin:unicorn/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -20,7 +21,8 @@ module.exports = {
     "plugins": [
         "react",
         "@typescript-eslint",
-        "promise"
+        "promise",
+        "unicorn"
     ],
     "rules": {
     }
