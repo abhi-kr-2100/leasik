@@ -15,13 +15,6 @@ class Sentence(models.Model):
     text = models.TextField()
     translation = models.TextField()
 
-    text_language = models.CharField(
-        max_length=2, validators=[MinValueValidator(2)], blank=True
-    )
-    translation_language = models.CharField(
-        max_length=2, validators=[MinValueValidator(2)], blank=True
-    )
-
     class Meta:
         unique_together = ("text", "translation")
 
