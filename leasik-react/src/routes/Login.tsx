@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { getTokenFromCredentials } from "../utilities/apiCalls";
 import { setToken } from "../utilities/authentication";
 
-type LoginFormPropsType = {
+interface ILoginFormProps {
     setUsername: (arg0: string) => any;
     setPassword: (arg0: string) => any;
     onSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
-};
-function LoginForm({ setUsername, setPassword, onSubmit }: LoginFormPropsType) {
+}
+function LoginForm({ setUsername, setPassword, onSubmit }: ILoginFormProps) {
     function onUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
         return setUsername(e.target.value);
     }
@@ -38,8 +38,10 @@ function LoginForm({ setUsername, setPassword, onSubmit }: LoginFormPropsType) {
     );
 }
 
-type LoginPropsType = { redirectURL: string };
-export default function Login({ redirectURL }: LoginPropsType) {
+interface ILoginProps {
+    redirectURL: string;
+}
+export default function Login({ redirectURL }: ILoginProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { Dialog, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-import { CardInterface, SentenceType } from "../../utilities/models";
+import { CardInterface, SentenceInterface } from "../../utilities/models";
 import { getToken } from "../../utilities/authentication";
 import {
     getWords,
@@ -30,7 +30,7 @@ interface AugmentedCardInterface extends CardInterface {
 class AugmentedCard implements AugmentedCardInterface {
     id: number;
     note: string;
-    sentence: SentenceType;
+    sentence: SentenceInterface;
     hidden_word_position: number;
     isBookmarked: boolean;
     isDeletedOnServer: boolean;
@@ -59,7 +59,7 @@ class AugmentedCard implements AugmentedCardInterface {
     constructor(
         id: number,
         note: string,
-        sentence: SentenceType,
+        sentence: SentenceInterface,
         hiddenWordPosition: number,
         isBookmarked: boolean,
         isDeletedOnServer: boolean = false,
@@ -77,8 +77,11 @@ class AugmentedCard implements AugmentedCardInterface {
 
 type answerStatusType = "unchecked" | "correct" | "incorrect";
 
-type BookmarkButtonPropsType = { card: AugmentedCard; onBookmark: () => any };
-function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
+interface IBookmarkButtonProps {
+    card: AugmentedCard;
+    onBookmark: () => any;
+}
+function BookmarkButton({ card, onBookmark }: IBookmarkButtonProps) {
     const classNames = [
         "button",
         card.isBookmarked ? "is-danger" : "is-info",
@@ -92,18 +95,18 @@ function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
     );
 }
 
-type EditCardsButtonPropsType = {
+interface IEditCardsButtonProps {
     card: CardInterface;
     onStartEditingCards: () => any;
     onSaveEdits: (wordIndicesToSave: number[]) => any;
     onCancelEdits: () => any;
-};
+}
 function EditCardsButton({
     card,
     onStartEditingCards,
     onSaveEdits,
     onCancelEdits,
-}: EditCardsButtonPropsType) {
+}: IEditCardsButtonProps) {
     // clicking on the EditCardsButton causes an edit dialog box to open
     const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false);
 
@@ -145,20 +148,20 @@ function EditCardsButton({
     }
 }
 
-type EditCardsDialogBoxPropsType = {
+interface IEditCardsDialogBoxProps {
     card: CardInterface;
     open: boolean;
     onClose: () => any;
     onCancel: () => any;
     onSave: (wordIndicesToSave: number[]) => any;
-};
+}
 function EditCardsDialogBox({
     card,
     open,
     onClose,
     onCancel,
     onSave,
-}: EditCardsDialogBoxPropsType) {
+}: IEditCardsDialogBoxProps) {
     const words = getWords(card.sentence.text);
     const wordSelectButtons = words.map((w, i) => (
         <ToggleButton value={i} key={i}>
@@ -206,20 +209,20 @@ function EditCardsDialogBox({
     }
 }
 
-type UtilityButtonsPropsType = {
+interface IUtilityButtonsProps {
     card: AugmentedCard;
     onBookmark: () => any;
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
     onSaveEditingCards: (wordIndicesToSave: number[]) => any;
-};
+}
 function UtilityButtons({
     card,
     onBookmark,
     onStartEditingCards,
     onCancelEditingCards,
     onSaveEditingCards,
-}: UtilityButtonsPropsType) {
+}: IUtilityButtonsProps) {
     return (
         <div className="container">
             <div className="buttons is-centered">
@@ -235,16 +238,16 @@ function UtilityButtons({
     );
 }
 
-type AnswerButtonsPropsType = {
+interface IAnswerButtonsProps {
     answerStatus: answerStatusType;
     onAnswerCheck: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
     onNext: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
-};
+}
 function AnswerButtons({
     answerStatus,
     onAnswerCheck,
     onNext,
-}: AnswerButtonsPropsType) {
+}: IAnswerButtonsProps) {
     const isAnswerUnchcked = answerStatus === "unchecked";
 
     const submitFunction = isAnswerUnchcked ? onAnswerCheck : onNext;
@@ -259,20 +262,20 @@ function AnswerButtons({
     );
 }
 
-type QuestionPropsType = {
+interface IQuestionProps {
     card: AugmentedCard;
     answerStatus: answerStatusType;
     currentInput: string;
     onInputChange: (arg0: string) => any;
     onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any;
-};
+}
 function Question({
     card,
     answerStatus,
     currentInput,
     onInputChange,
     onEnterKeyPress,
-}: QuestionPropsType) {
+}: IQuestionProps) {
     const words = getWords(card.sentence.text);
 
     // `Question`s are fill-in-the-blanks type questions.
@@ -321,8 +324,10 @@ function Question({
     }
 }
 
-type QuestionHintPropsType = { card: CardInterface };
-function QuestionHint({ card }: QuestionHintPropsType) {
+interface IQuestionHintProps {
+    card: CardInterface;
+}
+function QuestionHint({ card }: IQuestionHintProps) {
     return (
         <div className="block">
             <p className="title is-6">{card.sentence.translation}</p>
@@ -336,20 +341,20 @@ function QuestionHint({ card }: QuestionHintPropsType) {
     );
 }
 
-type QuestionAreaPropsType = {
+interface IQuestionAreaProps {
     card: AugmentedCard;
     answerStatus: answerStatusType;
     currentInput: string;
     onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any;
     onInputChange: (arg0: string) => any;
-};
+}
 function QuestionArea({
     card,
     answerStatus,
     currentInput,
     onEnterKeyPress,
     onInputChange,
-}: QuestionAreaPropsType) {
+}: IQuestionAreaProps) {
     return (
         <div className="container has-text-centered">
             <Question
@@ -365,7 +370,7 @@ function QuestionArea({
     );
 }
 
-type QuizDisplayPropsType = {
+interface IQuizDisplayProps {
     card: AugmentedCard;
     onBookmark: () => any;
     onStartEditingCards: () => any;
@@ -377,7 +382,7 @@ type QuizDisplayPropsType = {
     onInputChange: (arg0: string) => any;
     onAnswerCheck: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
     onNext: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
-};
+}
 function QuizDisplay({
     card,
     onBookmark,
@@ -390,7 +395,7 @@ function QuizDisplay({
     onInputChange,
     onAnswerCheck,
     onNext,
-}: QuizDisplayPropsType) {
+}: IQuizDisplayProps) {
     return (
         <div className="pt-5">
             <div className="hero-head">
@@ -424,18 +429,18 @@ function QuizDisplay({
     );
 }
 
-type GeneralListPlayCorePropsType = {
+interface IGeneralListPlayCoreProps {
     token: string;
     sentenceListID: number;
     initialCards: Promise<CardInterface[]>;
     assumeDefaultBookmarkValue?: boolean;
-};
+}
 function GeneralListPlayCore({
     token,
     sentenceListID,
     initialCards,
     assumeDefaultBookmarkValue,
-}: GeneralListPlayCorePropsType) {
+}: IGeneralListPlayCoreProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [cards, setCards] = useState<AugmentedCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -635,17 +640,17 @@ function GeneralListPlayCore({
     }
 }
 
-type GeneralListPlayPropsType = {
+interface IGeneralListPlayProps {
     getInitialCards: (
         token: string,
         sentenceListID: number
     ) => Promise<CardInterface[]>;
     assumeDefaultBookmarkValue?: boolean;
-};
+}
 export default function GeneralListPlay({
     getInitialCards,
     assumeDefaultBookmarkValue,
-}: GeneralListPlayPropsType) {
+}: IGeneralListPlayProps) {
     const params = useParams();
     const listIDParameter = params.listId !== undefined ? params.listId : "";
     const sentenceListID = parseInt(listIDParameter);

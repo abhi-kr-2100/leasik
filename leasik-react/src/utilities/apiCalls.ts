@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CardInterface, SentenceListType } from "./models";
+import { CardInterface, SentenceListInterface } from "./models";
 
 function getAxios(token?: string | null) {
     const baseURL = "http://127.0.0.1:8000/api/v1/";
@@ -93,7 +93,7 @@ export async function isBookmarked(
 
 export async function getSentenceLists(
     token?: string | null
-): Promise<SentenceListType[]> {
+): Promise<SentenceListInterface[]> {
     const sentenceListURL = "/lists/";
 
     return processAPIResult(getAxios(token).get(sentenceListURL)).then(

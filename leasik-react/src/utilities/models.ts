@@ -1,4 +1,4 @@
-export type SentenceType = {
+export interface SentenceInterface {
     text: string;
     translation: string;
 };
@@ -6,11 +6,11 @@ export type SentenceType = {
 export interface CardInterface {
     id: number;
     note: string;
-    sentence: SentenceType;
+    sentence: SentenceInterface;
     hidden_word_position: number;
 }
 
-export type SentenceListType = {
+export interface SentenceListInterface {
     id: number;
     name: string;
     description: string;

@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 
 import { getSentenceLists } from "../utilities/apiCalls";
 import { getToken } from "../utilities/authentication";
-import { SentenceListType } from "../utilities/models";
+import { SentenceListInterface } from "../utilities/models";
 
-type SentenceListPropsType = { sentenceList: SentenceListType };
-function SentenceList({ sentenceList }: SentenceListPropsType) {
+interface ISentenceListProps {
+    sentenceList: SentenceListInterface;
+}
+function SentenceList({ sentenceList }: ISentenceListProps) {
     const { id, name, description } = sentenceList;
 
     return (
@@ -42,7 +44,9 @@ function SentenceList({ sentenceList }: SentenceListPropsType) {
 }
 
 export default function SentenceLists() {
-    const [sentenceLists, setSentenceLists] = useState<SentenceListType[]>([]);
+    const [sentenceLists, setSentenceLists] = useState<SentenceListInterface[]>(
+        []
+    );
 
     useEffect(() => {
         const token = getToken();
