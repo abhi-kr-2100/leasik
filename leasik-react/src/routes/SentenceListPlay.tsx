@@ -1,7 +1,6 @@
-import GeneralListPlay from './common/PlayCommon'
-import { getPlaylist } from '../utilities/apiCalls'
-
+import GeneralListPlay from "./common/PlayCommon";
+import { getPlaylist } from "../utilities/apiCalls";
 
 export default function SentenceListPlay() {
-    return <GeneralListPlay getInitialCards={ getPlaylist } />
+    return <GeneralListPlay getInitialCards={getPlaylist} />;
 }
