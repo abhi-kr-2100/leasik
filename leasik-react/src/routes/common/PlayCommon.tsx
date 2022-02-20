@@ -22,6 +22,10 @@ import {
 interface AugmentedCardInterface extends CardInterface {
     isBookmarked: boolean
     isDeletedOnServer: boolean
+
+    // sister cards are cards that have the same sentence but different hidden_word_positions and id
+    // they may or may not differ in other properties
+    sisterCards: AugmentedCard[]
 }
 
 class AugmentedCard implements AugmentedCardInterface {
@@ -31,21 +35,24 @@ class AugmentedCard implements AugmentedCardInterface {
     hidden_word_position: number
     isBookmarked: boolean
     isDeletedOnServer: boolean
+    sisterCards: AugmentedCard[]
 
     constructor(
         id: number,
         note: string,
         sentence: SentenceType,
-        hidden_word_position: number,
+        hiddenWordPosition: number,
         isBookmarked: boolean,
-        isDeletedOnServer: boolean = false
+        isDeletedOnServer: boolean = false,
+        sisterCards: AugmentedCard[] = []
     ) {
         this.id = id
         this.note = note
         this.sentence = sentence
-        this.hidden_word_position = hidden_word_position
+        this.hidden_word_position = hiddenWordPosition
         this.isBookmarked = isBookmarked
         this.isDeletedOnServer = isDeletedOnServer
+        this.sisterCards = sisterCards
     }
 }
 
@@ -471,21 +478,34 @@ function GeneralListPlayCore(
         }
 
         const currentCard = cards[currentCardIndex]
-        if (currentCard.isDeletedOnServer) {
-            alert("Card has been deleted on the server.")
-            return
-        }
-
         const currentCardUpdated = { ...currentCard, isDeletedOnServer: true }
         const cardsCopy = cards.slice(0, currentCardIndex)
                             .concat(currentCardUpdated)
                             .concat(cards.slice(currentCardIndex + 1))
 
-        return (
-            replaceWithNewCards(token, currentCardUpdated.id, wordIndicesToSave)
+        const cardsToReplace = currentCard.isDeletedOnServer ? currentCard.sisterCards : [currentCard]
+        const head = cardsToReplace.slice(0, cardsToReplace.length - 1)
+        const lastCard = cardsToReplace[cardsToReplace.length - 1]
+
+        return Promise.all(head.map(c => replaceWithNewCards(token, c.id, [])))
+                .then(_ => replaceWithNewCards(token, lastCard.id, wordIndicesToSave))
+                .then(sisterCards => sisterCards.map(c => new AugmentedCard(
+                    c.id,
+                    c.note,
+                    c.sentence,
+                    c.hidden_word_position,
+                    currentCardUpdated.isBookmarked
+                )))
+                .then(setSisterCards)
+                .then(augmentedSisterCards => augmentedSisterCards.map(
+                    c => (c.isBookmarked) ? addBookmark(token, sentenceListID, c.id) : null
+                ))
                 .then(_ => setCards(cardsCopy))
                 .catch(err => alert(`Couldn't update cards. ${err}`))
-        )
+        
+        function setSisterCards(sisterCards: AugmentedCard[]) {
+            return cardsCopy[currentCardIndex].sisterCards = sisterCards
+        }
     }
 
     async  function toggleBookmarkStatusOfCurrentCard() {
@@ -495,17 +515,21 @@ function GeneralListPlayCore(
 
         const cardsCopy = cards.slice()
         const currentCard = cardsCopy[currentCardIndex]
-        if (currentCard.isDeletedOnServer) {
-            alert("Card has been deleted from the server.")
-            return
-        }
 
         const apiFunction = currentCard.isBookmarked ? removeBookmark : addBookmark
 
-        return  apiFunction(token, sentenceListID, currentCard.id)
-            .then(_ => currentCard.isBookmarked = !currentCard.isBookmarked)
-            .then(_ => setCards(cardsCopy))
-            .catch(err => alert(`Couldn't toggle bookmark. ${err}`))
+        const cardsToUpdate = currentCard.isDeletedOnServer ? currentCard.sisterCards : [currentCard]
+
+        return cardsToUpdate.map(c => {
+            return apiFunction(token, sentenceListID, c.id)
+                // since the currentCard determines the bookmark status of all
+                // its sisterCards, we update the currentCard's bookmarked status
+                // regardless of whether the currentCard's or the sisterCards'
+                // bookmark statuses were changed
+                .then(_ => currentCard.isBookmarked = !currentCard.isBookmarked)
+                .then(_ => setCards(cardsCopy))
+                .catch(err => alert(`Couldn't toggle bookmark. ${err}`))
+        })
     }
 
     function checkAnswerCore() {
@@ -526,8 +550,13 @@ function GeneralListPlayCore(
 
         setUserInput(correctAnswer)
 
-        if (!currentCard.isDeletedOnServer) {
-            updateProficiency(token, currentCard.id, score)
+        const cardToCheck = !currentCard.isDeletedOnServer ? currentCard :
+                                currentCard.sisterCards.find(
+                                    c => c.hidden_word_position === currentCard.hidden_word_position
+                                )
+
+        if (cardToCheck !== undefined) {
+            updateProficiency(token, cardToCheck.id, score)
                 .catch(err => alert(`Couldn't update card proficiency. ${err}`))
         }
     }
