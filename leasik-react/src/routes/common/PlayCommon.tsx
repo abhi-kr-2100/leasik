@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { Dialog, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-import { CardInterface, SentenceInterface } from "../../utilities/models";
+import { ICard, ISentence } from "../../utilities/models";
 import { getToken } from "../../utilities/authentication";
 import {
     getWords,
@@ -18,7 +18,7 @@ import {
     replaceWithNewCards,
 } from "../../utilities/apiCalls";
 
-interface AugmentedCardInterface extends CardInterface {
+interface IAugmentedCard extends ICard {
     isBookmarked: boolean;
     isDeletedOnServer: boolean;
 
@@ -27,17 +27,17 @@ interface AugmentedCardInterface extends CardInterface {
     sisterCards: AugmentedCard[];
 }
 
-class AugmentedCard implements AugmentedCardInterface {
+class AugmentedCard implements IAugmentedCard {
     id: number;
     note: string;
-    sentence: SentenceInterface;
+    sentence: ISentence;
     hidden_word_position: number;
     isBookmarked: boolean;
     isDeletedOnServer: boolean;
     sisterCards: AugmentedCard[];
 
     static fromCard(
-        card: CardInterface,
+        card: ICard,
         isBookmarked: boolean,
         isDeletedOnServer: boolean = false,
         sisterCards: AugmentedCard[] = []
@@ -59,7 +59,7 @@ class AugmentedCard implements AugmentedCardInterface {
     constructor(
         id: number,
         note: string,
-        sentence: SentenceInterface,
+        sentence: ISentence,
         hiddenWordPosition: number,
         isBookmarked: boolean,
         isDeletedOnServer: boolean = false,
@@ -96,7 +96,7 @@ function BookmarkButton({ card, onBookmark }: IBookmarkButtonProps) {
 }
 
 interface IEditCardsButtonProps {
-    card: CardInterface;
+    card: ICard;
     onStartEditingCards: () => any;
     onSaveEdits: (wordIndicesToSave: number[]) => any;
     onCancelEdits: () => any;
@@ -149,7 +149,7 @@ function EditCardsButton({
 }
 
 interface IEditCardsDialogBoxProps {
-    card: CardInterface;
+    card: ICard;
     open: boolean;
     onClose: () => any;
     onCancel: () => any;
@@ -325,7 +325,7 @@ function Question({
 }
 
 interface IQuestionHintProps {
-    card: CardInterface;
+    card: ICard;
 }
 function QuestionHint({ card }: IQuestionHintProps) {
     return (
@@ -432,7 +432,7 @@ function QuizDisplay({
 interface IGeneralListPlayCoreProps {
     token: string;
     sentenceListID: number;
-    initialCards: Promise<CardInterface[]>;
+    initialCards: Promise<ICard[]>;
     assumeDefaultBookmarkValue?: boolean;
 }
 function GeneralListPlayCore({
@@ -460,7 +460,7 @@ function GeneralListPlayCore({
             .finally(() => setIsLoading(false));
 
         async function toAugmentedCard(
-            normalCard: CardInterface
+            normalCard: ICard
         ): Promise<AugmentedCard> {
             if (assumeDefaultBookmarkValue) {
                 return Promise.resolve(
@@ -644,7 +644,7 @@ interface IGeneralListPlayProps {
     getInitialCards: (
         token: string,
         sentenceListID: number
-    ) => Promise<CardInterface[]>;
+    ) => Promise<ICard[]>;
     assumeDefaultBookmarkValue?: boolean;
 }
 export default function GeneralListPlay({

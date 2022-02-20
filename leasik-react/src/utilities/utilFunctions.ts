@@ -1,10 +1,10 @@
-import { CardInterface } from "./models";
+import { ICard } from "./models";
 
 export function getWords(s: string) {
     return s.split(" ").filter((w) => w !== "");
 }
 
-export function convertToConcreteCard(card: CardInterface): CardInterface {
+export function convertToConcreteCard(card: ICard): ICard {
     // select a random hidden_word_position, if it's -1
     if (card.hidden_word_position !== -1) {
         return { ...card };
