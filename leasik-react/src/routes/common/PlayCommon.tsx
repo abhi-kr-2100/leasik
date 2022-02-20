@@ -477,6 +477,10 @@ function GeneralListPlayCore(
             return Promise.reject("Token is null")
         }
 
+        if (wordIndicesToSave.length === 0) {
+            return
+        }
+
         const currentCard = cards[currentCardIndex]
         const currentCardUpdated = { ...currentCard, isDeletedOnServer: true }
         const cardsCopy = cards.slice(0, currentCardIndex)
