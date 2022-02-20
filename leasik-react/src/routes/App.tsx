@@ -29,16 +29,20 @@ export default function App() {
     return (
         <div>
             <nav className="navbar is-primary">
-                <div className="navbar-brand is-primary">
-                    <NavLink className="navbar-item" to="/">
-                        Home
-                    </NavLink>
-                    <NavLink className="navbar-item" to="/lists">
-                        Lists
-                    </NavLink>
-                    <NavLink className="navbar-item" to={accountLinkURL}>
-                        {accountLinkText}
-                    </NavLink>
+                <div className="navbar-menu">
+                    <div className="navbar-start is-primary">
+                        <NavLink className="navbar-item" to="/">
+                            Home
+                        </NavLink>
+                        <NavLink className="navbar-item" to="/lists">
+                            Lists
+                        </NavLink>
+                    </div>
+                    <div className="navbar-end">
+                        <NavLink className="navbar-item" to={accountLinkURL}>
+                            {accountLinkText}
+                        </NavLink>
+                    </div>
                 </div>
             </nav>
 
