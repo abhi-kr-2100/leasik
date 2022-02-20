@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PubSub from "pubsub-js";
 
 import { getTokenFromCredentials } from "../utilities/apiCalls";
 import { setToken } from "../utilities/authentication";
@@ -61,6 +62,7 @@ export default function Login({ redirectURL }: ILoginProps) {
         try {
             const token = await getTokenFromCredentials(username, password);
             setToken(token);
+            PubSub.publish("UserLoggedIn", token);
             navigate(redirectURL);
         } catch (err) {
             alert(`Login failed. ${err}`);
