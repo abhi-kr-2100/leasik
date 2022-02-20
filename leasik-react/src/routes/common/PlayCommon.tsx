@@ -23,8 +23,8 @@ interface AugmentedCardInterface extends CardInterface {
     isBookmarked: boolean
     isDeletedOnServer: boolean
 
-    // sister cards are cards that have the same sentence but different hidden_word_positions and id
-    // they may or may not differ in other properties
+    // sister cards are have the same sentence but different ids
+    // other properties may or not differ
     sisterCards: AugmentedCard[]
 }
 
@@ -36,6 +36,26 @@ class AugmentedCard implements AugmentedCardInterface {
     isBookmarked: boolean
     isDeletedOnServer: boolean
     sisterCards: AugmentedCard[]
+
+    static fromCard(
+        card: CardInterface,
+        isBookmarked: boolean,
+        isDeletedOnServer: boolean = false,
+        sisterCards: AugmentedCard[] = []
+    ): AugmentedCard {
+        const { id, note, sentence, hidden_word_position } = card
+        const object = new AugmentedCard(
+            id,
+            note,
+            sentence,
+            hidden_word_position,
+            isBookmarked,
+            isDeletedOnServer,
+            sisterCards
+        )
+
+        return object
+    }
 
     constructor(
         id: number,
@@ -61,14 +81,10 @@ type answerStatusType = "unchecked" | "correct" | "incorrect"
 
 type BookmarkButtonPropsType = { card: AugmentedCard, onBookmark: () => any }
 function BookmarkButton({ card, onBookmark }: BookmarkButtonPropsType) {
-    return (
-        <button
-            onClick={ onBookmark }
-            className={ `button is-${card.isBookmarked ? 'danger' : 'info'}` }
-        >
-            { card.isBookmarked ? 'Remove ' : '' } Bookmark
-        </button>
-    )
+    const classNames = ['button', card.isBookmarked ? 'is-danger' : 'is-info'].join(' ')
+    const buttonText = card.isBookmarked ? 'Remove Bookmark' : 'Bookmark'
+
+    return <button onClick={ onBookmark } className={ classNames }>{ buttonText }</button>
 }
 
 
@@ -81,6 +97,7 @@ type EditCardsButtonPropsType = {
 function EditCardsButton(
     { card, onStartEditingCards, onSaveEdits, onCancelEdits }: EditCardsButtonPropsType
 ) {
+    // clicking on the EditCardsButton causes an edit dialog box to open
     const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false)
 
     return (
@@ -95,9 +112,9 @@ function EditCardsButton(
                     if user explicity clicks the save button. Click outside the
                     box is considered a cancel.
                  */
-                onClose={ onClickToCancelAction }
-                onCancel={ onClickToCancelAction }
-                onSave={ onClickToSaveAction }
+                onClose={ onCancel }
+                onCancel={ onCancel }
+                onSave={ onSave }
             />
         </div>
     )
@@ -107,12 +124,12 @@ function EditCardsButton(
         setIsDialogBoxOpen(true)
     }
 
-    function onClickToCancelAction() {
+    function onCancel() {
         onCancelEdits()
         setIsDialogBoxOpen(false)
     }
 
-    function onClickToSaveAction(wordIndicesToSave: number[]) {
+    function onSave(wordIndicesToSave: number[]) {
         onSaveEdits(wordIndicesToSave)
         setIsDialogBoxOpen(false)
     }
@@ -186,10 +203,7 @@ function UtilityButtons({
     return (
         <div className='container'>
             <div className='buttons is-centered'>
-                <BookmarkButton
-                    card={ card }
-                    onBookmark={ onBookmark }
-                />
+                <BookmarkButton card={ card } onBookmark={ onBookmark } />
                 <EditCardsButton
                     card={ card }
                     onStartEditingCards={ onStartEditingCards }
@@ -208,8 +222,10 @@ type AnswerButtonsPropsType = {
     onNext: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any
 }
 function AnswerButtons({ answerStatus, onAnswerCheck, onNext }: AnswerButtonsPropsType) {
-    const submitFunction = (answerStatus === 'unchecked') ? onAnswerCheck : onNext
-    const buttonText = (answerStatus === 'unchecked') ? 'Check' : 'Next'
+    const isAnswerUnchcked = answerStatus === 'unchecked'
+
+    const submitFunction = isAnswerUnchcked ? onAnswerCheck : onNext
+    const buttonText = isAnswerUnchcked ? 'Check' : 'Next'
 
     return (
         <div className='container has-text-centered block'>
@@ -246,9 +262,28 @@ function Question(
         'unchecked': ''
     }
 
-    const baseClasses = 'title has-text-centered input is-static'
-    const additionalClasses = statusToClassName[answerStatus]
-    const allClasses = `${baseClasses} ${additionalClasses}`
+    const classNames = [
+        'title has-text-centered input is-static',
+        statusToClassName[answerStatus]
+    ].join(' ')
+
+    const isAnswerChecked = answerStatus !== 'unchecked'
+
+    return (
+        <div className='block'>
+            <p className='title is-3'>{ preBlank }</p>
+            <input
+                value={ currentInput }
+                onChange={ onChange }
+                onKeyPress={ onKeyPress }
+                className={ classNames }
+
+                readOnly={ isAnswerChecked }
+                autoFocus
+            />
+            <p className='title is-3'>{ postBlank }</p>
+        </div>
+    )
 
     function onKeyPress(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
@@ -259,22 +294,6 @@ function Question(
     function onChange(e: React.ChangeEvent<HTMLInputElement>) {
         return onInputChange(e.target.value)
     }
-
-    return (
-        <div className='block'>
-            <p className='title is-3'>{ preBlank }</p>
-            <input
-                value={ currentInput }
-                onChange={ onChange }
-                onKeyPress={ onKeyPress }
-                className={ allClasses }
-
-                readOnly={ answerStatus !== 'unchecked' }
-                autoFocus={ true }
-            />
-            <p className='title is-3'>{ postBlank }</p>
-        </div>
-    )
 }
 
 
@@ -378,16 +397,14 @@ function QuizDisplay({
 
 
 type GeneralListPlayCorePropsType = {
+    token: string
+    sentenceListID: number
     initialCards: Promise<CardInterface[]>
     assumeDefaultBookmarkValue?: boolean
 }
 function GeneralListPlayCore(
-    {initialCards, assumeDefaultBookmarkValue }: GeneralListPlayCorePropsType
+    {token, sentenceListID, initialCards, assumeDefaultBookmarkValue }: GeneralListPlayCorePropsType
 ) {
-    const params = useParams()
-    const sentenceListID = parseInt((params.listId !== undefined) ? params.listId : '')
-    const token = getToken()
-
     const [isLoading, setIsLoading] = useState(false)
     const [cards, setCards] = useState<AugmentedCard[]>([])
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -398,10 +415,6 @@ function GeneralListPlayCore(
 
     useEffect(
         () => {
-            if (token === null) {
-                return
-            }
-
             setIsLoading(true)
             initialCards
                 .then(normalCards => normalCards.map(convertToConcreteCard))
@@ -411,42 +424,20 @@ function GeneralListPlayCore(
                 .finally(() => setIsLoading(false))
 
             function toAugmentedCard(normalCard: CardInterface): Promise<AugmentedCard> {
-                if (token === null) {
-                    return Promise.reject("Token is null.")
-                }
-
                 if (assumeDefaultBookmarkValue) {
                     return Promise.resolve(
-                        new AugmentedCard(
-                            normalCard.id,
-                            normalCard.note,
-                            normalCard.sentence,
-                            normalCard.hidden_word_position,
-                            assumeDefaultBookmarkValue
-                        )
+                        AugmentedCard.fromCard(normalCard, assumeDefaultBookmarkValue)
                     )
                 }
 
                 return (
                     isBookmarked(token, sentenceListID, normalCard.id)
-                        .then(bookmarkStatus => (
-                            new AugmentedCard(
-                                normalCard.id,
-                                normalCard.note,
-                                normalCard.sentence,
-                                normalCard.hidden_word_position,
-                                bookmarkStatus
-                            )
-                        ))
+                        .then(bookmarkStatus => AugmentedCard.fromCard(normalCard, bookmarkStatus))
                 )
             }
         },
         [token, initialCards, sentenceListID, assumeDefaultBookmarkValue]
     )
-
-    if (token === null) {
-        return <div>Please log in first.</div>
-    }
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -473,50 +464,44 @@ function GeneralListPlayCore(
     )
 
     async function saveEditToCards(wordIndicesToSave: number[]): Promise<any> {
-        if (token === null) {
-            return Promise.reject("Token is null")
-        }
-
         if (wordIndicesToSave.length === 0) {
             return
         }
 
         const currentCard = cards[currentCardIndex]
         const currentCardUpdated = { ...currentCard, isDeletedOnServer: true }
-        const cardsCopy = cards.slice(0, currentCardIndex)
-                            .concat(currentCardUpdated)
-                            .concat(cards.slice(currentCardIndex + 1))
+        const cardsCopyWithUpdatedCurrentCard = cards.slice(0, currentCardIndex)
+                                            .concat(currentCardUpdated)
+                                            .concat(cards.slice(currentCardIndex + 1))
 
         const cardsToReplace = currentCard.isDeletedOnServer ? currentCard.sisterCards : [currentCard]
-        const head = cardsToReplace.slice(0, cardsToReplace.length - 1)
+        const cardsExceptLastCard = cardsToReplace.slice(0, cardsToReplace.length - 1)
         const lastCard = cardsToReplace[cardsToReplace.length - 1]
 
-        return Promise.all(head.map(c => replaceWithNewCards(token, c.id, [])))
+        return (
+            Promise.all(cardsExceptLastCard.map(c => replaceWithNewCards(token, c.id, [])))
                 .then(_ => replaceWithNewCards(token, lastCard.id, wordIndicesToSave))
-                .then(sisterCards => sisterCards.map(c => new AugmentedCard(
-                    c.id,
-                    c.note,
-                    c.sentence,
-                    c.hidden_word_position,
-                    currentCardUpdated.isBookmarked
-                )))
+                .then(sisterCards => sisterCards.map(c => AugmentedCard.fromCard(
+                    c, currentCardUpdated.isBookmarked))
+                )
                 .then(setSisterCards)
-                .then(augmentedSisterCards => augmentedSisterCards.map(
-                    c => (c.isBookmarked) ? addBookmark(token, sentenceListID, c.id) : null
-                ))
-                .then(_ => setCards(cardsCopy))
+                .then(augmentedSisterCards => {
+                    if (!currentCardUpdated.isBookmarked) {
+                        return
+                    }
+
+                    augmentedSisterCards.map(c => addBookmark(token, sentenceListID, c.id))
+                })
+                .then(_ => setCards(cardsCopyWithUpdatedCurrentCard))
                 .catch(err => alert(`Couldn't update cards. ${err}`))
+        )
         
         function setSisterCards(sisterCards: AugmentedCard[]) {
-            return cardsCopy[currentCardIndex].sisterCards = sisterCards
+            return cardsCopyWithUpdatedCurrentCard[currentCardIndex].sisterCards = sisterCards
         }
     }
 
     async  function toggleBookmarkStatusOfCurrentCard() {
-        if (token === null) {
-            return Promise.reject("Token is null")
-        }
-
         const cardsCopy = cards.slice()
         const currentCard = cardsCopy[currentCardIndex]
 
@@ -524,23 +509,18 @@ function GeneralListPlayCore(
 
         const cardsToUpdate = currentCard.isDeletedOnServer ? currentCard.sisterCards : [currentCard]
 
-        return cardsToUpdate.map(c => {
-            return apiFunction(token, sentenceListID, c.id)
-                // since the currentCard determines the bookmark status of all
-                // its sisterCards, we update the currentCard's bookmarked status
-                // regardless of whether the currentCard's or the sisterCards'
-                // bookmark statuses were changed
-                .then(_ => currentCard.isBookmarked = !currentCard.isBookmarked)
-                .then(_ => setCards(cardsCopy))
-                .catch(err => alert(`Couldn't toggle bookmark. ${err}`))
+        return cardsToUpdate.map(async c => {
+            try {
+                await apiFunction(token, sentenceListID, c.id)
+                currentCard.isBookmarked = !currentCard.isBookmarked
+                return setCards(cardsCopy)
+            } catch (err) {
+                return alert(`Couldn't toggle bookmark. ${err}`)
+            }
         })
     }
 
     function checkAnswerCore() {
-        if (token === null) {
-            return Promise.reject("Token is null.")
-        }
-
         const currentCard = cards[currentCardIndex]
         const correctAnswer = getWords(currentCard.sentence.text)[currentCard.hidden_word_position]
 
@@ -555,13 +535,15 @@ function GeneralListPlayCore(
         setUserInput(correctAnswer)
 
         const cardToCheck = !currentCard.isDeletedOnServer ? currentCard :
-                                currentCard.sisterCards.find(
-                                    c => c.hidden_word_position === currentCard.hidden_word_position
-                                )
+                                currentCard.sisterCards.find(hasSameHiddenWordPosition)
 
         if (cardToCheck !== undefined) {
             updateProficiency(token, cardToCheck.id, score)
                 .catch(err => alert(`Couldn't update card proficiency. ${err}`))
+        }
+
+        function hasSameHiddenWordPosition(sisterCard: AugmentedCard): boolean {
+            return currentCard.hidden_word_position === sisterCard.hidden_word_position
         }
     }
 
@@ -601,7 +583,8 @@ export default function GeneralListPlay(
     { getInitialCards, assumeDefaultBookmarkValue }: GeneralListPlayPropsType
 ) {
     const params = useParams()
-    const sentenceListID = parseInt((params.listId !== undefined) ? params.listId : '')
+    const listIDParameter = (params.listId !== undefined) ? params.listId : ''
+    const sentenceListID = parseInt(listIDParameter)
     const token = getToken()
 
     if (token === null) {
@@ -611,6 +594,8 @@ export default function GeneralListPlay(
     const initialCards = getInitialCards(token, sentenceListID)
     return (
         <GeneralListPlayCore
+            token={ token }
+            sentenceListID={ sentenceListID }
             initialCards={ initialCards }
             assumeDefaultBookmarkValue={ assumeDefaultBookmarkValue }
         />
