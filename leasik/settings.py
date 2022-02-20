@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",
+    # "django.contrib.sites",
     "leasikApp",
     "rest_framework",
     "rest_framework.authtoken",
@@ -57,10 +57,10 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "leasik.urls"
@@ -89,13 +89,14 @@ WSGI_APPLICATION = "leasik.wsgi.application"
 
 database_url = getenv("DATABASE_URL")
 conn_max_age = getenv("DJANGO_DB_CON_MAX_AGE")
+engine = "django_cockroachdb"
 if conn_max_age is not None:
     conn_max_age = int(conn_max_age)
+if DEBUG:
+    engine = None
 
 DATABASES = {
-    "default": dj_database_url.parse(
-        database_url, "django_cockroachdb", conn_max_age
-    )
+    "default": dj_database_url.parse(database_url, engine, conn_max_age)
 }
 
 DISABLE_COCKROACHDB_TELEMETRY = True
@@ -123,10 +124,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-if site_id := getenv("DJANGO_SITE_ID") is None:
-    raise KeyError("DJANGO_SITE_ID not set.")
+# if site_id := getenv("DJANGO_SITE_ID") is None:
+#     raise KeyError("DJANGO_SITE_ID not set.")
 
-SITE_ID = int(site_id)
+# SITE_ID = int(site_id)
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -143,10 +144,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
+# STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 # Default primary key field type
@@ -154,14 +155,13 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
