@@ -33,7 +33,8 @@ class Card(models.Model):
     """A card similar to the ones in flashcard programs.
 
     Card is used to implement the SM-2 algorithm. See
-    https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm."""
+    https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.
+    """
 
     repetition_number = models.IntegerField(
         default=0, validators=[MinValueValidator(0)]
@@ -69,8 +70,7 @@ class Card(models.Model):
         )
 
     def is_up_for_review(self) -> bool:
-        """Does the card needs to be reviewed?"""
-
+        """Return True if Card needs to be reviewed, False otherwise."""
         days_passed = self.last_review_date - date.today()
         return days_passed >= self.inter_repetition_interval
 
@@ -112,6 +112,7 @@ class UserProfile(models.Model):
     def __str__(self) -> str:
         return self.owner.username
 
+    @staticmethod
     @receiver(post_save, sender=User)
     def create_user_profile(
         sender: UserProfile, instance: User, created: bool, **kwargs: Any

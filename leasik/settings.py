@@ -117,7 +117,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-if site_id := getenv("DJANGO_SITE_ID") == None:
+if site_id := getenv("DJANGO_SITE_ID") is None:
     raise KeyError("DJANGO_SITE_ID not set.")
 
 SITE_ID = int(site_id)

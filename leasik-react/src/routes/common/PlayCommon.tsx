@@ -39,7 +39,7 @@ class AugmentedCard implements IAugmentedCard {
     static fromCard(
         card: ICard,
         isBookmarked: boolean,
-        isDeletedOnServer: boolean = false,
+        isDeletedOnServer = false,
         sisterCards: AugmentedCard[] = []
     ): AugmentedCard {
         const { id, note, sentence, hidden_word_position } = card;
@@ -62,7 +62,7 @@ class AugmentedCard implements IAugmentedCard {
         sentence: ISentence,
         hiddenWordPosition: number,
         isBookmarked: boolean,
-        isDeletedOnServer: boolean = false,
+        isDeletedOnServer = false,
         sisterCards: AugmentedCard[] = []
     ) {
         this.id = id;
@@ -77,11 +77,11 @@ class AugmentedCard implements IAugmentedCard {
 
 type answerStatusType = "unchecked" | "correct" | "incorrect";
 
-interface IBookmarkButtonProps {
+interface IBookmarkButtonProperties {
     card: AugmentedCard;
     onBookmark: () => any;
 }
-function BookmarkButton({ card, onBookmark }: IBookmarkButtonProps) {
+function BookmarkButton({ card, onBookmark }: IBookmarkButtonProperties) {
     const classNames = [
         "button",
         card.isBookmarked ? "is-danger" : "is-info",
@@ -95,7 +95,7 @@ function BookmarkButton({ card, onBookmark }: IBookmarkButtonProps) {
     );
 }
 
-interface IEditCardsButtonProps {
+interface IEditCardsButtonProperties {
     card: ICard;
     onStartEditingCards: () => any;
     onSaveEdits: (wordIndicesToSave: number[]) => any;
@@ -106,7 +106,7 @@ function EditCardsButton({
     onStartEditingCards,
     onSaveEdits,
     onCancelEdits,
-}: IEditCardsButtonProps) {
+}: IEditCardsButtonProperties) {
     // clicking on the EditCardsButton causes an edit dialog box to open
     const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false);
 
@@ -148,7 +148,7 @@ function EditCardsButton({
     }
 }
 
-interface IEditCardsDialogBoxProps {
+interface IEditCardsDialogBoxProperties {
     card: ICard;
     open: boolean;
     onClose: () => any;
@@ -161,10 +161,10 @@ function EditCardsDialogBox({
     onClose,
     onCancel,
     onSave,
-}: IEditCardsDialogBoxProps) {
+}: IEditCardsDialogBoxProperties) {
     const words = getWords(card.sentence.text);
-    const wordSelectButtons = words.map((w, i) => (
-        <ToggleButton value={i} key={i}>
+    const wordSelectButtons = words.map((w, index) => (
+        <ToggleButton value={index} key={index}>
             {w}
         </ToggleButton>
     ));
@@ -198,7 +198,7 @@ function EditCardsDialogBox({
     );
 
     function onSelect(
-        e: React.MouseEvent<HTMLElement>,
+        event: React.MouseEvent<HTMLElement>,
         newSelectedWordIndices: number[]
     ) {
         setSelectedWordIndices(newSelectedWordIndices);
@@ -209,7 +209,7 @@ function EditCardsDialogBox({
     }
 }
 
-interface IUtilityButtonsProps {
+interface IUtilityButtonsProperties {
     card: AugmentedCard;
     onBookmark: () => any;
     onStartEditingCards: () => any;
@@ -222,7 +222,7 @@ function UtilityButtons({
     onStartEditingCards,
     onCancelEditingCards,
     onSaveEditingCards,
-}: IUtilityButtonsProps) {
+}: IUtilityButtonsProperties) {
     return (
         <div className="container">
             <div className="buttons is-centered">
@@ -238,16 +238,18 @@ function UtilityButtons({
     );
 }
 
-interface IAnswerButtonsProps {
+interface IAnswerButtonsProperties {
     answerStatus: answerStatusType;
-    onAnswerCheck: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
-    onNext: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
+    onAnswerCheck: (
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => any;
+    onNext: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
 }
 function AnswerButtons({
     answerStatus,
     onAnswerCheck,
     onNext,
-}: IAnswerButtonsProps) {
+}: IAnswerButtonsProperties) {
     const isAnswerUnchcked = answerStatus === "unchecked";
 
     const submitFunction = isAnswerUnchcked ? onAnswerCheck : onNext;
@@ -262,12 +264,12 @@ function AnswerButtons({
     );
 }
 
-interface IQuestionProps {
+interface IQuestionProperties {
     card: AugmentedCard;
     answerStatus: answerStatusType;
     currentInput: string;
-    onInputChange: (arg0: string) => any;
-    onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any;
+    onInputChange: (newInput: string) => any;
+    onEnterKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => any;
 }
 function Question({
     card,
@@ -275,7 +277,7 @@ function Question({
     currentInput,
     onInputChange,
     onEnterKeyPress,
-}: IQuestionProps) {
+}: IQuestionProperties) {
     const words = getWords(card.sentence.text);
 
     // `Question`s are fill-in-the-blanks type questions.
@@ -313,21 +315,21 @@ function Question({
         </div>
     );
 
-    function onKeyPress(e: React.KeyboardEvent<HTMLInputElement>) {
-        if (e.key === "Enter") {
-            return onEnterKeyPress(e);
+    function onKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === "Enter") {
+            return onEnterKeyPress(event);
         }
     }
 
-    function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-        return onInputChange(e.target.value);
+    function onChange(event: React.ChangeEvent<HTMLInputElement>) {
+        return onInputChange(event.target.value);
     }
 }
 
-interface IQuestionHintProps {
+interface IQuestionHintProperties {
     card: ICard;
 }
-function QuestionHint({ card }: IQuestionHintProps) {
+function QuestionHint({ card }: IQuestionHintProperties) {
     return (
         <div className="block">
             <p className="title is-6">{card.sentence.translation}</p>
@@ -341,12 +343,12 @@ function QuestionHint({ card }: IQuestionHintProps) {
     );
 }
 
-interface IQuestionAreaProps {
+interface IQuestionAreaProperties {
     card: AugmentedCard;
     answerStatus: answerStatusType;
     currentInput: string;
-    onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any;
-    onInputChange: (arg0: string) => any;
+    onEnterKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => any;
+    onInputChange: (newInput: string) => any;
 }
 function QuestionArea({
     card,
@@ -354,7 +356,7 @@ function QuestionArea({
     currentInput,
     onEnterKeyPress,
     onInputChange,
-}: IQuestionAreaProps) {
+}: IQuestionAreaProperties) {
     return (
         <div className="container has-text-centered">
             <Question
@@ -370,7 +372,7 @@ function QuestionArea({
     );
 }
 
-interface IQuizDisplayProps {
+interface IQuizDisplayProperties {
     card: AugmentedCard;
     onBookmark: () => any;
     onStartEditingCards: () => any;
@@ -378,10 +380,12 @@ interface IQuizDisplayProps {
     onSaveEditingCards: (wordIndicesToSave: number[]) => any;
     answerStatus: answerStatusType;
     currentInput: string;
-    onEnterKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => any;
-    onInputChange: (arg0: string) => any;
-    onAnswerCheck: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
-    onNext: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
+    onEnterKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => any;
+    onInputChange: (newInput: string) => any;
+    onAnswerCheck: (
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => any;
+    onNext: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
 }
 function QuizDisplay({
     card,
@@ -395,7 +399,7 @@ function QuizDisplay({
     onInputChange,
     onAnswerCheck,
     onNext,
-}: IQuizDisplayProps) {
+}: IQuizDisplayProperties) {
     return (
         <div className="pt-5">
             <div className="hero-head">
@@ -429,7 +433,7 @@ function QuizDisplay({
     );
 }
 
-interface IGeneralListPlayCoreProps {
+interface IGeneralListPlayCoreProperties {
     token: string;
     sentenceListID: number;
     initialCards: Promise<ICard[]>;
@@ -440,7 +444,7 @@ function GeneralListPlayCore({
     sentenceListID,
     initialCards,
     assumeDefaultBookmarkValue,
-}: IGeneralListPlayCoreProps) {
+}: IGeneralListPlayCoreProperties) {
     const [isLoading, setIsLoading] = useState(false);
     const [cards, setCards] = useState<AugmentedCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -456,18 +460,16 @@ function GeneralListPlayCore({
                 Promise.all(concreteCards.map(toAugmentedCard))
             )
             .then(setCards)
-            .catch((err) => alert(`Couldn't load cards. ${err}`))
+            .catch((error) => alert(`Couldn't load cards. ${error}`))
             .finally(() => setIsLoading(false));
 
         async function toAugmentedCard(
             normalCard: ICard
         ): Promise<AugmentedCard> {
             if (assumeDefaultBookmarkValue) {
-                return Promise.resolve(
-                    AugmentedCard.fromCard(
-                        normalCard,
-                        assumeDefaultBookmarkValue
-                    )
+                return AugmentedCard.fromCard(
+                    normalCard,
+                    assumeDefaultBookmarkValue
                 );
             }
 
@@ -504,25 +506,25 @@ function GeneralListPlayCore({
         />
     );
 
-    async function saveEditToCards(wordIndicesToSave: number[]): Promise<any> {
+    async function saveEditToCards(
+        wordIndicesToSave: number[]
+    ): Promise<void> {
         if (wordIndicesToSave.length === 0) {
             return;
         }
 
         const currentCard = cards[currentCardIndex];
         const currentCardUpdated = { ...currentCard, isDeletedOnServer: true };
-        const cardsCopyWithUpdatedCurrentCard = cards
-            .slice(0, currentCardIndex)
-            .concat(currentCardUpdated)
-            .concat(cards.slice(currentCardIndex + 1));
+        const cardsCopyWithUpdatedCurrentCard = [
+            ...cards.slice(0, currentCardIndex),
+            currentCardUpdated,
+            ...cards.slice(currentCardIndex + 1),
+        ];
 
         const cardsToReplace = currentCard.isDeletedOnServer
             ? currentCard.sisterCards
             : [currentCard];
-        const cardsExceptLastCard = cardsToReplace.slice(
-            0,
-            cardsToReplace.length - 1
-        );
+        const cardsExceptLastCard = cardsToReplace.slice(0, -1);
         const lastCard = cardsToReplace[cardsToReplace.length - 1];
 
         return Promise.all(
@@ -530,7 +532,7 @@ function GeneralListPlayCore({
                 replaceWithNewCards(token, c.id, [])
             )
         )
-            .then((_) =>
+            .then(() =>
                 replaceWithNewCards(token, lastCard.id, wordIndicesToSave)
             )
             .then((sisterCards) =>
@@ -548,8 +550,8 @@ function GeneralListPlayCore({
                     addBookmark(token, sentenceListID, c.id)
                 );
             })
-            .then((_) => setCards(cardsCopyWithUpdatedCurrentCard))
-            .catch((err) => alert(`Couldn't update cards. ${err}`));
+            .then(() => setCards(cardsCopyWithUpdatedCurrentCard))
+            .catch((error) => alert(`Couldn't update cards. ${error}`));
 
         function setSisterCards(sisterCards: AugmentedCard[]) {
             return (cardsCopyWithUpdatedCurrentCard[
@@ -559,7 +561,7 @@ function GeneralListPlayCore({
     }
 
     async function toggleBookmarkStatusOfCurrentCard() {
-        const cardsCopy = cards.slice();
+        const cardsCopy = [...cards];
         const currentCard = cardsCopy[currentCardIndex];
 
         const apiFunction = currentCard.isBookmarked
@@ -575,8 +577,8 @@ function GeneralListPlayCore({
                 await apiFunction(token, sentenceListID, c.id);
                 currentCard.isBookmarked = !currentCard.isBookmarked;
                 return setCards(cardsCopy);
-            } catch (err) {
-                return alert(`Couldn't toggle bookmark. ${err}`);
+            } catch (error) {
+                return alert(`Couldn't toggle bookmark. ${error}`);
             }
         });
     }
@@ -602,8 +604,8 @@ function GeneralListPlayCore({
             : currentCard.sisterCards.find(hasSameHiddenWordPosition);
 
         if (cardToCheck !== undefined) {
-            updateProficiency(token, cardToCheck.id, score).catch((err) =>
-                alert(`Couldn't update card proficiency. ${err}`)
+            updateProficiency(token, cardToCheck.id, score).catch((error) =>
+                alert(`Couldn't update card proficiency. ${error}`)
             );
         }
 
@@ -617,8 +619,10 @@ function GeneralListPlayCore({
         }
     }
 
-    function checkAnswer(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        e.preventDefault();
+    function checkAnswer(
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) {
+        event.preventDefault();
         checkAnswerCore();
     }
 
@@ -628,13 +632,13 @@ function GeneralListPlayCore({
         setCurrentCardAnswerStatus("unchecked");
     }
 
-    function nextCard(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        e.preventDefault();
+    function nextCard(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        event.preventDefault();
         nextCardCore();
     }
 
-    function enterCheckAndNext(e: React.KeyboardEvent<HTMLInputElement>) {
-        e.preventDefault();
+    function enterCheckAndNext(event: React.KeyboardEvent<HTMLInputElement>) {
+        event.preventDefault();
 
         if (currentCardAnswerStatus === "unchecked") {
             checkAnswerCore();
@@ -644,7 +648,7 @@ function GeneralListPlayCore({
     }
 }
 
-interface IGeneralListPlayProps {
+interface IGeneralListPlayProperties {
     getInitialCards: (
         token: string,
         sentenceListID: number
@@ -654,10 +658,11 @@ interface IGeneralListPlayProps {
 export default function GeneralListPlay({
     getInitialCards,
     assumeDefaultBookmarkValue,
-}: IGeneralListPlayProps) {
-    const params = useParams();
-    const listIDParameter = params.listId !== undefined ? params.listId : "";
-    const sentenceListID = parseInt(listIDParameter);
+}: IGeneralListPlayProperties) {
+    const parameters = useParams();
+    const listIDParameter =
+        parameters.listId !== undefined ? parameters.listId : "";
+    const sentenceListID = Number.parseInt(listIDParameter);
     const token = getToken();
 
     if (token === null) {

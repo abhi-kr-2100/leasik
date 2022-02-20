@@ -14,19 +14,18 @@ T = TypeVar("T")
 
 
 def batched(
-    iter: Sequence[T], batch_size: int = 1
+    iterable: Sequence[T], batch_size: int = 1
 ) -> Generator[Tuple[Sequence[T], int, int], None, None]:
     """Return iter in batches of batch_size.
 
     Additionally, include information about start and end index of the batch.
     """
-
-    n = len(iter)
+    n = len(iterable)
     for i in range(0, n, batch_size):
         s = i
         e = min(i + batch_size, n)
 
-        yield (iter[s:e], s, e)
+        yield (iterable[s:e], s, e)
 
 
 def get_cards(
@@ -36,7 +35,6 @@ def get_cards(
 
     If n is None, return all.
     """
-
     cards: List[Card] = []
     cards_up_for_review: List[Card] = []
 
@@ -67,11 +65,10 @@ def get_cards(
 def sm2(
     q: int, n: int, ef: float, i: timedelta
 ) -> Tuple[int, float, timedelta]:
-    """Implementation of the SM-2 SRS algorithm.
+    """Implement the SM-2 SRS algorithm.
 
     See https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.
     """
-
     if q >= 3:
         if n == 0:
             i = timedelta(days=1)
@@ -85,7 +82,6 @@ def sm2(
         i = timedelta(days=1)
 
     ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
-    if ef < 1.3:
-        ef = 1.3
+    ef = max(ef, 1.3)
 
     return (n, ef, i)

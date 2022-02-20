@@ -12,7 +12,8 @@ class OwnerOnly(BasePermission):
 
 
 class OwnerOrPublicReadOnly(BasePermission):
-    """Allow read-only access to public objects while reserving full access for owners.
+    """
+    Allow owner full-access and read-only access to public if object is public.
 
     Assumes model has an `owner` attribute and an `is_public` attribute.
     """

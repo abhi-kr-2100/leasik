@@ -5,10 +5,10 @@ import { getSentenceLists } from "../utilities/apiCalls";
 import { getToken } from "../utilities/authentication";
 import { ISentenceList } from "../utilities/models";
 
-interface ISentenceListProps {
+interface ISentenceListProperties {
     sentenceList: ISentenceList;
 }
-function SentenceList({ sentenceList }: ISentenceListProps) {
+function SentenceList({ sentenceList }: ISentenceListProperties) {
     const { id, name, description } = sentenceList;
 
     return (

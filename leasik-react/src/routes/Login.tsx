@@ -5,18 +5,22 @@ import PubSub from "pubsub-js";
 import { getTokenFromCredentials } from "../utilities/apiCalls";
 import { setToken } from "../utilities/authentication";
 
-interface ILoginFormProps {
-    setUsername: (arg0: string) => any;
-    setPassword: (arg0: string) => any;
-    onSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
+interface ILoginFormProperties {
+    setUsername: (newUsername: string) => any;
+    setPassword: (newPassword: string) => any;
+    onSubmit: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
 }
-function LoginForm({ setUsername, setPassword, onSubmit }: ILoginFormProps) {
-    function onUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
-        return setUsername(e.target.value);
+function LoginForm({
+    setUsername,
+    setPassword,
+    onSubmit,
+}: ILoginFormProperties) {
+    function onUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
+        return setUsername(event.target.value);
     }
 
-    function onPasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
-        return setPassword(e.target.value);
+    function onPasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
+        return setPassword(event.target.value);
     }
 
     return (
@@ -39,10 +43,10 @@ function LoginForm({ setUsername, setPassword, onSubmit }: ILoginFormProps) {
     );
 }
 
-interface ILoginProps {
+interface ILoginProperties {
     redirectURL: string;
 }
-export default function Login({ redirectURL }: ILoginProps) {
+export default function Login({ redirectURL }: ILoginProperties) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -56,16 +60,18 @@ export default function Login({ redirectURL }: ILoginProps) {
         />
     );
 
-    async function login(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        e.preventDefault();
+    async function login(
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) {
+        event.preventDefault();
 
         try {
             const token = await getTokenFromCredentials(username, password);
             setToken(token);
             PubSub.publish("UserLoggedIn", token);
             navigate(redirectURL);
-        } catch (err) {
-            alert(`Login failed. ${err}`);
+        } catch (error) {
+            alert(`Login failed. ${error}`);
         }
     }
 }

@@ -24,6 +24,14 @@ from leasikREST.serializers import (
 
 
 class CardViewSet(ModelViewSet):
+    """Allow CRUD requests to be made for the Card object.
+
+    Additionally, handle the following requests:
+        * get cards that are up for review.
+        * replace a card with other cards with given hidden_word_positions
+        * update proficiency of a card using the SM-2 algorithm
+    """
+
     queryset = Card.objects.all()
     serializer_class = CardSerializer
     permission_classes = [OwnerOnly]
@@ -32,7 +40,6 @@ class CardViewSet(ModelViewSet):
     @action(detail=False, url_path="playlist/(?P<list_pk>[^/.]+)")
     def playlist(self, request: Request, list_pk: int) -> Response:
         """Return Cards from given list that the logged-in user should play."""
-
         num_cards = int(
             request.query_params.get("num_cards", api_settings.PAGE_SIZE)
         )
@@ -45,6 +52,11 @@ class CardViewSet(ModelViewSet):
 
     @action(methods=["POST"], detail=True)
     def replaceWithNewCards(self, request: Request, pk: int) -> Response:
+        """Replace Card with given cards with the given hidden_word_positions.
+
+        The POST data must contain a "hiddenWordPositions" property that is an
+        array of integers.
+        """
         owner = request.user
 
         card: Card = self.get_object()
@@ -65,6 +77,11 @@ class CardViewSet(ModelViewSet):
 
     @action(methods=["POST"], detail=True)
     def updateUsingSM2(self, request: Request, pk: int) -> Response:
+        """Update the proficiency of Card using the SM-2 algorithm.
+
+        An integer "score" in the range [0, 5] must be provided in the request
+        body.
+        """
         card: Card = self.get_object()
         score = request.data.get("score")
 
@@ -103,6 +120,15 @@ class CardViewSet(ModelViewSet):
 
 
 class BookmarkViewSet(ModelViewSet):
+    """View to interact with Bookmarks.
+
+    CRUD methods are not supposed to be used with BookmarkViewSet. Instead, it
+    provides custom actions to do the following:
+        * get all cards that are bookmarked to a list by the authenticated user
+        * test whether a card is bookmarked to a list by the authenticated user
+        * add/remove Bookmarks from a SentenceList
+    """
+
     queryset = Bookmark.objects.all()
     serializer_class = BookmarkSerializer
     permission_classes = [OwnerOnly]
@@ -110,6 +136,7 @@ class BookmarkViewSet(ModelViewSet):
 
     @action(detail=False, url_path="forList/(?P<list_pk>[^/.]+)")
     def forList(self, request: Request, list_pk: int) -> Response:
+        """Get cards that are bookmarked to the given list."""
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list
