@@ -131,7 +131,7 @@ function EditCardsDialogBox(
 ) {
     const words = getWords(card.sentence.text)
     const wordSelectButtons = words.map((w, i) => (
-        <ToggleButton value={ i }>
+        <ToggleButton value={ i } key={ i }>
             { w }
         </ToggleButton>
     ))
