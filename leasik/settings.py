@@ -87,12 +87,18 @@ WSGI_APPLICATION = "leasik.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {}
+database_url = getenv("DATABASE_URL")
 conn_max_age = getenv("DJANGO_DB_CON_MAX_AGE")
-DATABASES["default"] = dj_database_url.parse(
-    getenv("DATABASE_URL"),
-    conn_max_age=(int(conn_max_age) if conn_max_age is not None else None),
-)
+if conn_max_age is not None:
+    conn_max_age = int(conn_max_age)
+
+DATABASES = {
+    "default": dj_database_url.parse(
+        database_url, "django_cockroachdb", conn_max_age
+    )
+}
+
+DISABLE_COCKROACHDB_TELEMETRY = True
 
 
 # Password validation
