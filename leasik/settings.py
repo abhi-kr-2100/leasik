@@ -29,11 +29,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = getenv("DJANGO_DEVELOPMENT_MODE") is not None
+DEBUG = getenv("DJANGO_DEVELOPMENT_MODE", False)
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
-ALLOWED_HOSTS = [getenv("DJANGO_ALLOWED_HOST")]
+ALLOWED_HOSTS = getenv("DJANGO_ALLOWED_HOST").split()
 
 
 # Application definition
@@ -169,4 +169,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = getenv("DJANGO_CORS_ALLOWED_ORIGIN").split()
