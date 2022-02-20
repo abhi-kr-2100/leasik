@@ -87,7 +87,7 @@ WSGI_APPLICATION = "leasik.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-database_url = getenv("DATABASE_URL")
+database_url = getenv("DJANGO_DATABASE_URL")
 conn_max_age = getenv("DJANGO_DB_CON_MAX_AGE")
 engine = "django_cockroachdb"
 if conn_max_age is not None:
