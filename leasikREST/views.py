@@ -97,9 +97,9 @@ class BookmarkViewSet(ModelViewSet):
     @action(detail=False, url_path="forList/(?P<list_pk>[^/.]+)")
     def forList(self, request: Request, list_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
-        bookmark: Bookmark = Bookmark.objects.get(
+        bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list
-        )
+        )[0]
         cards = bookmark.cards.all()
 
         return Response(CardSerializer(cards, many=True).data)
@@ -110,9 +110,9 @@ class BookmarkViewSet(ModelViewSet):
     )
     def isBookmarked(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
-        bookmark: Bookmark = Bookmark.objects.get(
+        bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list
-        )
+        )[0]
         card = Card.objects.get(pk=card_pk)
 
         return Response({"result": card in bookmark.cards.all()})
@@ -124,9 +124,9 @@ class BookmarkViewSet(ModelViewSet):
     )
     def add(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
-        bookmark: Bookmark = Bookmark.objects.get(
+        bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list
-        )
+        )[0]
         card = Card.objects.get(pk=card_pk)
 
         bookmark.cards.add(card)
@@ -140,9 +140,9 @@ class BookmarkViewSet(ModelViewSet):
     )
     def remove(self, request: Request, list_pk: int, card_pk: int) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
-        bookmark: Bookmark = Bookmark.objects.get(
+        bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list
-        )
+        )[0]
         card = Card.objects.get(pk=card_pk)
 
         bookmark.cards.remove(card)
