@@ -64,7 +64,7 @@ export async function updateProficiency(token: string, cardID: number, score: SM
 
 export async function replaceWithNewCards(
     token: string, cardID: number, newHiddenWordPositions: number[]
-) {
+): Promise<CardInterface[]> {
     const replaceWithNewCardsURL = `/cards/${cardID}/replaceWithNewCards/`
 
     return processAPIResult(getAxios(token).post(replaceWithNewCardsURL, {

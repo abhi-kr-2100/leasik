@@ -51,7 +51,7 @@ class CardViewSet(ModelViewSet):
             for h in hidden_word_positions
         )
 
-        return Response({"status": "Created"})
+        return Response(CardSerializer(sentence.card_set.all(), many=True).data)
 
     @action(methods=["POST"], detail=True)
     def updateUsingSM2(self, request: Request, pk: int) -> Response:
