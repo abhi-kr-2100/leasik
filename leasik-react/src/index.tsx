@@ -14,7 +14,10 @@ render(
         <Routes>
             <Route path="/" element={<App />}>
                 <Route index element={<Home />} />
-                <Route path="/login" element={<Login redirectURL="/lists" />} />
+                <Route
+                    path="/login"
+                    element={<Login redirectURL="/lists" />}
+                />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/lists" element={<SentenceLists />} />
                 <Route path="/lists/:listId" element={<SentenceListPlay />} />

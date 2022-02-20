@@ -11,7 +11,11 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from leasikApp.models import Card, Bookmark, SentenceList
 from leasikApp.helpers import get_cards, sm2
 from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
-from leasikREST.filters import IsOwnerFilter, IsOwnerOrPublicFilter, SentenceListFilter
+from leasikREST.filters import (
+    IsOwnerFilter,
+    IsOwnerOrPublicFilter,
+    SentenceListFilter,
+)
 from leasikREST.serializers import (
     CardSerializer,
     BookmarkSerializer,
@@ -29,7 +33,9 @@ class CardViewSet(ModelViewSet):
     def playlist(self, request: Request, list_pk: int) -> Response:
         """Return Cards from given list that the logged-in user should play."""
 
-        num_cards = int(request.query_params.get("num_cards", api_settings.PAGE_SIZE))
+        num_cards = int(
+            request.query_params.get("num_cards", api_settings.PAGE_SIZE)
+        )
         sentence_list: SentenceList = SentenceList.objects.get(pk=list_pk)
         sentences = list(sentence_list.sentences.all())
 
@@ -42,7 +48,9 @@ class CardViewSet(ModelViewSet):
         owner = request.user
 
         card: Card = self.get_object()
-        hidden_word_positions: List[int] = request.data.get("hiddenWordPositions")
+        hidden_word_positions: List[int] = request.data.get(
+            "hiddenWordPositions"
+        )
 
         sentence = card.sentence
         sentence.card_set.all().delete()
@@ -51,7 +59,9 @@ class CardViewSet(ModelViewSet):
             for h in hidden_word_positions
         )
 
-        return Response(CardSerializer(sentence.card_set.all(), many=True).data)
+        return Response(
+            CardSerializer(sentence.card_set.all(), many=True).data
+        )
 
     @action(methods=["POST"], detail=True)
     def updateUsingSM2(self, request: Request, pk: int) -> Response:
@@ -59,16 +69,20 @@ class CardViewSet(ModelViewSet):
         score = request.data.get("score")
 
         if score is None:
-            return Response({"error": "score is required"}, status=HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "score is required"}, status=HTTP_400_BAD_REQUEST
+            )
 
         if not isinstance(score, int):
             return Response(
-                {"error": "score must be an integer"}, status=HTTP_400_BAD_REQUEST
+                {"error": "score must be an integer"},
+                status=HTTP_400_BAD_REQUEST,
             )
 
         if not 0 <= score <= 5:
             return Response(
-                {"error": "score must be in range [0, 5]"}, status=HTTP_400_BAD_REQUEST
+                {"error": "score must be in range [0, 5]"},
+                status=HTTP_400_BAD_REQUEST,
             )
 
         n, ef, i = sm2(
@@ -108,7 +122,9 @@ class BookmarkViewSet(ModelViewSet):
         detail=False,
         url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
     )
-    def isBookmarked(self, request: Request, list_pk: int, card_pk: int) -> Response:
+    def isBookmarked(
+        self, request: Request, list_pk: int, card_pk: int
+    ) -> Response:
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list

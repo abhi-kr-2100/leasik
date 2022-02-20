@@ -6,7 +6,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("leasikApp", "0006_sentence_text_language_sentence_translation_language"),
+        (
+            "leasikApp",
+            "0006_sentence_text_language_sentence_translation_language",
+        ),
     ]
 
     operations = [

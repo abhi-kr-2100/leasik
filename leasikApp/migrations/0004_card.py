@@ -30,7 +30,9 @@ class Migration(migrations.Migration):
                     "repetition_number",
                     models.IntegerField(
                         default=0,
-                        validators=[django.core.validators.MinValueValidator(0)],
+                        validators=[
+                            django.core.validators.MinValueValidator(0)
+                        ],
                     ),
                 ),
                 ("easiness_factor", models.FloatField(default=2.5)),
@@ -38,7 +40,9 @@ class Migration(migrations.Migration):
                     "inter_repetition_interval",
                     models.DurationField(
                         default=0,
-                        validators=[django.core.validators.MinValueValidator(0)],
+                        validators=[
+                            django.core.validators.MinValueValidator(0)
+                        ],
                         verbose_name="inter-repetition interval",
                     ),
                 ),

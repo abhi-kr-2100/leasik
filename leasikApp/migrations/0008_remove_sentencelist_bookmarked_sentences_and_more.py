@@ -45,7 +45,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "sentences",
-                    models.ManyToManyField(blank=True, to="leasikApp.Sentence"),
+                    models.ManyToManyField(
+                        blank=True, to="leasikApp.Sentence"
+                    ),
                 ),
             ],
             options={

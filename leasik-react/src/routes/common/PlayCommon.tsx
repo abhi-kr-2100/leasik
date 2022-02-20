@@ -526,7 +526,9 @@ function GeneralListPlayCore({
         const lastCard = cardsToReplace[cardsToReplace.length - 1];
 
         return Promise.all(
-            cardsExceptLastCard.map((c) => replaceWithNewCards(token, c.id, []))
+            cardsExceptLastCard.map((c) =>
+                replaceWithNewCards(token, c.id, [])
+            )
         )
             .then((_) =>
                 replaceWithNewCards(token, lastCard.id, wordIndicesToSave)
@@ -605,7 +607,9 @@ function GeneralListPlayCore({
             );
         }
 
-        function hasSameHiddenWordPosition(sisterCard: AugmentedCard): boolean {
+        function hasSameHiddenWordPosition(
+            sisterCard: AugmentedCard
+        ): boolean {
             return (
                 currentCard.hidden_word_position ===
                 sisterCard.hidden_word_position

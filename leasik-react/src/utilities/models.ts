@@ -1,7 +1,7 @@
 export interface ISentence {
     text: string;
     translation: string;
-};
+}
 
 export interface ICard {
     id: number;
@@ -14,4 +14,4 @@ export interface ISentenceList {
     id: number;
     name: string;
     description: string;
-};
+}

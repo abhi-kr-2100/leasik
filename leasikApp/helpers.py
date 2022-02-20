@@ -44,13 +44,19 @@ def get_cards(
 
     for batch, s, e in batched(sentences, n if n is not None else 1):
         for sentence in batch:
-            card = Card.objects.filter(owner=user, sentence=sentence).order_by("?")
+            card = Card.objects.filter(owner=user, sentence=sentence).order_by(
+                "?"
+            )
             if (first_card := card.first()) is not None:
                 cards.append(first_card)
             else:
-                cards.append(Card.objects.create(owner=user, sentence=sentence))
+                cards.append(
+                    Card.objects.create(owner=user, sentence=sentence)
+                )
 
-        cards_up_for_review.extend(c for c in cards[s:e] if c.is_up_for_review())
+        cards_up_for_review.extend(
+            c for c in cards[s:e] if c.is_up_for_review()
+        )
 
         if n is not None and len(cards_up_for_review) >= n:
             return cards_up_for_review[:n]
@@ -58,7 +64,9 @@ def get_cards(
     return cards[:n] if n is not None else cards
 
 
-def sm2(q: int, n: int, ef: float, i: timedelta) -> Tuple[int, float, timedelta]:
+def sm2(
+    q: int, n: int, ef: float, i: timedelta
+) -> Tuple[int, float, timedelta]:
     """Implementation of the SM-2 SRS algorithm.
 
     See https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.

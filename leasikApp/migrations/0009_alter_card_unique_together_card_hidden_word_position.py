@@ -6,7 +6,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("leasikApp", "0008_remove_sentencelist_bookmarked_sentences_and_more"),
+        (
+            "leasikApp",
+            "0008_remove_sentencelist_bookmarked_sentences_and_more",
+        ),
     ]
 
     operations = [
