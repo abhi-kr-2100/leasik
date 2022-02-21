@@ -4,6 +4,7 @@ import PubSub from "pubsub-js";
 
 import { getTokenFromCredentials } from "../utilities/apiCalls";
 import { setToken } from "../utilities/authentication";
+import LoadingScreen from "../utilities/components/LoadingScreen";
 
 interface ILoginFormProperties {
     setUsername: (newUsername: string) => any;
@@ -49,8 +50,13 @@ interface ILoginProperties {
 export default function Login({ redirectURL }: ILoginProperties) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [isUserInputNeeded, setIsUserInputNeeded] = useState(false);
 
     const navigate = useNavigate();
+
+    if (isUserInputNeeded) {
+        return <LoadingScreen />;
+    }
 
     return (
         <LoginForm
@@ -64,6 +70,7 @@ export default function Login({ redirectURL }: ILoginProperties) {
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) {
         event.preventDefault();
+        setIsUserInputNeeded(true);
 
         try {
             const token = await getTokenFromCredentials(username, password);
@@ -72,6 +79,7 @@ export default function Login({ redirectURL }: ILoginProperties) {
             navigate(redirectURL);
         } catch (error) {
             alert(`Login failed. ${error}`);
+            setIsUserInputNeeded(false);
         }
     }
 }
