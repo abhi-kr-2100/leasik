@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { getSentenceLists } from "../utilities/apiCalls";
 import { getToken } from "../utilities/authentication";
+import LoadingScreen from "../utilities/components/LoadingScreen";
 import { ISentenceList } from "../utilities/models";
 
 interface ISentenceListProperties {
@@ -44,15 +45,22 @@ function SentenceList({ sentenceList }: ISentenceListProperties) {
 }
 
 export default function SentenceLists() {
+    const [isLoading, setIsLoading] = useState(false);
     const [sentenceLists, setSentenceLists] = useState<ISentenceList[]>([]);
 
     useEffect(() => {
         const token = getToken();
 
+        setIsLoading(true);
         getSentenceLists(token)
             .then(setSentenceLists)
-            .catch((error) => alert(`Couldn't load sentence lists! ${error}`));
+            .catch((error) => alert(`Couldn't load sentence lists! ${error}`))
+            .finally(() => setIsLoading(false));
     }, []);
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
 
     return (
         <div>
