@@ -115,7 +115,9 @@ function QuestionArea({
 }
 interface IQuizDisplayProperties {
     card: AugmentedCard;
-    onBookmark: () => any;
+    onBookmark: (
+        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
+    ) => any;
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
     onSaveEditingCards: (wordIndicesToSave: number[]) => any;

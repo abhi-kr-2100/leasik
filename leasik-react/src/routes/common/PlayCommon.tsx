@@ -142,7 +142,9 @@ function GeneralListPlayCore({
         }
     }
 
-    async function toggleBookmarkStatusOfCurrentCard() {
+    async function toggleBookmarkStatusOfCurrentCard(
+        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
+    ) {
         const cardsCopy = [...cards];
         const currentCard = cardsCopy[currentCardIndex];
 
@@ -154,6 +156,7 @@ function GeneralListPlayCore({
             ? currentCard.sisterCards
             : [currentCard];
 
+        setIsBookmarkBeingToggled(true);
         return Promise.all(
             cardsToUpdate.map(async (c) =>
                 apiFunction(token, sentenceListID, c.id)
@@ -161,7 +164,8 @@ function GeneralListPlayCore({
         )
             .then(() => (currentCard.isBookmarked = !currentCard.isBookmarked))
             .then(() => setCards(cardsCopy))
-            .catch((error) => alert(`Couldn't toggle bookmarks. ${error}`));
+            .catch((error) => alert(`Couldn't toggle bookmarks. ${error}`))
+            .finally(() => setIsBookmarkBeingToggled(false));
     }
 
     function checkAnswerCore() {

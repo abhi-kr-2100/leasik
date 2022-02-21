@@ -7,20 +7,33 @@ import { getWords } from "../utilFunctions";
 
 interface IBookmarkButtonProperties {
     card: AugmentedCard;
-    onBookmark: () => any;
+    onBookmark: (
+        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
+    ) => any;
 }
 function BookmarkButton({ card, onBookmark }: IBookmarkButtonProperties) {
-    const classNames = [
-        "button",
-        card.isBookmarked ? "is-danger" : "is-info",
-    ].join(" ");
+    const [isBookmarkBeingToggled, setIsBookmarkBeingToggled] =
+        useState(false);
+
+    const classNamesFinal = `button ${
+        card.isBookmarked ? "is-danger" : "is-info"
+    } ${isBookmarkBeingToggled ? "is-loading is-disabled" : ""}`;
+
     const buttonText = card.isBookmarked ? "Remove Bookmark" : "Bookmark";
 
     return (
-        <button onClick={onBookmark} className={classNames}>
+        <button onClick={toggleBookmark} className={classNamesFinal}>
             {buttonText}
         </button>
     );
+
+    function toggleBookmark() {
+        if (isBookmarkBeingToggled) {
+            return;
+        }
+
+        onBookmark(setIsBookmarkBeingToggled);
+    }
 }
 
 interface IEditCardsButtonProperties {
@@ -139,7 +152,9 @@ function EditCardsDialogBox({
 
 interface IUtilityButtonsProperties {
     card: AugmentedCard;
-    onBookmark: () => any;
+    onBookmark: (
+        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
+    ) => any;
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
     onSaveEditingCards: (wordIndicesToSave: number[]) => any;
