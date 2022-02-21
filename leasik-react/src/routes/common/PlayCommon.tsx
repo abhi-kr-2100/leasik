@@ -28,7 +28,7 @@ interface IAugmentedCard extends ICard {
 }
 
 class AugmentedCard implements IAugmentedCard {
-    id: number;
+    id: BigInt;
     note: string;
     sentence: ISentence;
     hidden_word_position: number;
@@ -57,7 +57,7 @@ class AugmentedCard implements IAugmentedCard {
     }
 
     constructor(
-        id: number,
+        id: BigInt,
         note: string,
         sentence: ISentence,
         hiddenWordPosition: number,
@@ -435,7 +435,7 @@ function QuizDisplay({
 
 interface IGeneralListPlayCoreProperties {
     token: string;
-    sentenceListID: number;
+    sentenceListID: BigInt;
     initialCards: Promise<ICard[]>;
     assumeDefaultBookmarkValue?: boolean;
 }
@@ -651,7 +651,7 @@ function GeneralListPlayCore({
 interface IGeneralListPlayProperties {
     getInitialCards: (
         token: string,
-        sentenceListID: number
+        sentenceListID: BigInt
     ) => Promise<ICard[]>;
     assumeDefaultBookmarkValue?: boolean;
 }
@@ -662,7 +662,7 @@ export default function GeneralListPlay({
     const parameters = useParams();
     const listIDParameter =
         parameters.listId !== undefined ? parameters.listId : "";
-    const sentenceListID = Number.parseInt(listIDParameter);
+    const sentenceListID = BigInt(listIDParameter);
     const token = getToken();
 
     if (token === null) {

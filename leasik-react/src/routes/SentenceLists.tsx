@@ -57,8 +57,8 @@ export default function SentenceLists() {
     return (
         <div>
             <div className="container is-fluid pt-5">
-                {sentenceLists.map((sl) => (
-                    <SentenceList key={sl.id} sentenceList={sl} />
+                {sentenceLists.map((sl, index) => (
+                    <SentenceList key={index} sentenceList={sl} />
                 ))}
             </div>
         </div>

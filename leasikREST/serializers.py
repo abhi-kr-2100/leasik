@@ -1,9 +1,11 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, CharField
 
 from leasikApp.models import Card, Sentence, Bookmark, SentenceList
 
 
 class SentenceSerializer(ModelSerializer):
+    id = CharField()  # id may be too big for JavaScript's number type
+
     class Meta:
         model = Sentence
         fields = [
@@ -14,6 +16,7 @@ class SentenceSerializer(ModelSerializer):
 
 
 class CardSerializer(ModelSerializer):
+    id = CharField()  # id may be too big for JavaScript's number type
     sentence = SentenceSerializer()
 
     class Meta:
@@ -27,6 +30,8 @@ class CardSerializer(ModelSerializer):
 
 
 class SentenceListSerializer(ModelSerializer):
+    id = CharField()  # id may be too big for JavaScript's number type
+
     class Meta:
         model = SentenceList
         fields = [
@@ -37,6 +42,7 @@ class SentenceListSerializer(ModelSerializer):
 
 
 class BookmarkSerializer(ModelSerializer):
+    id = CharField()  # id may be too big for JavaScript's number type
     sentence_list = SentenceListSerializer()
     cards = CardSerializer(many=True)
 

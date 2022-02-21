@@ -1,4 +1,4 @@
-import { ICard } from "./models";
+import { ICard, ICardBase, ISentenceList, ISentenceListBase } from "./models";
 
 export function getWords(s: string) {
     return s.split(" ").filter((w) => w !== "");
@@ -14,6 +14,12 @@ export function convertToConcreteCard(card: ICard): ICard {
     const hiddenWordPosition = Math.floor(Math.random() * words.length);
 
     return { ...card, hidden_word_position: hiddenWordPosition };
+}
+
+export function convertBaseToExtended(baseObject: ICardBase): ICard;
+export function convertBaseToExtended(baseObject: ISentenceListBase): ISentenceList;
+export function convertBaseToExtended(baseObject: ICardBase | ISentenceListBase): ISentenceList | ICard {
+    return { ...baseObject, id: BigInt(baseObject.id as string) };
 }
 
 export function semanticallyEqual(sent1: string, sent2: string): boolean {

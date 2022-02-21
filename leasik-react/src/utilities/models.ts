@@ -3,15 +3,23 @@ export interface ISentence {
     translation: string;
 }
 
-export interface ICard {
-    id: number;
+export interface ICardBase {
+    id: string | BigInt;
     note: string;
     sentence: ISentence;
     hidden_word_position: number;
 }
 
-export interface ISentenceList {
-    id: number;
+export interface ICard extends ICardBase {
+    id: BigInt;
+}
+
+export interface ISentenceListBase {
+    id: string | BigInt;
     name: string;
     description: string;
+}
+
+export interface ISentenceList extends ISentenceListBase {
+    id: BigInt;
 }
