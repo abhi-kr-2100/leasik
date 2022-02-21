@@ -17,6 +17,7 @@ import {
     isBookmarked,
     replaceWithNewCards,
 } from "../../utilities/apiCalls";
+import LoadingScreen from "./Loading";
 
 interface IAugmentedCard extends ICard {
     isBookmarked: boolean;
@@ -483,7 +484,7 @@ function GeneralListPlayCore({
     }, [token, initialCards, sentenceListID, assumeDefaultBookmarkValue]);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <LoadingScreen />;
     }
 
     if (currentCardIndex === cards.length) {
