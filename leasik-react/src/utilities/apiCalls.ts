@@ -3,7 +3,7 @@ import { ICard, ISentenceList, ICardBase, ISentenceListBase } from "./models";
 import { convertBaseToExtended } from "./utilFunctions";
 
 function getAxios(token?: string | null) {
-    const baseURL = "http://127.0.0.1:8000/api/v1/";
+    const baseURL = "https://leasik.herokuapp.com/api/v1/";
     const headers =
         token !== undefined && token !== null
             ? { Authorization: `Token ${token}` }
