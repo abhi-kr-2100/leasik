@@ -109,20 +109,12 @@ function GeneralListPlayCore({
             ...cards.slice(currentCardIndex + 1),
         ];
 
-        const cardsToReplace = currentCard.isDeletedOnServer
-            ? currentCard.sisterCards
-            : [currentCard];
-        const cardsExceptLastCard = cardsToReplace.slice(0, -1);
-        const lastCard = cardsToReplace[cardsToReplace.length - 1];
+        // any card that we know is not deleted on the server
+        const availableCard = currentCard.isDeletedOnServer
+            ? currentCard.sisterCards[0]
+            : currentCard;
 
-        return Promise.all(
-            cardsExceptLastCard.map((c) =>
-                replaceWithNewCards(token, c.id, [])
-            )
-        )
-            .then(() =>
-                replaceWithNewCards(token, lastCard.id, wordIndicesToSave)
-            )
+        return replaceWithNewCards(token, availableCard.id, wordIndicesToSave)
             .then((sisterCards) =>
                 sisterCards.map((c) =>
                     AugmentedCard.fromCard(c, currentCardUpdated.isBookmarked)
@@ -134,8 +126,10 @@ function GeneralListPlayCore({
                     return;
                 }
 
-                augmentedSisterCards.map((c) =>
-                    addBookmark(token, sentenceListID, c.id)
+                Promise.all(
+                    augmentedSisterCards.map((c) =>
+                        addBookmark(token, sentenceListID, c.id)
+                    )
                 );
             })
             .then(() => setCards(cardsCopyWithUpdatedCurrentCard))

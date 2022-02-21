@@ -50,8 +50,8 @@ class CardViewSet(ModelViewSet):
 
         return Response(CardSerializer(cards, many=True).data)
 
-    @action(methods=["POST"], detail=True)
-    def replaceWithNewCards(self, request: Request, pk: int) -> Response:
+    @action(methods=["POST"], detail=False)
+    def replaceWithNewCards(self, request: Request) -> Response:
         """Replace Card with given cards with the given hidden_word_positions.
 
         The POST data must contain a "hiddenWordPositions" property that is an
@@ -59,16 +59,29 @@ class CardViewSet(ModelViewSet):
         """
         owner = request.user
 
-        card: Card = self.get_object()
-        hidden_word_positions: List[int] = request.data.get(
+        # we need to convert it to int because JSON.stringify() can't work
+        # with BigInts, hence this comes to us as a string
+        card_to_delete_id: int = int(request.data.get("availableCardID"))
+        card_to_delete: Card = Card.objects.get(pk=card_to_delete_id)
+
+        new_hidden_word_positions: List[int] = request.data.get(
             "hiddenWordPositions"
         )
 
-        sentence = card.sentence
+        if not new_hidden_word_positions:
+            # if we proceed with no new hidden word positions, all cards will
+            # be deleted, and we don't want to do that.
+            return Response(
+                CardSerializer(
+                    Card.objects.filter(pk=card_to_delete), many=True
+                ).data
+            )
+
+        sentence = card_to_delete.sentence
         sentence.card_set.all().delete()
         sentence.card_set.bulk_create(
             Card(owner=owner, sentence=sentence, hidden_word_position=h)
-            for h in hidden_word_positions
+            for h in new_hidden_word_positions
         )
 
         return Response(

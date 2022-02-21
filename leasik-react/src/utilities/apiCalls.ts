@@ -3,7 +3,7 @@ import { ICard, ISentenceList, ICardBase, ISentenceListBase } from "./models";
 import { convertBaseToExtended } from "./utilFunctions";
 
 function getAxios(token?: string | null) {
-    const baseURL = "https://leasik.herokuapp.com/api/v1/";
+    const baseURL = "http://127.0.0.1:8000/api/v1/";
     const headers =
         token !== undefined && token !== null
             ? { Authorization: `Token ${token}` }
@@ -69,9 +69,10 @@ export async function replaceWithNewCards(
     cardID: BigInt,
     newHiddenWordPositions: number[]
 ): Promise<ICard[]> {
-    const replaceWithNewCardsURL = `/cards/${cardID}/replaceWithNewCards/`;
+    const replaceWithNewCardsURL = `/cards/replaceWithNewCards/`;
 
     return getAxios(token).post(replaceWithNewCardsURL, {
+                availableCardID: cardID.toString(),
                 hiddenWordPositions: newHiddenWordPositions,
             })
                 .then(response => response.data as ICardBase[])
