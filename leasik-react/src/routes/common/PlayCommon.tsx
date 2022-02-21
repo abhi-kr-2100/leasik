@@ -160,15 +160,14 @@ function GeneralListPlayCore({
             ? currentCard.sisterCards
             : [currentCard];
 
-        return cardsToUpdate.map(async (c) => {
-            try {
-                await apiFunction(token, sentenceListID, c.id);
-                currentCard.isBookmarked = !currentCard.isBookmarked;
-                return setCards(cardsCopy);
-            } catch (error) {
-                return alert(`Couldn't toggle bookmark. ${error}`);
-            }
-        });
+        return Promise.all(
+            cardsToUpdate.map(async (c) =>
+                apiFunction(token, sentenceListID, c.id)
+            )
+        )
+            .then(() => (currentCard.isBookmarked = !currentCard.isBookmarked))
+            .then(() => setCards(cardsCopy))
+            .catch((error) => alert(`Couldn't toggle bookmarks. ${error}`));
     }
 
     function checkAnswerCore() {
