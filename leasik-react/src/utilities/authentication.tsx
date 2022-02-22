@@ -1,12 +1,12 @@
 export function getToken() {
-    return sessionStorage.getItem("token");
+    return localStorage.getItem("token");
 }
 
 export function setToken(token: string | null) {
     if (token === null) {
-        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
         return;
     }
 
-    sessionStorage.setItem("token", token);
+    localStorage.setItem("token", token);
 }
