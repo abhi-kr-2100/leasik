@@ -176,6 +176,22 @@ class BookmarkViewSet(ModelViewSet):
     @action(
         methods=["POST"],
         detail=False,
+        url_path="isBookmarkedBulk/(?P<list_pk>[^/.]+)",
+    )
+    def isBookmarkedBulk(self, request: Request, list_pk: int) -> Response:
+        sentence_list = SentenceList.objects.get(pk=list_pk)
+        bookmark: Bookmark = Bookmark.objects.get_or_create(
+            owner=request.user, sentence_list=sentence_list
+        )[0]
+
+        card_ids = request.data.get("cardIDs")
+        cards = Card.objects.filter(pk__in=card_ids)
+
+        return Response([card in bookmark.cards.all() for card in cards])
+
+    @action(
+        methods=["POST"],
+        detail=False,
         url_path="add/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
     )
     def add(self, request: Request, list_pk: int, card_pk: int) -> Response:
@@ -186,6 +202,21 @@ class BookmarkViewSet(ModelViewSet):
         card = Card.objects.get(pk=card_pk)
 
         bookmark.cards.add(card)
+
+        return Response({"status": "created"})
+
+    @action(
+        methods=["POST"], detail=False, url_path="addBulk/(?P<list_pk>[^/.]+)"
+    )
+    def addBulk(self, request: Request, list_pk: int) -> Response:
+        sentence_list = SentenceList.objects.get(pk=list_pk)
+        bookmark: Bookmark = Bookmark.objects.get_or_create(
+            owner=request.user, sentence_list=sentence_list
+        )[0]
+
+        card_ids = request.data.get("cardIDs")
+        cards = Card.objects.filter(pk__in=card_ids)
+        bookmark.cards.add(*cards)
 
         return Response({"status": "created"})
 
@@ -202,6 +233,25 @@ class BookmarkViewSet(ModelViewSet):
         card = Card.objects.get(pk=card_pk)
 
         bookmark.cards.remove(card)
+
+        return Response({"status": "removed"})
+
+    # using POST because DELETE doesn't allow a body
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_path="removeBulk/(?P<list_pk>[^/.]+)",
+    )
+    def removeBulk(self, request: Request, list_pk: int) -> Response:
+        sentence_list = SentenceList.objects.get(pk=list_pk)
+        bookmark: Bookmark = Bookmark.objects.get_or_create(
+            owner=request.user, sentence_list=sentence_list
+        )[0]
+
+        card_ids = request.data.get("cardIDs")
+        cards = Card.objects.filter(pk__in=card_ids)
+
+        bookmark.cards.remove(*cards)
 
         return Response({"status": "removed"})
 
