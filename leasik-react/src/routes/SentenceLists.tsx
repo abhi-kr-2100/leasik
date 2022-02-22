@@ -62,9 +62,7 @@ export default function SentenceLists() {
         return <LoadingScreen />;
     }
 
-    const sentenceListElements = sentenceLists.map((sentenceList, index) => (
-        <SentenceList key={index} sentenceList={sentenceList} />
-    ));
+    const sentenceListElements = sentenceLists.map(toSentenceListElement);
 
     return (
         <div>
@@ -73,4 +71,8 @@ export default function SentenceLists() {
             </div>
         </div>
     );
+}
+
+function toSentenceListElement(sentenceList: ISentenceList, key: number) {
+    return <SentenceList key={key} sentenceList={sentenceList} />;
 }
