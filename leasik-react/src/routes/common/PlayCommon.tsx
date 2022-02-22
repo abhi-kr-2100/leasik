@@ -154,7 +154,7 @@ function GeneralListPlayCore({
                     return;
                 }
 
-                Promise.all(
+                return Promise.all(
                     augmentedSisterCards.map((c) =>
                         addBookmark(token, sentenceListID, c.id)
                     )
