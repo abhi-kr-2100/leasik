@@ -242,6 +242,10 @@ function GeneralListPlayCore({
     }
 
     function nextCardCore() {
+        if (isBookmarkBeingToggled) {
+            return;
+        }
+
         setCurrentCardIndex(currentCardIndex + 1);
         setUserInput("");
         setCurrentCardAnswerStatus("unchecked");
