@@ -16,6 +16,10 @@ export function convertToConcreteCard(card: ICard): ICard {
     return { ...card, hidden_word_position: hiddenWordPosition };
 }
 
+export function convertToConcreteCards(cards: ICard[]): ICard[] {
+    return cards.map(convertToConcreteCard);
+}
+
 export function convertBaseToExtended(baseObject: ICardBase): ICard;
 export function convertBaseToExtended(
     baseObject: ISentenceListBase
@@ -35,4 +39,20 @@ export function normalizeString(s: string) {
         .replace(/[^\p{L}\s]/gu, "")
         .replace(/\s{2,}/g, " ")
         .toLowerCase();
+}
+
+interface IHasID {
+    id: BigInt;
+}
+
+export function getID(object: IHasID): BigInt {
+    return object.id
+}
+
+interface IPrintable {
+    toString: () => string;
+}
+
+export function toString(object: IPrintable): string {
+    return object.toString();
 }
