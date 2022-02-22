@@ -30,6 +30,7 @@ function BookmarkButton({
 
 interface IEditCardsButtonProperties {
     card: ICard;
+    isCardEditsBeingSaved: boolean;
     isDialogBoxOpen: boolean;
     onStartEditingCards: () => any;
     onSaveEdits: (wordIndicesToSave: number[]) => any;
@@ -37,6 +38,7 @@ interface IEditCardsButtonProperties {
 }
 function EditCardsButton({
     card,
+    isCardEditsBeingSaved,
     isDialogBoxOpen,
     onStartEditingCards,
     onSaveEdits,
@@ -49,6 +51,7 @@ function EditCardsButton({
             </button>
             <EditCardsDialogBox
                 card={card}
+                isCardEditsBeingSaved={isCardEditsBeingSaved}
                 open={isDialogBoxOpen}
                 /* onClose implies cancel because action should only be saved
                     if user explicity clicks the save button. Click outside the
@@ -65,6 +68,7 @@ function EditCardsButton({
 interface IEditCardsDialogBoxProperties {
     card: ICard;
     open: boolean;
+    isCardEditsBeingSaved: boolean;
     onClose: () => any;
     onCancel: () => any;
     onSave: (wordIndicesToSave: number[]) => any;
@@ -72,6 +76,7 @@ interface IEditCardsDialogBoxProperties {
 function EditCardsDialogBox({
     card,
     open,
+    isCardEditsBeingSaved,
     onClose,
     onCancel,
     onSave,
@@ -87,6 +92,13 @@ function EditCardsDialogBox({
         []
     );
 
+    const saveButtonClasses = `button is-success ${
+        isCardEditsBeingSaved ? "is-loading is-disabled" : ""
+    }`;
+    const cancelButtonClasses = `button is-danger ${
+        isCardEditsBeingSaved ? "is-disabled" : ""
+    }`;
+
     return (
         <Dialog onClose={onClose} open={open}>
             <ToggleButtonGroup
@@ -98,11 +110,11 @@ function EditCardsDialogBox({
             </ToggleButtonGroup>
 
             <div>
-                <button className="button is-danger" onClick={onCancel}>
+                <button className={cancelButtonClasses} onClick={onCancel}>
                     Cancel
                 </button>
                 <button
-                    className="button is-success"
+                    className={saveButtonClasses}
                     onClick={saveSelectedWordIndices}
                 >
                     Save
@@ -126,6 +138,7 @@ function EditCardsDialogBox({
 interface IUtilityButtonsProperties {
     card: AugmentedCard;
     isEditCardsDialogBoxOpen: boolean;
+    isCardEditsBeingSaved: boolean;
     isBookmarkBeingToggled: boolean;
     onBookmark: () => any;
     onStartEditingCards: () => any;
@@ -135,6 +148,7 @@ interface IUtilityButtonsProperties {
 export default function UtilityButtons({
     card,
     isEditCardsDialogBoxOpen,
+    isCardEditsBeingSaved,
     isBookmarkBeingToggled,
     onBookmark,
     onStartEditingCards,
@@ -151,6 +165,7 @@ export default function UtilityButtons({
                 />
                 <EditCardsButton
                     card={card}
+                    isCardEditsBeingSaved={isCardEditsBeingSaved}
                     isDialogBoxOpen={isEditCardsDialogBoxOpen}
                     onStartEditingCards={onStartEditingCards}
                     onCancelEdits={onCancelEditingCards}

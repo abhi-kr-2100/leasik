@@ -38,6 +38,7 @@ function GeneralListPlayCore({
         useState(false);
     const [isEditCardsDialogBoxOpen, setIsEditCardsDialogBoxOpen] =
         useState(false);
+    const [isCardEditsBeingSaved, setIsCardEditsBeingSaved] = useState(false);
 
     const [cards, setCards] = useState<AugmentedCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -87,6 +88,7 @@ function GeneralListPlayCore({
         <QuizDisplay
             answerStatus={currentCardAnswerStatus}
             card={cards[currentCardIndex]}
+            isCardEditsBeingSaved={isCardEditsBeingSaved}
             isEditCardsDialogOpen={isEditCardsDialogBoxOpen}
             currentInput={userInput}
             onAnswerCheck={checkAnswer}
@@ -111,6 +113,11 @@ function GeneralListPlayCore({
     }
 
     function cancelEditingCards() {
+        if (isCardEditsBeingSaved) {
+            // wait for save to finish
+            return;
+        }
+
         setIsEditCardsDialogBoxOpen(false);
     }
 
@@ -134,6 +141,7 @@ function GeneralListPlayCore({
             ? currentCard.sisterCards[0]
             : currentCard;
 
+        setIsCardEditsBeingSaved(true);
         return replaceWithNewCards(token, availableCard.id, wordIndicesToSave)
             .then((sisterCards) =>
                 sisterCards.map((c) =>
@@ -154,7 +162,10 @@ function GeneralListPlayCore({
             })
             .then(() => setCards(cardsCopyWithUpdatedCurrentCard))
             .catch((error) => alert(`Couldn't update cards. ${error}`))
-            .finally(() => setIsEditCardsDialogBoxOpen(false));
+            .finally(() => {
+                setIsCardEditsBeingSaved(false);
+                setIsEditCardsDialogBoxOpen(false);
+            });
 
         function setSisterCards(sisterCards: AugmentedCard[]) {
             return (cardsCopyWithUpdatedCurrentCard[
