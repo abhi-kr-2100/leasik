@@ -34,6 +34,8 @@ function GeneralListPlayCore({
     assumeDefaultBookmarkValue,
 }: IGeneralListPlayCoreProperties) {
     const [isLoading, setIsLoading] = useState(false);
+    const [isBookmarkBeingToggled, setIsBookmarkBeingToggled] =
+        useState(false);
     const [cards, setCards] = useState<AugmentedCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [userInput, setUserInput] = useState("");
@@ -84,6 +86,7 @@ function GeneralListPlayCore({
             card={cards[currentCardIndex]}
             currentInput={userInput}
             onAnswerCheck={checkAnswer}
+            isBookmarkBeingToggled={isBookmarkBeingToggled}
             onBookmark={toggleBookmarkStatusOfCurrentCard}
             onStartEditingCards={() => {}}
             onCancelEditingCards={() => {}}
@@ -142,9 +145,7 @@ function GeneralListPlayCore({
         }
     }
 
-    async function toggleBookmarkStatusOfCurrentCard(
-        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
-    ) {
+    async function toggleBookmarkStatusOfCurrentCard() {
         const cardsCopy = [...cards];
         const currentCard = cardsCopy[currentCardIndex];
 

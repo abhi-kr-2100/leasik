@@ -115,9 +115,8 @@ function QuestionArea({
 }
 interface IQuizDisplayProperties {
     card: AugmentedCard;
-    onBookmark: (
-        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
-    ) => any;
+    isBookmarkBeingToggled: boolean;
+    onBookmark: () => any;
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
     onSaveEditingCards: (wordIndicesToSave: number[]) => any;
@@ -132,6 +131,7 @@ interface IQuizDisplayProperties {
 }
 export default function QuizDisplay({
     card,
+    isBookmarkBeingToggled,
     onBookmark,
     onStartEditingCards,
     onCancelEditingCards,
@@ -148,6 +148,7 @@ export default function QuizDisplay({
             <div className="hero-head">
                 <UtilityButtons
                     card={card}
+                    isBookmarkBeingToggled={isBookmarkBeingToggled}
                     onBookmark={onBookmark}
                     onStartEditingCards={onStartEditingCards}
                     onCancelEditingCards={onCancelEditingCards}

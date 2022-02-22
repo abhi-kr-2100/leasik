@@ -7,14 +7,14 @@ import { getWords } from "../utilFunctions";
 
 interface IBookmarkButtonProperties {
     card: AugmentedCard;
-    onBookmark: (
-        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
-    ) => any;
+    isBookmarkBeingToggled: boolean;
+    onBookmark: () => any;
 }
-function BookmarkButton({ card, onBookmark }: IBookmarkButtonProperties) {
-    const [isBookmarkBeingToggled, setIsBookmarkBeingToggled] =
-        useState(false);
-
+function BookmarkButton({
+    card,
+    isBookmarkBeingToggled,
+    onBookmark,
+}: IBookmarkButtonProperties) {
     const classNamesFinal = `button ${
         card.isBookmarked ? "is-danger" : "is-info"
     } ${isBookmarkBeingToggled ? "is-loading is-disabled" : ""}`;
@@ -22,18 +22,10 @@ function BookmarkButton({ card, onBookmark }: IBookmarkButtonProperties) {
     const buttonText = card.isBookmarked ? "Remove Bookmark" : "Bookmark";
 
     return (
-        <button onClick={toggleBookmark} className={classNamesFinal}>
+        <button onClick={onBookmark} className={classNamesFinal}>
             {buttonText}
         </button>
     );
-
-    function toggleBookmark() {
-        if (isBookmarkBeingToggled) {
-            return;
-        }
-
-        onBookmark(setIsBookmarkBeingToggled);
-    }
 }
 
 interface IEditCardsButtonProperties {
@@ -152,15 +144,15 @@ function EditCardsDialogBox({
 
 interface IUtilityButtonsProperties {
     card: AugmentedCard;
-    onBookmark: (
-        setIsBookmarkBeingToggled: (isBookmarkBeingToggled: boolean) => any
-    ) => any;
+    isBookmarkBeingToggled: boolean;
+    onBookmark: () => any;
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
     onSaveEditingCards: (wordIndicesToSave: number[]) => any;
 }
 export default function UtilityButtons({
     card,
+    isBookmarkBeingToggled,
     onBookmark,
     onStartEditingCards,
     onCancelEditingCards,
@@ -169,7 +161,11 @@ export default function UtilityButtons({
     return (
         <div className="container">
             <div className="buttons is-centered">
-                <BookmarkButton card={card} onBookmark={onBookmark} />
+                <BookmarkButton
+                    card={card}
+                    isBookmarkBeingToggled={isBookmarkBeingToggled}
+                    onBookmark={onBookmark}
+                />
                 <EditCardsButton
                     card={card}
                     onStartEditingCards={onStartEditingCards}
