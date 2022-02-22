@@ -1,4 +1,3 @@
-
 import { ICard, ISentence } from "./models";
 
 export interface IAugmentedCard extends ICard {
@@ -37,6 +36,24 @@ export class AugmentedCard implements IAugmentedCard {
         );
 
         return object;
+    }
+
+    static fromCardsWithOneBookmarkValue(
+        cards: ICard[],
+        bookmarkValue: boolean
+    ): AugmentedCard[] {
+        return cards.map((card) =>
+            AugmentedCard.fromCard(card, bookmarkValue)
+        );
+    }
+
+    static fromCards(
+        cards: ICard[],
+        bookmarkStatuses: boolean[]
+    ): AugmentedCard[] {
+        return cards.map((card, index) =>
+            AugmentedCard.fromCard(card, bookmarkStatuses[index])
+        );
     }
 
     constructor(
