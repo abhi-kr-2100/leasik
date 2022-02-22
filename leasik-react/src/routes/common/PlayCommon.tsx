@@ -6,16 +6,17 @@ import { AugmentedCard, answerStatusType } from "../../utilities/types";
 import { getToken } from "../../utilities/authentication";
 import {
     getWords,
+    getID,
     semanticallyEqual,
-    convertToConcreteCard,
+    convertToConcreteCards,
 } from "../../utilities/utilFunctions";
 
 import {
-    removeBookmark,
-    addBookmark,
+    addBookmarkBulk,
+    removeBookmarkBulk,
     updateProficiency,
-    isBookmarked,
     replaceWithNewCards,
+    isBookmarkedBulk,
 } from "../../utilities/apiCalls";
 
 import LoadingScreen from "../../utilities/components/LoadingScreen";
@@ -50,30 +51,30 @@ function GeneralListPlayCore({
     useEffect(() => {
         setIsLoading(true);
         initialCards
-            .then((normalCards) => normalCards.map(convertToConcreteCard))
-            .then((concreteCards) =>
-                Promise.all(concreteCards.map(toAugmentedCard))
-            )
+            .then(convertToConcreteCards)
+            .then(convertToAugmentedCards)
             .then(setCards)
             .catch((error) => alert(`Couldn't load cards. ${error}`))
             .finally(() => setIsLoading(false));
 
-        async function toAugmentedCard(
-            normalCard: ICard
-        ): Promise<AugmentedCard> {
+        async function convertToAugmentedCards(
+            normalCards: ICard[]
+        ): Promise<AugmentedCard[]> {
             if (assumeDefaultBookmarkValue) {
-                return AugmentedCard.fromCard(
-                    normalCard,
+                return AugmentedCard.fromCardsWithOneBookmarkValue(
+                    normalCards,
                     assumeDefaultBookmarkValue
                 );
             }
 
-            const bookmarkStatus = await isBookmarked(
+            const cardIDs = normalCards.map(getID);
+            const bookmarkStatuses = await isBookmarkedBulk(
                 token,
                 sentenceListID,
-                normalCard.id
+                cardIDs
             );
-            return AugmentedCard.fromCard(normalCard, bookmarkStatus);
+
+            return AugmentedCard.fromCards(normalCards, bookmarkStatuses);
         }
     }, [token, initialCards, sentenceListID, assumeDefaultBookmarkValue]);
 
@@ -145,8 +146,9 @@ function GeneralListPlayCore({
         setIsCardEditsBeingSaved(true);
         return replaceWithNewCards(token, availableCard.id, wordIndicesToSave)
             .then((sisterCards) =>
-                sisterCards.map((c) =>
-                    AugmentedCard.fromCard(c, currentCardUpdated.isBookmarked)
+                AugmentedCard.fromCardsWithOneBookmarkValue(
+                    sisterCards,
+                    currentCardUpdated.isBookmarked
                 )
             )
             .then(setSisterCards)
@@ -155,10 +157,10 @@ function GeneralListPlayCore({
                     return;
                 }
 
-                return Promise.all(
-                    augmentedSisterCards.map((c) =>
-                        addBookmark(token, sentenceListID, c.id)
-                    )
+                return addBookmarkBulk(
+                    token,
+                    sentenceListID,
+                    augmentedSisterCards.map(getID)
                 );
             })
             .then(() => setCards(cardsCopyWithUpdatedCurrentCard))
@@ -180,19 +182,15 @@ function GeneralListPlayCore({
         const currentCard = cardsCopy[currentCardIndex];
 
         const apiFunction = currentCard.isBookmarked
-            ? removeBookmark
-            : addBookmark;
+            ? removeBookmarkBulk
+            : addBookmarkBulk;
 
         const cardsToUpdate = currentCard.isDeletedOnServer
             ? currentCard.sisterCards
             : [currentCard];
 
         setIsBookmarkBeingToggled(true);
-        return Promise.all(
-            cardsToUpdate.map(async (c) =>
-                apiFunction(token, sentenceListID, c.id)
-            )
-        )
+        return apiFunction(token, sentenceListID, cardsToUpdate.map(getID))
             .then(() => (currentCard.isBookmarked = !currentCard.isBookmarked))
             .then(() => setCards(cardsCopy))
             .catch((error) => alert(`Couldn't toggle bookmarks. ${error}`))
