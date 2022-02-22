@@ -1,9 +1,10 @@
 import axios from "axios";
 import { ICard, ISentenceList, ICardBase, ISentenceListBase } from "./models";
 import { convertBaseToExtended } from "./utilFunctions";
+import { toString } from "./utilFunctions";
 
 function getAxios(token?: string | null) {
-    const baseURL = "https://leasik.herokuapp.com/api/v1/";
+    const baseURL = "http://127.0.0.1:8000/api/v1/";
     const isTokenValid = token !== undefined && token !== null;
     const headers = isTokenValid
         ? { Authorization: `Token ${token}` }
@@ -99,6 +100,20 @@ export async function isBookmarked(
         .then((data) => data.result);
 }
 
+export async function isBookmarkedBulk(
+    token: string,
+    sentenceListID: BigInt,
+    cardIDs: BigInt[]
+): Promise<boolean[]> {
+    const isBookmarkedBulkURL = `/bookmarks/isBookmarkedBulk/${sentenceListID}/`;
+
+    return getAxios(token)
+        .post(isBookmarkedBulkURL, {
+            cardIDs: cardIDs.map(toString)
+        })
+        .then((response) => response.data);
+}
+
 export async function getSentenceLists(
     token?: string | null
 ): Promise<ISentenceList[]> {
@@ -129,6 +144,20 @@ export async function addBookmark(
         .then((response) => response.data);
 }
 
+export async function addBookmarkBulk(
+    token: string,
+    sentenceListID: BigInt,
+    cardIDs: BigInt[]
+) {
+    const addBookmarkBulkURL = `/bookmarks/addBulk/${sentenceListID}/`;
+
+    return getAxios(token)
+        .post(addBookmarkBulkURL, {
+            cardIDs: cardIDs.map(toString),
+        })
+        .then((response) => response.data);
+}
+
 export async function removeBookmark(
     token: string,
     sentenceListID: BigInt,
@@ -138,5 +167,20 @@ export async function removeBookmark(
 
     return getAxios(token)
         .delete(removeBookmarkURL)
+        .then((response) => response.data);
+}
+
+export async function removeBookmarkBulk(
+    token: string,
+    sentenceListID: BigInt,
+    cardIDs: BigInt[]
+) {
+    const removeBookmarkBulkURL = `/bookmarks/removeBulk/${sentenceListID}/`;
+
+    // we're forced to use POST as DELETE doesn't support a body
+    return getAxios(token)
+        .post(removeBookmarkBulkURL, {
+            cardIDs: cardIDs.map(toString),
+        })
         .then((response) => response.data);
 }
