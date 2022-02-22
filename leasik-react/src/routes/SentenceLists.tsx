@@ -62,12 +62,14 @@ export default function SentenceLists() {
         return <LoadingScreen />;
     }
 
+    const sentenceListElements = sentenceLists.map((sentenceList, index) => (
+        <SentenceList key={index} sentenceList={sentenceList} />
+    ));
+
     return (
         <div>
             <div className="container is-fluid pt-5">
-                {sentenceLists.map((sl, index) => (
-                    <SentenceList key={index} sentenceList={sl} />
-                ))}
+                {sentenceListElements}
             </div>
         </div>
     );
