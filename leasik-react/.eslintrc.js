@@ -27,9 +27,6 @@ module.exports = {
         "unicorn/no-array-callback-reference": 0,
         "@typescript-eslint/no-empty-function": 1,
         "promise/always-return": 1,
-        "promise/catch-or-return": [
-            1,
-            {"allowFinally": true}
-        ]
+        "promise/catch-or-return": [1, { allowFinally: true }],
     },
 };

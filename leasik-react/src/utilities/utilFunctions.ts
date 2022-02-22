@@ -46,7 +46,7 @@ interface IHasID {
 }
 
 export function getID(object: IHasID): BigInt {
-    return object.id
+    return object.id;
 }
 
 interface IPrintable {

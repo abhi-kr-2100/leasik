@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { ICard } from "../../utilities/models";
 import { AugmentedCard, answerStatusType } from "../../utilities/types";
 import { getToken } from "../../utilities/authentication";
+
 import {
     getWords,
     getID,
@@ -21,6 +22,7 @@ import {
 
 import LoadingScreen from "../../utilities/components/LoadingScreen";
 import QuizDisplay from "../../utilities/components/QuizDisplay";
+import QuizFinishScreen from "../../utilities/components/QuizFinishScreen";
 
 interface IGeneralListPlayCoreProperties {
     token: string;
@@ -83,7 +85,7 @@ function GeneralListPlayCore({
     }
 
     if (currentCardIndex === cards.length) {
-        return <div>Quiz finished!</div>;
+        return <QuizFinishScreen />;
     }
 
     return (
@@ -123,15 +125,15 @@ function GeneralListPlayCore({
         setIsEditCardsDialogBoxOpen(false);
     }
 
-    async function saveEditToCards(
-        wordIndicesToSave: number[]
-    ): Promise<void> {
-        if (wordIndicesToSave.length === 0) {
+    async function saveEditToCards(newWordIndices: number[]): Promise<void> {
+        if (newWordIndices.length === 0) {
             return;
         }
 
         const currentCard = cards[currentCardIndex];
         const currentCardUpdated = { ...currentCard, isDeletedOnServer: true };
+
+        // same as cards except that the current card is the updated one
         const cardsCopyWithUpdatedCurrentCard = [
             ...cards.slice(0, currentCardIndex),
             currentCardUpdated,
@@ -144,7 +146,7 @@ function GeneralListPlayCore({
             : currentCard;
 
         setIsCardEditsBeingSaved(true);
-        return replaceWithNewCards(token, availableCard.id, wordIndicesToSave)
+        return replaceWithNewCards(token, availableCard.id, newWordIndices)
             .then((sisterCards) =>
                 AugmentedCard.fromCardsWithOneBookmarkValue(
                     sisterCards,
@@ -181,7 +183,7 @@ function GeneralListPlayCore({
         const cardsCopy = [...cards];
         const currentCard = cardsCopy[currentCardIndex];
 
-        const apiFunction = currentCard.isBookmarked
+        const action = currentCard.isBookmarked
             ? removeBookmarkBulk
             : addBookmarkBulk;
 
@@ -190,7 +192,7 @@ function GeneralListPlayCore({
             : [currentCard];
 
         setIsBookmarkBeingToggled(true);
-        return apiFunction(token, sentenceListID, cardsToUpdate.map(getID))
+        return action(token, sentenceListID, cardsToUpdate.map(getID))
             .then(() => (currentCard.isBookmarked = !currentCard.isBookmarked))
             .then(() => setCards(cardsCopy))
             .catch((error) => alert(`Couldn't toggle bookmarks. ${error}`))

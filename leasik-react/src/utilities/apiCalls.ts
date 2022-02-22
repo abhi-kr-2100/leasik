@@ -109,7 +109,7 @@ export async function isBookmarkedBulk(
 
     return getAxios(token)
         .post(isBookmarkedBulkURL, {
-            cardIDs: cardIDs.map(toString)
+            cardIDs: cardIDs.map(toString),
         })
         .then((response) => response.data);
 }
