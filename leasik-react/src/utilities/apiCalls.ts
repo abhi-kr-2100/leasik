@@ -6,8 +6,8 @@ function getAxios(token?: string | null) {
     const baseURL = "https://leasik.herokuapp.com/api/v1/";
     const isTokenValid = token !== undefined && token !== null;
     const headers = isTokenValid
-            ? { Authorization: `Token ${token}` }
-            : undefined;
+        ? { Authorization: `Token ${token}` }
+        : undefined;
 
     return axios.create({
         baseURL: baseURL,
@@ -21,9 +21,10 @@ export async function getTokenFromCredentials(
 ): Promise<string> {
     const loginURL = "/api-token-auth/";
 
-    return getAxios().post(loginURL, {username: username, password: password})
-            .then(response => response.data)
-            .then(data => data.token)
+    return getAxios()
+        .post(loginURL, { username: username, password: password })
+        .then((response) => response.data)
+        .then((data) => data.token);
 }
 
 export async function getPlaylist(
@@ -32,11 +33,12 @@ export async function getPlaylist(
 ): Promise<ICard[]> {
     const getPlaylistURL = `/cards/playlist/${sentenceListID}/`;
 
-    return getAxios(token).get(getPlaylistURL)
-            .then(response => response.data as ICardBase[])
-            .then(cards => cards.map(
-                convertBaseToExtended as (x: ICardBase) => ICard
-            ));
+    return getAxios(token)
+        .get(getPlaylistURL)
+        .then((response) => response.data as ICardBase[])
+        .then((cards) =>
+            cards.map(convertBaseToExtended as (x: ICardBase) => ICard)
+        );
 }
 
 export async function getBookmarksForList(
@@ -45,11 +47,12 @@ export async function getBookmarksForList(
 ): Promise<ICard[]> {
     const getBookmarksForListURL = `/bookmarks/forList/${sentenceListID}/`;
 
-    return getAxios(token).get(getBookmarksForListURL)
-            .then(response => response.data as ICardBase[])
-            .then(cards => cards.map(
-                convertBaseToExtended as (x: ICardBase) => ICard
-            ))
+    return getAxios(token)
+        .get(getBookmarksForListURL)
+        .then((response) => response.data as ICardBase[])
+        .then((cards) =>
+            cards.map(convertBaseToExtended as (x: ICardBase) => ICard)
+        );
 }
 
 type SM2ScoreType = 0 | 1 | 2 | 3 | 4 | 5; // possible scores under the SM-2 algorithm
@@ -60,8 +63,9 @@ export async function updateProficiency(
 ) {
     const updateProficiencyURL = `/cards/${cardID}/updateUsingSM2/`;
 
-    return getAxios(token).post(updateProficiencyURL, { score: score })
-            .then(response => response.data)
+    return getAxios(token)
+        .post(updateProficiencyURL, { score: score })
+        .then((response) => response.data);
 }
 
 export async function replaceWithNewCards(
@@ -71,14 +75,15 @@ export async function replaceWithNewCards(
 ): Promise<ICard[]> {
     const replaceWithNewCardsURL = `/cards/replaceWithNewCards/`;
 
-    return getAxios(token).post(replaceWithNewCardsURL, {
-                availableCardID: cardID.toString(),
-                hiddenWordPositions: newHiddenWordPositions,
-            })
-                .then(response => response.data as ICardBase[])
-                .then(cards => cards.map(
-                    convertBaseToExtended as (x: ICardBase) => ICard
-                ));
+    return getAxios(token)
+        .post(replaceWithNewCardsURL, {
+            availableCardID: cardID.toString(),
+            hiddenWordPositions: newHiddenWordPositions,
+        })
+        .then((response) => response.data as ICardBase[])
+        .then((cards) =>
+            cards.map(convertBaseToExtended as (x: ICardBase) => ICard)
+        );
 }
 
 export async function isBookmarked(
@@ -88,9 +93,10 @@ export async function isBookmarked(
 ): Promise<boolean> {
     const isBookmarkedURL = `/bookmarks/isBookmarked/${sentenceListID}/${cardID}/`;
 
-    return getAxios(token).get(isBookmarkedURL)
-            .then(response => response.data)
-            .then(data => data.result);
+    return getAxios(token)
+        .get(isBookmarkedURL)
+        .then((response) => response.data)
+        .then((data) => data.result);
 }
 
 export async function getSentenceLists(
@@ -98,12 +104,17 @@ export async function getSentenceLists(
 ): Promise<ISentenceList[]> {
     const sentenceListURL = "/lists/";
 
-    return getAxios(token).get(sentenceListURL)
-            .then(response => response.data)
-            .then(data => data["results"] as ISentenceListBase[])
-            .then(sentenceLists => sentenceLists.map(
-                convertBaseToExtended as (x: ISentenceListBase) => ISentenceList)
-            );
+    return getAxios(token)
+        .get(sentenceListURL)
+        .then((response) => response.data)
+        .then((data) => data["results"] as ISentenceListBase[])
+        .then((sentenceLists) =>
+            sentenceLists.map(
+                convertBaseToExtended as (
+                    x: ISentenceListBase
+                ) => ISentenceList
+            )
+        );
 }
 
 export async function addBookmark(
@@ -113,8 +124,9 @@ export async function addBookmark(
 ) {
     const addBookmarkURL = `/bookmarks/add/${sentenceListID}/${cardID}/`;
 
-    return getAxios(token).post(addBookmarkURL)
-            .then(response => response.data);
+    return getAxios(token)
+        .post(addBookmarkURL)
+        .then((response) => response.data);
 }
 
 export async function removeBookmark(
@@ -124,6 +136,7 @@ export async function removeBookmark(
 ) {
     const removeBookmarkURL = `/bookmarks/remove/${sentenceListID}/${cardID}/`;
 
-    return getAxios(token).delete(removeBookmarkURL)
-            .then(response => response.data);
+    return getAxios(token)
+        .delete(removeBookmarkURL)
+        .then((response) => response.data);
 }
