@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import PubSub from "pubsub-js";
 
+import { getToken } from "../utilities/authentication";
+
 export default function App() {
-    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+    const initialUserLoggedInState = getToken() !== null;
+    const [isUserLoggedIn, setIsUserLoggedIn] = useState(
+        initialUserLoggedInState
+    );
 
     const accountLinkURL = isUserLoggedIn ? "/logout" : "/login";
     const accountLinkText = isUserLoggedIn ? "Log out" : "Log in";
