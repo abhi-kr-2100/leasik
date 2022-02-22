@@ -36,6 +36,9 @@ function GeneralListPlayCore({
     const [isLoading, setIsLoading] = useState(false);
     const [isBookmarkBeingToggled, setIsBookmarkBeingToggled] =
         useState(false);
+    const [isEditCardsDialogBoxOpen, setIsEditCardsDialogBoxOpen] =
+        useState(false);
+
     const [cards, setCards] = useState<AugmentedCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [userInput, setUserInput] = useState("");
@@ -84,18 +87,32 @@ function GeneralListPlayCore({
         <QuizDisplay
             answerStatus={currentCardAnswerStatus}
             card={cards[currentCardIndex]}
+            isEditCardsDialogOpen={isEditCardsDialogBoxOpen}
             currentInput={userInput}
             onAnswerCheck={checkAnswer}
             isBookmarkBeingToggled={isBookmarkBeingToggled}
             onBookmark={toggleBookmarkStatusOfCurrentCard}
-            onStartEditingCards={() => {}}
-            onCancelEditingCards={() => {}}
+            onStartEditingCards={startEditingCards}
+            onCancelEditingCards={cancelEditingCards}
             onSaveEditingCards={saveEditToCards}
             onEnterKeyPress={enterCheckAndNext}
             onInputChange={setUserInput}
             onNext={nextCard}
         />
     );
+
+    function startEditingCards() {
+        if (isBookmarkBeingToggled) {
+            // one thing at a time
+            return;
+        }
+
+        setIsEditCardsDialogBoxOpen(true);
+    }
+
+    function cancelEditingCards() {
+        setIsEditCardsDialogBoxOpen(false);
+    }
 
     async function saveEditToCards(
         wordIndicesToSave: number[]
@@ -136,7 +153,8 @@ function GeneralListPlayCore({
                 );
             })
             .then(() => setCards(cardsCopyWithUpdatedCurrentCard))
-            .catch((error) => alert(`Couldn't update cards. ${error}`));
+            .catch((error) => alert(`Couldn't update cards. ${error}`))
+            .finally(() => setIsEditCardsDialogBoxOpen(false));
 
         function setSisterCards(sisterCards: AugmentedCard[]) {
             return (cardsCopyWithUpdatedCurrentCard[

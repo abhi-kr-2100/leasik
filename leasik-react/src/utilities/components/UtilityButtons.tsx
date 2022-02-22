@@ -30,25 +30,21 @@ function BookmarkButton({
 
 interface IEditCardsButtonProperties {
     card: ICard;
+    isDialogBoxOpen: boolean;
     onStartEditingCards: () => any;
     onSaveEdits: (wordIndicesToSave: number[]) => any;
     onCancelEdits: () => any;
 }
 function EditCardsButton({
     card,
+    isDialogBoxOpen,
     onStartEditingCards,
     onSaveEdits,
     onCancelEdits,
 }: IEditCardsButtonProperties) {
-    // clicking on the EditCardsButton causes an edit dialog box to open
-    const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false);
-
     return (
         <div>
-            <button
-                className="button is-info"
-                onClick={openDialogBoxAndStartEditProcess}
-            >
+            <button className="button is-info" onClick={onStartEditingCards}>
                 Edit Cards
             </button>
             <EditCardsDialogBox
@@ -58,27 +54,12 @@ function EditCardsButton({
                     if user explicity clicks the save button. Click outside the
                     box is considered a cancel.
                  */
-                onClose={onCancel}
-                onCancel={onCancel}
-                onSave={onSave}
+                onClose={onCancelEdits}
+                onCancel={onCancelEdits}
+                onSave={onSaveEdits}
             />
         </div>
     );
-
-    function openDialogBoxAndStartEditProcess() {
-        onStartEditingCards();
-        setIsDialogBoxOpen(true);
-    }
-
-    function onCancel() {
-        onCancelEdits();
-        setIsDialogBoxOpen(false);
-    }
-
-    function onSave(wordIndicesToSave: number[]) {
-        onSaveEdits(wordIndicesToSave);
-        setIsDialogBoxOpen(false);
-    }
 }
 
 interface IEditCardsDialogBoxProperties {
@@ -144,6 +125,7 @@ function EditCardsDialogBox({
 
 interface IUtilityButtonsProperties {
     card: AugmentedCard;
+    isEditCardsDialogBoxOpen: boolean;
     isBookmarkBeingToggled: boolean;
     onBookmark: () => any;
     onStartEditingCards: () => any;
@@ -152,6 +134,7 @@ interface IUtilityButtonsProperties {
 }
 export default function UtilityButtons({
     card,
+    isEditCardsDialogBoxOpen,
     isBookmarkBeingToggled,
     onBookmark,
     onStartEditingCards,
@@ -168,6 +151,7 @@ export default function UtilityButtons({
                 />
                 <EditCardsButton
                     card={card}
+                    isDialogBoxOpen={isEditCardsDialogBoxOpen}
                     onStartEditingCards={onStartEditingCards}
                     onCancelEdits={onCancelEditingCards}
                     onSaveEdits={onSaveEditingCards}

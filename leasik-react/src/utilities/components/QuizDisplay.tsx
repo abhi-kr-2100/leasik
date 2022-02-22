@@ -115,6 +115,7 @@ function QuestionArea({
 }
 interface IQuizDisplayProperties {
     card: AugmentedCard;
+    isEditCardsDialogOpen: boolean;
     isBookmarkBeingToggled: boolean;
     onBookmark: () => any;
     onStartEditingCards: () => any;
@@ -131,6 +132,7 @@ interface IQuizDisplayProperties {
 }
 export default function QuizDisplay({
     card,
+    isEditCardsDialogOpen,
     isBookmarkBeingToggled,
     onBookmark,
     onStartEditingCards,
@@ -148,6 +150,7 @@ export default function QuizDisplay({
             <div className="hero-head">
                 <UtilityButtons
                     card={card}
+                    isEditCardsDialogBoxOpen={isEditCardsDialogOpen}
                     isBookmarkBeingToggled={isBookmarkBeingToggled}
                     onBookmark={onBookmark}
                     onStartEditingCards={onStartEditingCards}
