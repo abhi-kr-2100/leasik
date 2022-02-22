@@ -1,3 +1,4 @@
+import React from "react";
 import { AugmentedCard } from "../types";
 import BookmarkButton from "./BookmarkButton";
 import EditCardsButton from "./EditCardsButton";
@@ -7,10 +8,15 @@ interface IUtilityButtonsProperties {
     isEditCardsDialogBoxOpen: boolean;
     isCardEditsBeingSaved: boolean;
     isBookmarkBeingToggled: boolean;
+    selectedWordIndices: number[];
     onBookmark: () => any;
+    onSelectWordIndex: (
+        event: React.MouseEvent<HTMLElement>,
+        newSelectedWordIndices: number[]
+    ) => any;
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
-    onSaveEditingCards: (wordIndicesToSave: number[]) => any;
+    onSaveEditingCards: () => any;
 }
 
 export default function UtilityButtons({
@@ -18,7 +24,9 @@ export default function UtilityButtons({
     isEditCardsDialogBoxOpen,
     isCardEditsBeingSaved,
     isBookmarkBeingToggled,
+    selectedWordIndices,
     onBookmark,
+    onSelectWordIndex,
     onStartEditingCards,
     onCancelEditingCards,
     onSaveEditingCards,
@@ -35,6 +43,8 @@ export default function UtilityButtons({
                     card={card}
                     isCardEditsBeingSaved={isCardEditsBeingSaved}
                     isDialogBoxOpen={isEditCardsDialogBoxOpen}
+                    selectedWordIndices={selectedWordIndices}
+                    onSelect={onSelectWordIndex}
                     onStartEditingCards={onStartEditingCards}
                     onCancelEdits={onCancelEditingCards}
                     onSaveEdits={onSaveEditingCards}

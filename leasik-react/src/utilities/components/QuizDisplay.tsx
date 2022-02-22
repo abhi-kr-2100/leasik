@@ -11,10 +11,15 @@ interface IQuizDisplayProperties {
     isEditCardsDialogOpen: boolean;
     isCardEditsBeingSaved: boolean;
     isBookmarkBeingToggled: boolean;
+    selectedWordIndices: number[];
     onBookmark: () => any;
+    onSelectWordIndex: (
+        event: React.MouseEvent<HTMLElement>,
+        newSelectedWordIndices: number[]
+    ) => any;
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
-    onSaveEditingCards: (wordIndicesToSave: number[]) => any;
+    onSaveEditingCards: () => any;
     answerStatus: answerStatusType;
     currentInput: string;
     onEnterKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => any;
@@ -30,10 +35,12 @@ export default function QuizDisplay({
     isEditCardsDialogOpen,
     isCardEditsBeingSaved,
     isBookmarkBeingToggled,
+    selectedWordIndices,
     onBookmark,
     onStartEditingCards,
     onCancelEditingCards,
     onSaveEditingCards,
+    onSelectWordIndex,
     answerStatus,
     currentInput,
     onEnterKeyPress,
@@ -49,6 +56,8 @@ export default function QuizDisplay({
                     isCardEditsBeingSaved={isCardEditsBeingSaved}
                     isEditCardsDialogBoxOpen={isEditCardsDialogOpen}
                     isBookmarkBeingToggled={isBookmarkBeingToggled}
+                    selectedWordIndices={selectedWordIndices}
+                    onSelectWordIndex={onSelectWordIndex}
                     onBookmark={onBookmark}
                     onStartEditingCards={onStartEditingCards}
                     onCancelEditingCards={onCancelEditingCards}

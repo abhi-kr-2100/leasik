@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ToggleButtonGroup, ToggleButton, Dialog } from "@mui/material";
 import { ICard } from "../models";
 import { getWords } from "../utilFunctions";
@@ -7,15 +6,22 @@ interface IEditCardsDialogBoxProperties {
     card: ICard;
     open: boolean;
     isCardEditsBeingSaved: boolean;
+    selectedWordIndices: number[];
+    onSelect: (
+        event: React.MouseEvent<HTMLElement>,
+        newSelectedWordIndices: number[]
+    ) => any;
     onClose: () => any;
     onCancel: () => any;
-    onSave: (wordIndicesToSave: number[]) => any;
+    onSave: () => any;
 }
 
 export default function EditCardsDialogBox({
     card,
     open,
     isCardEditsBeingSaved,
+    selectedWordIndices,
+    onSelect,
     onClose,
     onCancel,
     onSave,
@@ -26,10 +32,6 @@ export default function EditCardsDialogBox({
             {w}
         </ToggleButton>
     ));
-
-    const [selectedWordIndices, setSelectedWordIndices] = useState<number[]>(
-        []
-    );
 
     const saveButtonClasses = `button is-success ${
         isCardEditsBeingSaved ? "is-loading is-disabled" : ""
@@ -52,24 +54,10 @@ export default function EditCardsDialogBox({
                 <button className={cancelButtonClasses} onClick={onCancel}>
                     Cancel
                 </button>
-                <button
-                    className={saveButtonClasses}
-                    onClick={saveSelectedWordIndices}
-                >
+                <button className={saveButtonClasses} onClick={onSave}>
                     Save
                 </button>
             </div>
         </Dialog>
     );
-
-    function onSelect(
-        event: React.MouseEvent<HTMLElement>,
-        newSelectedWordIndices: number[]
-    ) {
-        setSelectedWordIndices(newSelectedWordIndices);
-    }
-
-    function saveSelectedWordIndices() {
-        return onSave(selectedWordIndices);
-    }
 }

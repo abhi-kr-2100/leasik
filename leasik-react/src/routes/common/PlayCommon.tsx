@@ -47,6 +47,8 @@ function GeneralListPlayCore({
     const [cards, setCards] = useState<AugmentedCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [userInput, setUserInput] = useState("");
+    const [currentSelectedWordIndices, setCurrentSelectedWordIndices] =
+        useState<number[]>([]);
     const [currentCardAnswerStatus, setCurrentCardAnswerStatus] =
         useState<answerStatusType>("unchecked");
 
@@ -98,6 +100,8 @@ function GeneralListPlayCore({
             onAnswerCheck={checkAnswer}
             isBookmarkBeingToggled={isBookmarkBeingToggled}
             onBookmark={toggleBookmarkStatusOfCurrentCard}
+            selectedWordIndices={currentSelectedWordIndices}
+            onSelectWordIndex={selectNewWordIndices}
             onStartEditingCards={startEditingCards}
             onCancelEditingCards={cancelEditingCards}
             onSaveEditingCards={saveEditToCards}
@@ -106,6 +110,13 @@ function GeneralListPlayCore({
             onNext={nextCard}
         />
     );
+
+    function selectNewWordIndices(
+        event: React.MouseEvent<HTMLElement>,
+        newWordIndices: number[]
+    ) {
+        setCurrentSelectedWordIndices(newWordIndices);
+    }
 
     function startEditingCards() {
         if (isBookmarkBeingToggled) {
@@ -125,8 +136,8 @@ function GeneralListPlayCore({
         setIsEditCardsDialogBoxOpen(false);
     }
 
-    async function saveEditToCards(newWordIndices: number[]): Promise<void> {
-        if (newWordIndices.length === 0) {
+    async function saveEditToCards(): Promise<void> {
+        if (currentSelectedWordIndices.length === 0) {
             return;
         }
 
@@ -146,7 +157,11 @@ function GeneralListPlayCore({
             : currentCard;
 
         setIsCardEditsBeingSaved(true);
-        return replaceWithNewCards(token, availableCard.id, newWordIndices)
+        return replaceWithNewCards(
+            token,
+            availableCard.id,
+            currentSelectedWordIndices
+        )
             .then((sisterCards) =>
                 AugmentedCard.fromCardsWithOneBookmarkValue(
                     sisterCards,
@@ -250,6 +265,7 @@ function GeneralListPlayCore({
         setCurrentCardIndex(currentCardIndex + 1);
         setUserInput("");
         setCurrentCardAnswerStatus("unchecked");
+        setCurrentSelectedWordIndices([]);
     }
 
     function nextCard(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
