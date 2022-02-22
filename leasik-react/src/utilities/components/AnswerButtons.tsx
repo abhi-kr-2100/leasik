@@ -7,6 +7,7 @@ interface IAnswerButtonsProperties {
     ) => any;
     onNext: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
 }
+
 export default function AnswerButtons({
     answerStatus,
     onAnswerCheck,

@@ -4,8 +4,8 @@ import { convertBaseToExtended } from "./utilFunctions";
 
 function getAxios(token?: string | null) {
     const baseURL = "https://leasik.herokuapp.com/api/v1/";
-    const headers =
-        token !== undefined && token !== null
+    const isTokenValid = token !== undefined && token !== null;
+    const headers = isTokenValid
             ? { Authorization: `Token ${token}` }
             : undefined;
 

@@ -27,6 +27,7 @@ interface IGeneralListPlayCoreProperties {
     initialCards: Promise<ICard[]>;
     assumeDefaultBookmarkValue?: boolean;
 }
+
 function GeneralListPlayCore({
     token,
     sentenceListID,
@@ -279,9 +280,14 @@ export default function GeneralListPlay({
     assumeDefaultBookmarkValue,
 }: IGeneralListPlayProperties) {
     const parameters = useParams();
-    const listIDParameter =
-        parameters.listId !== undefined ? parameters.listId : "";
-    const sentenceListID = BigInt(listIDParameter);
+    const isParameterAvailable = parameters.listId !== undefined;
+
+    // make sure listIDParameter is always a string
+    const listIDParameter = isParameterAvailable ? parameters.listId : "";
+
+    // as string clause is needed because TypeScript is not smart enough to
+    // figure out that listIDParameter is never undefined
+    const sentenceListID = BigInt(listIDParameter as string);
     const token = getToken();
 
     if (token === null) {

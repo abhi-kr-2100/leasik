@@ -17,8 +17,12 @@ export function convertToConcreteCard(card: ICard): ICard {
 }
 
 export function convertBaseToExtended(baseObject: ICardBase): ICard;
-export function convertBaseToExtended(baseObject: ISentenceListBase): ISentenceList;
-export function convertBaseToExtended(baseObject: ICardBase | ISentenceListBase): ISentenceList | ICard {
+export function convertBaseToExtended(
+    baseObject: ISentenceListBase
+): ISentenceList;
+export function convertBaseToExtended(
+    baseObject: ICardBase | ISentenceListBase
+): ISentenceList | ICard {
     return { ...baseObject, id: BigInt(baseObject.id as string) };
 }
 
