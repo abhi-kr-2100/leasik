@@ -1,6 +1,7 @@
 import React from "react";
 import { AugmentedCard, answerStatusType } from "../types";
 import Question from "./Question";
+import QuestionHint from "./QuestionHint";
 
 interface IQuestionAreaProperties {
     card: AugmentedCard;
@@ -26,6 +27,8 @@ export default function QuestionArea({
                 onEnterKeyPress={onEnterKeyPress}
                 onInputChange={onInputChange}
             />
+
+            <QuestionHint card={card} />
         </div>
     );
 }
