@@ -66,9 +66,7 @@ export default function SentenceLists() {
 
     return (
         <div>
-            <div className="container is-fluid pt-5">
-                {sentenceListElements}
-            </div>
+            <div className="container py-6 px-6">{sentenceListElements}</div>
         </div>
     );
 }
