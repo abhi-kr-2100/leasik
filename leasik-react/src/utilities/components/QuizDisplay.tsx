@@ -28,6 +28,11 @@ interface IQuizDisplayProperties {
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => any;
     onNext: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
+    answerAccessKey?: string;
+    bookmarkAccessKey?: string;
+    editCardsAccessKey?: string;
+    editSaveAccessKey?: string;
+    editCancelAccessKey?: string;
 }
 
 export default function QuizDisplay({
@@ -47,11 +52,20 @@ export default function QuizDisplay({
     onInputChange,
     onAnswerCheck,
     onNext,
+    answerAccessKey,
+    bookmarkAccessKey,
+    editCardsAccessKey,
+    editSaveAccessKey,
+    editCancelAccessKey,
 }: IQuizDisplayProperties) {
     return (
         <div className="pt-5">
             <div className="hero-head">
                 <UtilityButtons
+                    bookmarkAccessKey={bookmarkAccessKey}
+                    editCardsAccessKey={editCardsAccessKey}
+                    editCancelAccessKey={editCancelAccessKey}
+                    editSaveAccessKey={editSaveAccessKey}
                     card={card}
                     isCardEditsBeingSaved={isCardEditsBeingSaved}
                     isEditCardsDialogBoxOpen={isEditCardsDialogOpen}
@@ -77,6 +91,7 @@ export default function QuizDisplay({
 
             <div className="hero-footer">
                 <AnswerButtons
+                    accessKey={answerAccessKey}
                     answerStatus={answerStatus}
                     onAnswerCheck={onAnswerCheck}
                     onNext={onNext}

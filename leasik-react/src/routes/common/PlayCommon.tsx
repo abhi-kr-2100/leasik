@@ -6,6 +6,14 @@ import { AugmentedCard, answerStatusType } from "../../utilities/types";
 import { getToken } from "../../utilities/authentication";
 
 import {
+    answerCheckAndNextAccessKey,
+    bookmarkAccessKey,
+    editAccessKey,
+    editCancelAccessKey,
+    editSaveAccessKey,
+} from "../../utilities/accessKeys";
+
+import {
     getWords,
     getID,
     semanticallyEqual,
@@ -92,6 +100,11 @@ function GeneralListPlayCore({
 
     return (
         <QuizDisplay
+            answerAccessKey={answerCheckAndNextAccessKey}
+            bookmarkAccessKey={bookmarkAccessKey}
+            editCardsAccessKey={editAccessKey}
+            editCancelAccessKey={editCancelAccessKey}
+            editSaveAccessKey={editSaveAccessKey}
             answerStatus={currentCardAnswerStatus}
             card={cards[currentCardIndex]}
             isCardEditsBeingSaved={isCardEditsBeingSaved}

@@ -14,6 +14,8 @@ interface IEditCardsDialogBoxProperties {
     onClose: () => any;
     onCancel: () => any;
     onSave: () => any;
+    cancelAccessKey?: string;
+    saveAccessKey?: string;
 }
 
 export default function EditCardsDialogBox({
@@ -25,10 +27,16 @@ export default function EditCardsDialogBox({
     onClose,
     onCancel,
     onSave,
+    cancelAccessKey,
+    saveAccessKey,
 }: IEditCardsDialogBoxProperties) {
     const words = getWords(card.sentence.text);
     const wordSelectButtons = words.map((w, index) => (
-        <ToggleButton value={index} key={index}>
+        <ToggleButton
+            accessKey={(index + 1).toString()} // users don't start counting at 0
+            value={index}
+            key={index}
+        >
             {w}
         </ToggleButton>
     ));
@@ -51,10 +59,18 @@ export default function EditCardsDialogBox({
             </ToggleButtonGroup>
 
             <div>
-                <button className={cancelButtonClasses} onClick={onCancel}>
+                <button
+                    accessKey={cancelAccessKey}
+                    className={cancelButtonClasses}
+                    onClick={onCancel}
+                >
                     Cancel
                 </button>
-                <button className={saveButtonClasses} onClick={onSave}>
+                <button
+                    accessKey={saveAccessKey}
+                    className={saveButtonClasses}
+                    onClick={onSave}
+                >
                     Save
                 </button>
             </div>

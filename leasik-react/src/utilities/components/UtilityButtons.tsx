@@ -17,6 +17,10 @@ interface IUtilityButtonsProperties {
     onStartEditingCards: () => any;
     onCancelEditingCards: () => any;
     onSaveEditingCards: () => any;
+    bookmarkAccessKey?: string;
+    editCardsAccessKey?: string;
+    editSaveAccessKey?: string;
+    editCancelAccessKey?: string;
 }
 
 export default function UtilityButtons({
@@ -30,16 +34,24 @@ export default function UtilityButtons({
     onStartEditingCards,
     onCancelEditingCards,
     onSaveEditingCards,
+    bookmarkAccessKey,
+    editCardsAccessKey,
+    editSaveAccessKey,
+    editCancelAccessKey,
 }: IUtilityButtonsProperties) {
     return (
         <div className="container">
             <div className="buttons is-centered">
                 <BookmarkButton
+                    accessKey={bookmarkAccessKey}
                     card={card}
                     isBookmarkBeingToggled={isBookmarkBeingToggled}
                     onBookmark={onBookmark}
                 />
                 <EditCardsButton
+                    startAccessKey={editCardsAccessKey}
+                    saveAccessKey={editSaveAccessKey}
+                    cancelAccessKey={editCancelAccessKey}
                     card={card}
                     isCardEditsBeingSaved={isCardEditsBeingSaved}
                     isDialogBoxOpen={isEditCardsDialogBoxOpen}

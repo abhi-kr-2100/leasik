@@ -4,12 +4,14 @@ interface IBookmarkButtonProperties {
     card: AugmentedCard;
     isBookmarkBeingToggled: boolean;
     onBookmark: () => any;
+    accessKey?: string;
 }
 
 export default function BookmarkButton({
     card,
     isBookmarkBeingToggled,
     onBookmark,
+    accessKey,
 }: IBookmarkButtonProperties) {
     const classNamesFinal = `button ${
         card.isBookmarked ? "is-danger" : "is-info"
@@ -18,7 +20,11 @@ export default function BookmarkButton({
     const buttonText = card.isBookmarked ? "Remove Bookmark" : "Bookmark";
 
     return (
-        <button onClick={onBookmark} className={classNamesFinal}>
+        <button
+            accessKey={accessKey}
+            onClick={onBookmark}
+            className={classNamesFinal}
+        >
             {buttonText}
         </button>
     );

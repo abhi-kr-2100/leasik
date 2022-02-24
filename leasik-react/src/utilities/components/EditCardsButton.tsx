@@ -13,6 +13,9 @@ interface IEditCardsButtonProperties {
     onStartEditingCards: () => any;
     onSaveEdits: () => any;
     onCancelEdits: () => any;
+    startAccessKey?: string;
+    saveAccessKey?: string;
+    cancelAccessKey?: string;
 }
 
 export default function EditCardsButton({
@@ -24,13 +27,22 @@ export default function EditCardsButton({
     onStartEditingCards,
     onSaveEdits,
     onCancelEdits,
+    startAccessKey,
+    saveAccessKey,
+    cancelAccessKey,
 }: IEditCardsButtonProperties) {
     return (
         <div>
-            <button className="button is-info" onClick={onStartEditingCards}>
+            <button
+                accessKey={startAccessKey}
+                className="button is-info"
+                onClick={onStartEditingCards}
+            >
                 Edit Cards
             </button>
             <EditCardsDialogBox
+                saveAccessKey={saveAccessKey}
+                cancelAccessKey={cancelAccessKey}
                 card={card}
                 isCardEditsBeingSaved={isCardEditsBeingSaved}
                 open={isDialogBoxOpen}

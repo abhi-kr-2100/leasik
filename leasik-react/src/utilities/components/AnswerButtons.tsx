@@ -6,12 +6,14 @@ interface IAnswerButtonsProperties {
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => any;
     onNext: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => any;
+    accessKey?: string;
 }
 
 export default function AnswerButtons({
     answerStatus,
     onAnswerCheck,
     onNext,
+    accessKey,
 }: IAnswerButtonsProperties) {
     const isAnswerUnchcked = answerStatus === "unchecked";
 
@@ -20,7 +22,11 @@ export default function AnswerButtons({
 
     return (
         <div className="container has-text-centered block">
-            <button className="button is-primary" onClick={submitFunction}>
+            <button
+                accessKey={accessKey}
+                className="button is-primary"
+                onClick={submitFunction}
+            >
                 {buttonText}
             </button>
         </div>
