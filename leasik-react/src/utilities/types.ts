@@ -1,7 +1,6 @@
 import { ICard, ISentence } from "./models";
 
 export interface IAugmentedCard extends ICard {
-    isBookmarked: boolean;
     isDeletedOnServer: boolean;
 
     // sister cards are have the same sentence but different ids
@@ -14,23 +13,23 @@ export class AugmentedCard implements IAugmentedCard {
     note: string;
     sentence: ISentence;
     hidden_word_position: number;
-    isBookmarked: boolean;
+    is_bookmarked: boolean;
     isDeletedOnServer: boolean;
     sisterCards: AugmentedCard[];
 
     static fromCard(
         card: ICard,
-        isBookmarked: boolean,
         isDeletedOnServer = false,
         sisterCards: AugmentedCard[] = []
     ): AugmentedCard {
-        const { id, note, sentence, hidden_word_position } = card;
+        const { id, note, sentence, hidden_word_position, is_bookmarked } =
+            card;
         const object = new AugmentedCard(
             id,
             note,
             sentence,
             hidden_word_position,
-            isBookmarked,
+            is_bookmarked,
             isDeletedOnServer,
             sisterCards
         );
@@ -38,22 +37,10 @@ export class AugmentedCard implements IAugmentedCard {
         return object;
     }
 
-    static fromCardsWithOneBookmarkValue(
-        cards: ICard[],
-        bookmarkValue: boolean
-    ): AugmentedCard[] {
-        return cards.map((card) =>
-            AugmentedCard.fromCard(card, bookmarkValue)
-        );
-    }
-
     static fromCards(
         cards: ICard[],
-        bookmarkStatuses: boolean[]
     ): AugmentedCard[] {
-        return cards.map((card, index) =>
-            AugmentedCard.fromCard(card, bookmarkStatuses[index])
-        );
+        return cards.map(card => AugmentedCard.fromCard(card));
     }
 
     constructor(
@@ -69,7 +56,7 @@ export class AugmentedCard implements IAugmentedCard {
         this.note = note;
         this.sentence = sentence;
         this.hidden_word_position = hiddenWordPosition;
-        this.isBookmarked = isBookmarked;
+        this.is_bookmarked = isBookmarked;
         this.isDeletedOnServer = isDeletedOnServer;
         this.sisterCards = sisterCards;
     }

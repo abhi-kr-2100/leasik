@@ -25,7 +25,6 @@ import {
     removeBookmarkBulk,
     updateProficiency,
     replaceWithNewCards,
-    isBookmarkedBulk,
 } from "../../utilities/apiCalls";
 
 import LoadingScreen from "../../utilities/components/LoadingScreen";
@@ -36,14 +35,12 @@ interface IGeneralListPlayCoreProperties {
     token: string;
     sentenceListID: BigInt;
     initialCards: Promise<ICard[]>;
-    assumeDefaultBookmarkValue?: boolean;
 }
 
 function GeneralListPlayCore({
     token,
     sentenceListID,
     initialCards,
-    assumeDefaultBookmarkValue,
 }: IGeneralListPlayCoreProperties) {
     const [isLoading, setIsLoading] = useState(false);
     const [isBookmarkBeingToggled, setIsBookmarkBeingToggled] =
@@ -72,23 +69,9 @@ function GeneralListPlayCore({
         async function convertToAugmentedCards(
             normalCards: ICard[]
         ): Promise<AugmentedCard[]> {
-            if (assumeDefaultBookmarkValue !== undefined) {
-                return AugmentedCard.fromCardsWithOneBookmarkValue(
-                    normalCards,
-                    assumeDefaultBookmarkValue
-                );
-            }
-
-            const cardIDs = normalCards.map(getID);
-            const bookmarkStatuses = await isBookmarkedBulk(
-                token,
-                sentenceListID,
-                cardIDs
-            );
-
-            return AugmentedCard.fromCards(normalCards, bookmarkStatuses);
+            return AugmentedCard.fromCards(normalCards);
         }
-    }, [token, initialCards, sentenceListID, assumeDefaultBookmarkValue]);
+    }, [token, initialCards, sentenceListID]);
 
     if (isLoading) {
         return <LoadingScreen />;
@@ -175,15 +158,10 @@ function GeneralListPlayCore({
             availableCard.id,
             currentSelectedWordIndices
         )
-            .then((sisterCards) =>
-                AugmentedCard.fromCardsWithOneBookmarkValue(
-                    sisterCards,
-                    currentCardUpdated.isBookmarked
-                )
-            )
+            .then((sisterCards) => AugmentedCard.fromCards(sisterCards))
             .then(setSisterCards)
             .then((augmentedSisterCards) => {
-                if (!currentCardUpdated.isBookmarked) {
+                if (!currentCardUpdated.is_bookmarked) {
                     return;
                 }
 
@@ -211,7 +189,7 @@ function GeneralListPlayCore({
         const cardsCopy = [...cards];
         const currentCard = cardsCopy[currentCardIndex];
 
-        const action = currentCard.isBookmarked
+        const action = currentCard.is_bookmarked
             ? removeBookmarkBulk
             : addBookmarkBulk;
 
@@ -221,7 +199,9 @@ function GeneralListPlayCore({
 
         setIsBookmarkBeingToggled(true);
         return action(token, sentenceListID, cardsToUpdate.map(getID))
-            .then(() => (currentCard.isBookmarked = !currentCard.isBookmarked))
+            .then(
+                () => (currentCard.is_bookmarked = !currentCard.is_bookmarked)
+            )
             .then(() => setCards(cardsCopy))
             .catch((error) => alert(`Couldn't toggle bookmarks. ${error}`))
             .finally(() => setIsBookmarkBeingToggled(false));
@@ -302,11 +282,9 @@ interface IGeneralListPlayProperties {
         token: string,
         sentenceListID: BigInt
     ) => Promise<ICard[]>;
-    assumeDefaultBookmarkValue?: boolean;
 }
 export default function GeneralListPlay({
     getInitialCards,
-    assumeDefaultBookmarkValue,
 }: IGeneralListPlayProperties) {
     const parameters = useParams();
     const isParameterAvailable = parameters.listId !== undefined;
@@ -329,7 +307,6 @@ export default function GeneralListPlay({
             token={token}
             sentenceListID={sentenceListID}
             initialCards={initialCards}
-            assumeDefaultBookmarkValue={assumeDefaultBookmarkValue}
         />
     );
 }

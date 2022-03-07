@@ -16,7 +16,9 @@ from leasikREST.filters import (
     IsOwnerOrPublicFilter,
     SentenceListFilter,
 )
+
 from leasikREST.serializers import (
+    AugmentedCardSerializer,
     CardSerializer,
     BookmarkSerializer,
     SentenceListSerializer,
@@ -43,12 +45,27 @@ class CardViewSet(ModelViewSet):
         num_cards = int(
             request.query_params.get("num_cards", api_settings.PAGE_SIZE)
         )
+
         sentence_list: SentenceList = SentenceList.objects.get(pk=list_pk)
         sentences = list(sentence_list.sentences.all())
 
-        cards = get_cards(request.user, sentences, num_cards)
+        bookmark = Bookmark.objects.get_or_create(
+            owner=request.user, sentence_list=sentence_list
+        )[0]
+        bookmarked_cards = bookmark.cards.values_list("id", flat=True)
 
-        return Response(CardSerializer(cards, many=True).data)
+        cards = get_cards(request.user, sentences, num_cards)
+        data = [
+            {
+                **CardSerializer(c).data,
+                "is_bookmarked": c.id in bookmarked_cards,
+            }
+            for c in cards
+        ]
+
+        return Response(
+            AugmentedCardSerializer(data=data, many=True).initial_data
+        )
 
     @action(methods=["POST"], detail=False)
     def replaceWithNewCards(self, request: Request) -> Response:
@@ -156,7 +173,13 @@ class BookmarkViewSet(ModelViewSet):
         )[0]
         cards = bookmark.cards.all()
 
-        return Response(CardSerializer(cards, many=True).data)
+        data = [
+            {**CardSerializer(c).data, "is_bookmarked": True} for c in cards
+        ]
+
+        return Response(
+            AugmentedCardSerializer(data=data, many=True).initial_data
+        )
 
     @action(
         detail=False,

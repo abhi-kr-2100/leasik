@@ -14,10 +14,10 @@ export default function BookmarkButton({
     accessKey,
 }: IBookmarkButtonProperties) {
     const classNamesFinal = `button ${
-        card.isBookmarked ? "is-danger" : "is-info"
+        card.is_bookmarked ? "is-danger" : "is-info"
     } ${isBookmarkBeingToggled ? "is-loading is-disabled" : ""}`;
 
-    const buttonText = card.isBookmarked ? "Remove Bookmark" : "Bookmark";
+    const buttonText = card.is_bookmarked ? "Remove Bookmark" : "Bookmark";
 
     return (
         <button
