@@ -72,7 +72,7 @@ function GeneralListPlayCore({
         async function convertToAugmentedCards(
             normalCards: ICard[]
         ): Promise<AugmentedCard[]> {
-            if (assumeDefaultBookmarkValue) {
+            if (assumeDefaultBookmarkValue !== undefined) {
                 return AugmentedCard.fromCardsWithOneBookmarkValue(
                     normalCards,
                     assumeDefaultBookmarkValue
