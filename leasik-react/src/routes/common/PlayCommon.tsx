@@ -45,7 +45,7 @@ function GeneralListPlayCore({
     initialCards,
     assumeDefaultBookmarkValue,
 }: IGeneralListPlayCoreProperties) {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingCards, setIsLoadingCards] = useState(false);
     const [isBookmarkBeingToggled, setIsBookmarkBeingToggled] =
         useState(false);
     const [isEditCardsDialogBoxOpen, setIsEditCardsDialogBoxOpen] =
@@ -61,13 +61,13 @@ function GeneralListPlayCore({
         useState<answerStatusType>("unchecked");
 
     useEffect(() => {
-        setIsLoading(true);
+        setIsLoadingCards(true);
         initialCards
             .then(convertToConcreteCards)
             .then(convertToAugmentedCards)
             .then(setCards)
             .catch((error) => alert(`Couldn't load cards. ${error}`))
-            .finally(() => setIsLoading(false));
+            .finally(() => setIsLoadingCards(false));
 
         async function convertToAugmentedCards(
             normalCards: ICard[]
@@ -90,7 +90,7 @@ function GeneralListPlayCore({
         }
     }, [token, initialCards, sentenceListID, assumeDefaultBookmarkValue]);
 
-    if (isLoading) {
+    if (isLoadingCards) {
         return <LoadingScreen />;
     }
 
