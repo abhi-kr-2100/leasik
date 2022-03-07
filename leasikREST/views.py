@@ -167,11 +167,15 @@ class BookmarkViewSet(ModelViewSet):
     @action(detail=False, url_path="forList/(?P<list_pk>[^/.]+)")
     def forList(self, request: Request, list_pk: int) -> Response:
         """Get cards that are bookmarked to the given list."""
+        num_cards = int(
+            request.query_params.get("num_cards", api_settings.PAGE_SIZE)
+        )
+
         sentence_list = SentenceList.objects.get(pk=list_pk)
         bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list
         )[0]
-        cards = bookmark.cards.all()
+        cards = bookmark.cards.all().order_by("?")[:num_cards]
 
         data = [
             {**CardSerializer(c).data, "is_bookmarked": True} for c in cards
