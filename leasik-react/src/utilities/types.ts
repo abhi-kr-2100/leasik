@@ -37,10 +37,8 @@ export class AugmentedCard implements IAugmentedCard {
         return object;
     }
 
-    static fromCards(
-        cards: ICard[],
-    ): AugmentedCard[] {
-        return cards.map(card => AugmentedCard.fromCard(card));
+    static fromCards(cards: ICard[]): AugmentedCard[] {
+        return cards.map((card) => AugmentedCard.fromCard(card));
     }
 
     constructor(
