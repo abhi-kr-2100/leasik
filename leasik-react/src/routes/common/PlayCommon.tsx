@@ -43,11 +43,10 @@ function GeneralListPlayCore({
     initialCards,
 }: IGeneralListPlayCoreProperties) {
     const [isLoadingCards, setIsLoadingCards] = useState(false);
-    const [isBookmarkBeingToggled, setIsBookmarkBeingToggled] =
-        useState(false);
     const [isEditCardsDialogBoxOpen, setIsEditCardsDialogBoxOpen] =
         useState(false);
-    const [isCardEditsBeingSaved, setIsCardEditsBeingSaved] = useState(false);
+    const [isBookmarkToggled, setIsBookmarkToggled] = useState(false);
+    const [isCardDeletedOnServer, setIsCardDeletedOnServer] = useState(false);
 
     const [cards, setCards] = useState<AugmentedCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -90,11 +89,15 @@ function GeneralListPlayCore({
             editSaveAccessKey={editSaveAccessKey}
             answerStatus={currentCardAnswerStatus}
             card={cards[currentCardIndex]}
-            isCardEditsBeingSaved={isCardEditsBeingSaved}
+            // the operation below occurs in the background, so the user should
+            // not see any loading effects
+            isCardEditsBeingSaved={false}
             isEditCardsDialogOpen={isEditCardsDialogBoxOpen}
             currentInput={userInput}
             onAnswerCheck={checkAnswer}
-            isBookmarkBeingToggled={isBookmarkBeingToggled}
+            // the operation below occurs in the background, so the user should
+            // not see any loading effects
+            isBookmarkBeingToggled={false}
             onBookmark={toggleBookmarkStatusOfCurrentCard}
             selectedWordIndices={currentSelectedWordIndices}
             onSelectWordIndex={selectNewWordIndices}
@@ -115,53 +118,36 @@ function GeneralListPlayCore({
     }
 
     function startEditingCards() {
-        if (isBookmarkBeingToggled) {
-            // one thing at a time
-            return;
-        }
-
         setIsEditCardsDialogBoxOpen(true);
     }
 
     function cancelEditingCards() {
-        if (isCardEditsBeingSaved) {
-            // wait for save to finish
-            return;
-        }
-
         setIsEditCardsDialogBoxOpen(false);
     }
 
-    async function saveEditToCards(): Promise<void> {
+    function saveEditToCards() {
+        setIsCardDeletedOnServer(currentSelectedWordIndices.length > 0);
+        setIsEditCardsDialogBoxOpen(false);
+    }
+
+    async function sendSaveEditToCardsRequestToAPI(
+        cardIndex: number,
+        currentSelectedWordIndices: number[]
+    ): Promise<void> {
         if (currentSelectedWordIndices.length === 0) {
             return;
         }
 
-        const currentCard = cards[currentCardIndex];
-        const currentCardUpdated = { ...currentCard, isDeletedOnServer: true };
+        const currentCard = cards[cardIndex];
 
-        // same as cards except that the current card is the updated one
-        const cardsCopyWithUpdatedCurrentCard = [
-            ...cards.slice(0, currentCardIndex),
-            currentCardUpdated,
-            ...cards.slice(currentCardIndex + 1),
-        ];
-
-        // any card that we know is not deleted on the server
-        const availableCard = currentCard.isDeletedOnServer
-            ? currentCard.sisterCards[0]
-            : currentCard;
-
-        setIsCardEditsBeingSaved(true);
         return replaceWithNewCards(
             token,
-            availableCard.id,
+            currentCard.id,
             currentSelectedWordIndices
         )
             .then((sisterCards) => AugmentedCard.fromCards(sisterCards))
-            .then(setSisterCards)
             .then((augmentedSisterCards) => {
-                if (!currentCardUpdated.is_bookmarked) {
+                if (!currentCard.is_bookmarked) {
                     return;
                 }
 
@@ -171,40 +157,48 @@ function GeneralListPlayCore({
                     augmentedSisterCards.map(getID)
                 );
             })
-            .then(() => setCards(cardsCopyWithUpdatedCurrentCard))
-            .catch((error) => alert(`Couldn't update cards. ${error}`))
-            .finally(() => {
-                setIsCardEditsBeingSaved(false);
-                setIsEditCardsDialogBoxOpen(false);
-            });
-
-        function setSisterCards(sisterCards: AugmentedCard[]) {
-            return (cardsCopyWithUpdatedCurrentCard[
-                currentCardIndex
-            ].sisterCards = sisterCards);
-        }
+            .catch((error) => alert(`Couldn't update cards. ${error}`));
     }
 
-    async function toggleBookmarkStatusOfCurrentCard() {
-        const cardsCopy = [...cards];
-        const currentCard = cardsCopy[currentCardIndex];
+    function toggleBookmarkStatusOfCurrentCard() {
+        setIsBookmarkToggled(!isBookmarkToggled);
 
+        const currentCard = cards[currentCardIndex];
+        const currentCardUpdated = {
+            ...currentCard,
+            is_bookmarked: !currentCard.is_bookmarked,
+        };
+
+        const updatedCards = [
+            ...cards.slice(0, currentCardIndex),
+            currentCardUpdated,
+            ...cards.slice(currentCardIndex + 1),
+        ];
+
+        setCards(updatedCards);
+    }
+
+    async function sendToggleBookmarkStatusRequestToAPI(
+        cardIndex: number,
+        isCardDeletedOnServer: boolean,
+        isBookmarkToggled: boolean
+    ) {
+        if (isCardDeletedOnServer || !isBookmarkToggled) {
+            return;
+        }
+
+        const currentCard = cards[cardIndex];
+
+        // is_bookmarked is the state we want the card on the server to be in
         const action = currentCard.is_bookmarked
-            ? removeBookmarkBulk
-            : addBookmarkBulk;
+            ? addBookmarkBulk
+            : removeBookmarkBulk;
 
-        const cardsToUpdate = currentCard.isDeletedOnServer
-            ? currentCard.sisterCards
-            : [currentCard];
+        const cardsToUpdate = [currentCard];
 
-        setIsBookmarkBeingToggled(true);
-        return action(token, sentenceListID, cardsToUpdate.map(getID))
-            .then(
-                () => (currentCard.is_bookmarked = !currentCard.is_bookmarked)
-            )
-            .then(() => setCards(cardsCopy))
-            .catch((error) => alert(`Couldn't toggle bookmarks. ${error}`))
-            .finally(() => setIsBookmarkBeingToggled(false));
+        return action(token, sentenceListID, cardsToUpdate.map(getID)).catch(
+            (error) => alert(`Couldn't toggle bookmarks. ${error}`)
+        );
     }
 
     function checkAnswerCore() {
@@ -251,10 +245,18 @@ function GeneralListPlayCore({
     }
 
     function nextCardCore() {
-        if (isBookmarkBeingToggled) {
-            return;
-        }
+        sendSaveEditToCardsRequestToAPI(
+            currentCardIndex,
+            currentSelectedWordIndices
+        );
+        sendToggleBookmarkStatusRequestToAPI(
+            currentCardIndex,
+            isCardDeletedOnServer,
+            isBookmarkToggled
+        );
 
+        setIsBookmarkToggled(false);
+        setIsCardDeletedOnServer(false);
         setCurrentCardIndex(currentCardIndex + 1);
         setUserInput("");
         setCurrentCardAnswerStatus("unchecked");
