@@ -8,6 +8,7 @@ export interface ICardBase {
     note: string;
     sentence: ISentence;
     hidden_word_position: number;
+    is_bookmarked: boolean;
 }
 
 export interface ICard extends ICardBase {
