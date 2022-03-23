@@ -12,6 +12,7 @@ djangorestframework = "*"
 django-cors-headers = "*"
 django-cockroachdb = "*"
 whitenoise = "*"
+gunicorn = "*"
 
 [dev-packages]
 mypy = "*"
@@ -22,7 +23,6 @@ flake8-docstrings = "*"
 radon = "*"
 flake8-pylint = "*"
 flake8-bandit = "*"
-gunicorn = "*"
 
 [requires]
 python_version = "3.8"
