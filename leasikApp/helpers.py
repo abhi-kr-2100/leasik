@@ -1,47 +1,40 @@
 """Helper or utility functions for the leasikApp app."""
 
 
-from typing import List, Optional, Sequence, Tuple, TypeVar, Generator
+from typing import List, Optional, Tuple, Set
 from datetime import timedelta
-from random import shuffle
+from random import sample
 
 from django.contrib.auth.models import User
 
 from .models import Card, Sentence
 
 
-T = TypeVar("T")
-
-
-def batched(
-    iterable: Sequence[T], batch_size: int = 1
-) -> Generator[Tuple[Sequence[T], int, int], None, None]:
-    """Return iter in batches of batch_size.
-
-    Additionally, include information about start and end index of the batch.
-    """
-    n = len(iterable)
-    for i in range(0, n, batch_size):
-        s = i
-        e = min(i + batch_size, n)
-
-        yield (iterable[s:e], s, e)
-
-
 def get_cards(
-    user: User, sentences: List[Sentence], n: Optional[int] = None
+    user: User,
+    sentences: List[Sentence],
+    n: Optional[int] = None,
+    retries: int = 3,
 ) -> List[Card]:
     """Return n applicable cards belonging to user from slist.
 
+    A card is considered applicable if it is up for review. It is not
+    guaranteed that only applicable cards will be returned; if enough
+    applicable cards are not found after retrying for the specified number of
+    times (default 3), the function will return some non-applicable cards.
+
     If n is None, return all.
     """
-    cards: List[Card] = []
-    cards_up_for_review: List[Card] = []
+    all_cards_seen: Set[Card] = set()
+    sample_size = len(sentences) if n is None or n > len(sentences) else n
+    cards_up_for_review: Set[Card] = set()
 
-    shuffle(sentences)
+    for _ in range(retries):
+        if len(cards_up_for_review) >= sample_size:
+            break
 
-    for batch, s, e in batched(sentences, n if n is not None else 1):
-        for sentence in batch:
+        cards: List[Card] = []
+        for sentence in sample(sentences, sample_size):
             card = Card.objects.filter(owner=user, sentence=sentence).order_by(
                 "?"
             )
@@ -52,14 +45,20 @@ def get_cards(
                     Card.objects.create(owner=user, sentence=sentence)
                 )
 
-        cards_up_for_review.extend(
-            c for c in cards[s:e] if c.is_up_for_review()
+        all_cards_seen.update(cards)
+        cards_up_for_review.update(c for c in cards if c.is_up_for_review())
+
+    # make sure cards_up_for_review has at least sample_size elements
+    unused_cards = all_cards_seen - cards_up_for_review
+    number_of_cards_required = sample_size - len(cards_up_for_review)
+    if number_of_cards_required > 0:
+        cards_up_for_review.update(
+            sample(
+                unused_cards, min(number_of_cards_required, len(unused_cards))
+            )
         )
 
-        if n is not None and len(cards_up_for_review) >= n:
-            return cards_up_for_review[:n]
-
-    return cards[:n] if n is not None else cards
+    return list(cards_up_for_review)[:sample_size]
 
 
 def sm2(
