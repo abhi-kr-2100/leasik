@@ -9,7 +9,13 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from leasikApp.models import Card, Bookmark, SentenceList
-from leasikApp.helpers import get_cards, sm2
+from leasikApp.helpers import (
+    converted_to_augmented_cards,
+    get_cards,
+    sm2,
+    augmented_cards,
+)
+
 from leasikREST.permissions import OwnerOnly, OwnerOrPublicReadOnly
 from leasikREST.filters import (
     IsOwnerFilter,
@@ -18,13 +24,10 @@ from leasikREST.filters import (
 )
 
 from leasikREST.serializers import (
-    AugmentedCardSerializer,
     CardSerializer,
     BookmarkSerializer,
     SentenceListSerializer,
 )
-
-from leasikApp.helpers import augmented_cards
 
 
 class CardViewSet(ModelViewSet):
@@ -155,9 +158,10 @@ class BookmarkViewSet(ModelViewSet):
     permission_classes = [OwnerOnly]
     filter_backends = [IsOwnerFilter, SentenceListFilter]
 
+    # url: /forList/<int:listID>
     @action(detail=False, url_path="forList/(?P<list_pk>[^/.]+)")
     def forList(self, request: Request, list_pk: int) -> Response:
-        """Get cards that are bookmarked to the given list."""
+        """Get cards from the given list that are bookmarked."""
         num_cards = int(
             request.query_params.get("num_cards", api_settings.PAGE_SIZE)
         )
@@ -166,16 +170,12 @@ class BookmarkViewSet(ModelViewSet):
         bookmark: Bookmark = Bookmark.objects.get_or_create(
             owner=request.user, sentence_list=sentence_list
         )[0]
+
         cards = bookmark.cards.all().order_by("?")[:num_cards]
 
-        data = [
-            {**CardSerializer(c).data, "is_bookmarked": True} for c in cards
-        ]
+        return Response(converted_to_augmented_cards(cards))
 
-        return Response(
-            AugmentedCardSerializer(data=data, many=True).initial_data
-        )
-
+    # url: /isBookmarked/<int:listID>/<int:cardID>
     @action(
         detail=False,
         url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
@@ -191,6 +191,7 @@ class BookmarkViewSet(ModelViewSet):
 
         return Response({"result": card in bookmark.cards.all()})
 
+    # url: /isBookmarkedBulk/<int:listID>
     @action(
         methods=["POST"],
         detail=False,

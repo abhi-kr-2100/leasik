@@ -118,3 +118,16 @@ def augmented_cards(
     ]
 
     return AugmentedCardSerializer(data=data, many=True)
+
+
+def converted_to_augmented_cards(
+    cards: List[Card], are_bookmarked: bool
+) -> AugmentedCardSerializer:
+    """Augment the cards with given bookmark information and return."""
+
+    data = [
+        {**CardSerializer(c).data, "is_bookmarked": are_bookmarked}
+        for c in cards
+    ]
+
+    return AugmentedCardSerializer(data=data, many=True)
