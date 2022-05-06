@@ -16,7 +16,7 @@ def get_cards(
     n: Optional[int] = None,
     retries: int = 3,
 ) -> List[Card]:
-    """Return n applicable cards belonging to user from slist.
+    """Return n applicable user owned cards belonging to sentences.
 
     A card is considered applicable if it is up for review. It is not
     guaranteed that only applicable cards will be returned; if enough
