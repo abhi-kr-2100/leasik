@@ -24,6 +24,8 @@ from leasikREST.serializers import (
     SentenceListSerializer,
 )
 
+from leasikApp.helpers import augmented_cards
+
 
 class CardViewSet(ModelViewSet):
     """Allow CRUD requests to be made for the Card object.
@@ -39,6 +41,7 @@ class CardViewSet(ModelViewSet):
     permission_classes = [OwnerOnly]
     filter_backends = [IsOwnerFilter]
 
+    # url_path = /playlist/<int:listID>
     @action(detail=False, url_path="playlist/(?P<list_pk>[^/.]+)")
     def playlist(self, request: Request, list_pk: int) -> Response:
         """Return Cards from given list that the logged-in user should play."""
@@ -49,22 +52,11 @@ class CardViewSet(ModelViewSet):
         sentence_list: SentenceList = SentenceList.objects.get(pk=list_pk)
         sentences = list(sentence_list.sentences.all())
 
-        bookmark = Bookmark.objects.get_or_create(
-            owner=request.user, sentence_list=sentence_list
-        )[0]
-        bookmarked_cards = bookmark.cards.values_list("id", flat=True)
-
         cards = get_cards(request.user, sentences, num_cards)
-        data = [
-            {
-                **CardSerializer(c).data,
-                "is_bookmarked": c.id in bookmarked_cards,
-            }
-            for c in cards
-        ]
+        augmented = augmented_cards(request.user, sentence_list, cards)
 
         return Response(
-            AugmentedCardSerializer(data=data, many=True).initial_data
+            augmented.initial_data,
         )
 
     @action(methods=["POST"], detail=False)

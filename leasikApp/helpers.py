@@ -7,7 +7,9 @@ from random import sample
 
 from django.contrib.auth.models import User
 
-from .models import Card, Sentence
+from leasikREST.serializers import AugmentedCardSerializer, CardSerializer
+
+from .models import Bookmark, Card, Sentence, SentenceList
 
 
 def get_one_card(user: User, sentence: Sentence):
@@ -99,3 +101,20 @@ def sm2(
     ef = max(ef, 1.3)
 
     return (n, ef, i)
+
+
+def augmented_cards(
+    owner: User, sentence_list: SentenceList, cards: List[Card]
+) -> AugmentedCardSerializer:
+    """Augment the cards with bookmark information and return."""
+    bookmark = Bookmark.objects.get_or_create(
+        owner=owner, sentence_list=sentence_list
+    )[0]
+    bookmarked_cards = bookmark.cards.values_list("id", flat=True)
+
+    data = [
+        {**CardSerializer(c).data, "is_bookmarked": c.id in bookmarked_cards}
+        for c in cards
+    ]
+
+    return AugmentedCardSerializer(data=data, many=True)
