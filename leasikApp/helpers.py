@@ -10,6 +10,28 @@ from django.contrib.auth.models import User
 from .models import Card, Sentence
 
 
+def get_one_card(user: User, sentence: Sentence):
+    """Return one random user owned card belonging to sentence."""
+
+    card = Card.objects.filter(owner=user, sentence=sentence).order_by("?")
+
+    # cards for the sentence may or may not exist; create one if doesn't exist
+    if (first_card := card.first()) is not None:
+        return first_card
+    else:
+        return Card.objects.create(owner=user, sentence=sentence)
+
+
+def get_n_cards(user: User, sentences: List[Sentence], n: int):
+    """Return one card each from n sentences owned by user.
+
+    Assumes that len(sentences) >= n.
+    """
+
+    cards = [get_one_card(user, sentence) for sentence in sample(sentences, n)]
+    return cards
+
+
 def get_cards(
     user: User,
     sentences: List[Sentence],
@@ -25,40 +47,33 @@ def get_cards(
 
     If n is None, return all.
     """
-    all_cards_seen: Set[Card] = set()
+    # number of cards to return
     sample_size = len(sentences) if n is None or n > len(sentences) else n
-    cards_up_for_review: Set[Card] = set()
+
+    all_cards_seen: Set[Card] = set()  # regardless of applicability
+    applicable_cards: Set[Card] = set()
 
     for _ in range(retries):
-        if len(cards_up_for_review) >= sample_size:
+        if len(applicable_cards) >= sample_size:
             break
 
-        cards: List[Card] = []
-        for sentence in sample(sentences, sample_size):
-            card = Card.objects.filter(owner=user, sentence=sentence).order_by(
-                "?"
-            )
-            if (first_card := card.first()) is not None:
-                cards.append(first_card)
-            else:
-                cards.append(
-                    Card.objects.create(owner=user, sentence=sentence)
-                )
-
+        cards: List[Card] = get_n_cards(user, sentences, sample_size)
         all_cards_seen.update(cards)
-        cards_up_for_review.update(c for c in cards if c.is_up_for_review())
+        applicable_cards.update(c for c in cards if c.is_up_for_review())
 
     # make sure cards_up_for_review has at least sample_size elements
-    unused_cards = all_cards_seen - cards_up_for_review
-    number_of_cards_required = sample_size - len(cards_up_for_review)
-    if number_of_cards_required > 0:
-        cards_up_for_review.update(
+    inapplicable_cards = all_cards_seen - applicable_cards
+    extra_cards_required = sample_size - len(applicable_cards)
+
+    if extra_cards_required > 0:
+        applicable_cards.update(
             sample(
-                unused_cards, min(number_of_cards_required, len(unused_cards))
+                inapplicable_cards,
+                min(extra_cards_required, len(inapplicable_cards)),
             )
         )
 
-    return list(cards_up_for_review)[:sample_size]
+    return list(applicable_cards)[:sample_size]
 
 
 def sm2(
