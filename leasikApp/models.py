@@ -67,7 +67,7 @@ class Card(models.Model):
 
     def is_up_for_review(self) -> bool:
         """Return True if Card needs to be reviewed, False otherwise."""
-        days_passed = self.last_review_date - date.today()
+        days_passed = date.today() - self.last_review_date
         return days_passed >= self.inter_repetition_interval
 
 
