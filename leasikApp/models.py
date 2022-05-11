@@ -53,7 +53,7 @@ class Card(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
 
-    # which word in sentence to hide? -1 means hide any word randomly
+    # -1 means a random word will be selected each time
     hidden_word_position = models.SmallIntegerField(default=-1)
 
     class Meta:
