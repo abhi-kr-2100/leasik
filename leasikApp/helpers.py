@@ -34,6 +34,7 @@ def get_n_cards(user: User, sentences: List[Sentence], n: int):
     return cards
 
 
+# TODO: Simplify and optimize this function.
 def get_cards(
     user: User,
     sentences: List[Sentence],

@@ -45,6 +45,7 @@ class CardViewSet(ModelViewSet):
     filter_backends = [IsOwnerFilter]
 
     # url_path = /playlist/<int:listID>
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(detail=False, url_path="playlist/(?P<list_pk>[^/.]+)")
     def playlist(self, request: Request, list_pk: int) -> Response:
         """Return Cards from given list that the logged-in user should play."""
@@ -53,15 +54,15 @@ class CardViewSet(ModelViewSet):
         )
 
         sentence_list: SentenceList = SentenceList.objects.get(pk=list_pk)
+        # TODO: converting all sentences to a list is expensive; find a better way
         sentences = list(sentence_list.sentences.all())
 
         cards = get_cards(request.user, sentences, num_cards)
         augmented = augmented_cards(request.user, sentence_list, cards)
 
-        return Response(
-            augmented.initial_data,
-        )
+        return Response(augmented.initial_data)
 
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(methods=["POST"], detail=False)
     def replaceWithNewCards(self, request: Request) -> Response:
         """Replace old cards of a sentence with one or more new cards.
@@ -99,6 +100,7 @@ class CardViewSet(ModelViewSet):
             CardSerializer(sentence.card_set.all(), many=True).data
         )
 
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(methods=["POST"], detail=True)
     def updateUsingSM2(self, request: Request, pk: int) -> Response:
         """Update the proficiency of Card using the SM-2 algorithm.
@@ -159,6 +161,7 @@ class BookmarkViewSet(ModelViewSet):
     filter_backends = [IsOwnerFilter, SentenceListFilter]
 
     # url: /forList/<int:listID>
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(detail=False, url_path="forList/(?P<list_pk>[^/.]+)")
     def forList(self, request: Request, list_pk: int) -> Response:
         """Get cards from the given list that are bookmarked."""
@@ -171,11 +174,14 @@ class BookmarkViewSet(ModelViewSet):
             owner=request.user, sentence_list=sentence_list
         )[0]
 
+        # TODO: Use a query that limits the number of results instead of
+        # fetching all cards.
         cards = bookmark.cards.all().order_by("?")[:num_cards]
 
         return Response(converted_to_augmented_cards(cards))
 
     # url: /isBookmarked/<int:listID>/<int:cardID>
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(
         detail=False,
         url_path="isBookmarked/(?P<list_pk>[^/.]+)/(?P<card_pk>[^/.]+)",
@@ -192,6 +198,7 @@ class BookmarkViewSet(ModelViewSet):
         return Response({"result": card in bookmark.cards.all()})
 
     # url: /isBookmarkedBulk/<int:listID>
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(
         methods=["POST"],
         detail=False,
@@ -208,6 +215,7 @@ class BookmarkViewSet(ModelViewSet):
 
         return Response([card in bookmark.cards.all() for card in cards])
 
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(
         methods=["POST"],
         detail=False,
@@ -224,6 +232,7 @@ class BookmarkViewSet(ModelViewSet):
 
         return Response({"status": "created"})
 
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(
         methods=["POST"], detail=False, url_path="addBulk/(?P<list_pk>[^/.]+)"
     )
@@ -237,8 +246,10 @@ class BookmarkViewSet(ModelViewSet):
         cards = Card.objects.filter(pk__in=card_ids)
         bookmark.cards.add(*cards)
 
+        # TODO: Return the created object.
         return Response({"status": "created"})
 
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(
         methods=["DELETE"],
         detail=False,
@@ -256,6 +267,7 @@ class BookmarkViewSet(ModelViewSet):
         return Response({"status": "removed"})
 
     # using POST because DELETE doesn't allow a body
+    # TODO: Make this part of one of the standard REST API endpoints.
     @action(
         methods=["POST"],
         detail=False,

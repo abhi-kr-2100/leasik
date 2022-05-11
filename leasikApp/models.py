@@ -48,6 +48,7 @@ class Card(models.Model):
 
     last_review_date = models.DateField(auto_now_add=True)
 
+    # TODO: Remove this.
     note = models.TextField(blank=True)
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -75,6 +76,7 @@ class SentenceList(models.Model):
     """A list of sentences owned by a user."""
 
     name = models.CharField(max_length=100)
+    # TODO: Remove this.
     slug = models.SlugField(max_length=100, unique=True)
 
     description = models.TextField(blank=True)
@@ -88,6 +90,7 @@ class SentenceList(models.Model):
         return self.name
 
 
+# TODO: Work out a better design for this.
 class Bookmark(models.Model):
     """A bookmark relation between a SentenceList and User, and Cards."""
 

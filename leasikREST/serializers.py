@@ -66,3 +66,6 @@ class BookmarkSerializer(ModelSerializer):
     class Meta:
         model = Bookmark
         fields = ["id"]
+
+
+# TODO: Eliminate the need for the AugmentedCardSerializer
