@@ -23,7 +23,10 @@ class Sentence(models.Model):
 
 
 class Card(models.Model):
-    """A card similar to the ones in flashcard programs.
+    """A card relates a sentence with a hidden word position.
+
+    The hidden word position determines which word in the sentence the user
+    will be tested on. If it's -1, a random word is selected each time.
 
     Card is used to implement the SM-2 algorithm. See
     https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.
