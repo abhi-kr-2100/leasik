@@ -16,6 +16,14 @@ from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
 
+# Graphene uses force_text which is not available in this version of Django.
+# See: https://stackoverflow.com/questions/70382084/import-error-force-text-from-django-utils-encoding
+import django
+from django.utils.encoding import force_str
+
+django.utils.encoding.force_text = force_str
+
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,6 +59,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
+    "graphene_django",
 ]
 
 MIDDLEWARE = [
@@ -97,9 +106,7 @@ if conn_max_age is not None:
 if DEBUG:
     engine = None
 
-DATABASES = {
-    "default": dj_database_url.parse(database_url, engine, conn_max_age)
-}
+DATABASES = {"default": dj_database_url.parse(database_url, engine, conn_max_age)}
 
 DISABLE_COCKROACHDB_TELEMETRY = True
 
@@ -172,3 +179,5 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = getenv("DJANGO_CORS_ALLOWED_ORIGIN").split()
+
+GRAPHENE = {"SCHEMA": "leasik.schema.schema"}
