@@ -69,7 +69,9 @@ class Query(graphene.ObjectType):
         cards = Card.objects.filter(owner=info.context.user)
         if reviewable is not None:
             compatible_ids = [
-                card.id for card in cards if card.is_up_for_review() == reviewable
+                card.id
+                for card in cards
+                if card.is_up_for_review() == reviewable
             ]
             cards = cards.filter(id__in=compatible_ids)
 

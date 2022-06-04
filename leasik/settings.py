@@ -103,7 +103,9 @@ if conn_max_age is not None:
 if DEBUG:
     engine = None
 
-DATABASES = {"default": dj_database_url.parse(database_url, engine, conn_max_age)}
+DATABASES = {
+    "default": dj_database_url.parse(database_url, engine, conn_max_age)
+}
 
 DISABLE_COCKROACHDB_TELEMETRY = True
 
