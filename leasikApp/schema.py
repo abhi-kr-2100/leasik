@@ -46,7 +46,7 @@ class SentenceListConnection(relay.Connection):
         node = SentenceListType
 
 
-class Query:
+class Query(graphene.ObjectType):
     sentences = relay.ConnectionField(SentenceConnection)
     cards = relay.ConnectionField(CardConnection)
     sentence_lists = relay.ConnectionField(SentenceListConnection)
