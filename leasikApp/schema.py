@@ -53,13 +53,16 @@ class Query(graphene.ObjectType):
         CardConnection,
         reviewable=graphene.Boolean(required=False),
         sentence_list_id=graphene.ID(required=False),
+        randomize=graphene.Boolean(required=False, default_value=False),
     )
     sentence_lists = relay.ConnectionField(SentenceListConnection)
 
     def resolve_sentences(root, info, **kwargs):
         return Sentence.objects.all()
 
-    def resolve_cards(root, info, reviewable=None, sentence_list_id=None, **kwargs):
+    def resolve_cards(
+        root, info, randomize, reviewable=None, sentence_list_id=None, **kwargs
+    ):
         if info.context.user.is_anonymous:
             return Card.objects.none()
 
@@ -73,6 +76,9 @@ class Query(graphene.ObjectType):
         if sentence_list_id is not None:
             int_id = int(from_global_id(sentence_list_id)[1])
             cards = cards.filter(sentence__sentencelist__id=int_id)
+
+        if randomize is True:
+            cards = cards.order_by("?")
 
         return cards
 
