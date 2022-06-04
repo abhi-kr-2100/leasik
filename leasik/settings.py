@@ -130,6 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -180,4 +181,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = getenv("DJANGO_CORS_ALLOWED_ORIGIN").split()
 
-GRAPHENE = {"SCHEMA": "leasik.schema.schema"}
+GRAPHENE = {
+    "SCHEMA": "leasik.schema.schema",
+    "MIDDLEWARE": ["graphql_jwt.middleware.JSONWebTokenMiddleware"],
+}
