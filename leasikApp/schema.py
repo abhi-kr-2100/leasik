@@ -2,6 +2,7 @@ from django.db.models import Q
 
 import graphene
 from graphene import relay
+from graphql_relay import from_global_id
 from graphene_django import DjangoObjectType
 
 from .models import Sentence, Card, SentenceList
@@ -48,16 +49,32 @@ class SentenceListConnection(relay.Connection):
 
 class Query(graphene.ObjectType):
     sentences = relay.ConnectionField(SentenceConnection)
-    cards = relay.ConnectionField(CardConnection)
+    cards = relay.ConnectionField(
+        CardConnection,
+        reviewable=graphene.Boolean(required=False),
+        sentence_list_id=graphene.ID(required=False),
+    )
     sentence_lists = relay.ConnectionField(SentenceListConnection)
 
     def resolve_sentences(root, info, **kwargs):
         return Sentence.objects.all()
 
-    def resolve_cards(root, info, **kwargs):
+    def resolve_cards(root, info, reviewable=None, sentence_list_id=None, **kwargs):
         if info.context.user.is_anonymous:
             return Card.objects.none()
-        return Card.objects.filter(owner=info.context.user)
+
+        cards = Card.objects.filter(owner=info.context.user)
+        if reviewable is not None:
+            compatible_ids = [
+                card.id for card in cards if card.is_up_for_review() == reviewable
+            ]
+            cards = cards.filter(id__in=compatible_ids)
+
+        if sentence_list_id is not None:
+            int_id = int(from_global_id(sentence_list_id)[1])
+            cards = cards.filter(sentence__sentencelist__id=int_id)
+
+        return cards
 
     def resolve_sentence_lists(root, info, **kwargs):
         if info.context.user.is_anonymous:
