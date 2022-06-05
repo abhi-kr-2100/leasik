@@ -1,16 +1,18 @@
+import { Link } from "react-router-dom";
+
 export default function NavBar() {
   return (
     <nav className="h-[10%] px-5 bg-emerald-400 py-3">
       <ul className="flex gap-x-1">
         <li className="text-white hover:bg-emerald-600 rounded">
-          <a href="/" className="block py-2 px-2 mx-1">
+          <Link to="/" className="block py-2 px-2 mx-1">
             Home
-          </a>
+          </Link>
         </li>
         <li className="text-white hover:bg-emerald-600 rounded">
-          <a href="/lists" className="block py-2 px-2 mx-1">
+          <Link to="/lists" className="block py-2 px-2 mx-1">
             Lists
-          </a>
+          </Link>
         </li>
         <li className="text-white hover:bg-emerald-600 rounded">
           <a
@@ -23,9 +25,9 @@ export default function NavBar() {
           </a>
         </li>
         <li className="text-white hover:bg-emerald-600 rounded ml-auto">
-          <a href="/login" className="block py-2 px-2 mx-1">
+          <Link to="/login" className="block py-2 px-2 mx-1">
             Login
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>
