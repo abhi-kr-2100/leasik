@@ -1,3 +1,11 @@
+import NavBar from "./NavBar";
+import HomeHero from "./HomeHero";
+
 export default function Home() {
-  return <h1>Hello, world!</h1>;
+  return (
+    <div className="h-screen">
+      <NavBar />
+      <HomeHero />
+    </div>
+  );
 }

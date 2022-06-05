@@ -1,6 +1,6 @@
 export default function NavBar() {
   return (
-    <nav className="px-5 bg-emerald-400 py-3">
+    <nav className="h-[10%] px-5 bg-emerald-400 py-3">
       <ul className="flex gap-x-1">
         <li className="text-white hover:bg-emerald-600 rounded">
           <a href="/" className="block py-2 px-2 mx-1">
