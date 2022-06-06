@@ -7,6 +7,7 @@ import "./index.css";
 import App from "./App";
 import Home from "./components/Home";
 import ListsController from "./components/ListsController";
+import ListPlayController from "./components/ListPlayController";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -18,6 +19,7 @@ root.render(
         <Route path="/" element={<App />}>
           <Route index element={<Home />} />
           <Route path="lists" element={<ListsController />} />
+          <Route path="lists/:listId" element={<ListPlayController />} />
         </Route>
       </Routes>
     </BrowserRouter>
