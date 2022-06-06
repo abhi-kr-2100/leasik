@@ -4,10 +4,13 @@ export interface IQuestionProps {
   text: string;
   translation: string;
   hiddenWordPosition: number;
+  checked: boolean;
+  userInput: string;
+  setUserInput: (input: string) => void;
 }
 
 export default function Question(props: IQuestionProps) {
-  const [beforeHiddenWord, afterHiddenWord] = partitionSentence(
+  const [beforeHiddenWord, word, afterHiddenWord] = partitionSentence(
     props.text,
     props.hiddenWordPosition
   );
@@ -17,7 +20,13 @@ export default function Question(props: IQuestionProps) {
       <div>
         <div className="text-xl my-3">
           <p className="inline">{beforeHiddenWord}</p>
-          <input className="inline mx-1 p-2 text-center" autoFocus />
+          <input
+            className="inline mx-1 p-2 text-center"
+            autoFocus
+            value={props.checked ? word : props.userInput}
+            disabled={props.checked}
+            onChange={(newValue) => props.setUserInput(newValue.target.value)}
+          />
           <p className="inline">{afterHiddenWord}</p>
         </div>
       </div>
