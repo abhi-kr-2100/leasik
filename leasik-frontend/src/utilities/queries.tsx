@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
-export const JWT_TOKEN = gql`
-  mutation TokenAuth($username: String, $password: String) {
+export const GET_JWT_TOKEN = gql`
+  mutation GetJWTToken($username: String, $password: String) {
     tokenAuth(username: $username, password: $password) {
       token
     }
@@ -16,7 +16,7 @@ export const VERIFY_TOKEN = gql`
   }
 `;
 
-export const SENTENCE_LISTS = gql`
+export const GET_SENTENCE_LISTS = gql`
   query GetSentenceLists {
     sentenceLists {
       edges {
@@ -30,8 +30,8 @@ export const SENTENCE_LISTS = gql`
   }
 `;
 
-export const CARDS_FOR_REVIEW = gql`
-  query GetCardsForReview($sentenceListId: ID!, $n: Int) {
+export const GET_CARDS_UP_FOR_REVIEW = gql`
+  query GetCardsUpForReview($sentenceListId: ID!, $n: Int) {
     cards(
       sentenceListId: $sentenceListId
       reviewable: true
@@ -53,8 +53,8 @@ export const CARDS_FOR_REVIEW = gql`
   }
 `;
 
-export const CARDS_NOT_FOR_REVIEW = gql`
-  query GetCardsNotForReview($sentenceListId: ID!, $n: Int) {
+export const GET_CARDS_NOT_UP_FOR_REVIEW = gql`
+  query GetCardsNotUpForReview($sentenceListId: ID!, $n: Int) {
     cards(
       sentenceListId: $sentenceListId
       reviewable: false
