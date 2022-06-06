@@ -1,10 +1,10 @@
-import { ReactElement, useState } from "react";
+import { useState } from "react";
+import Card from "../models/Card";
 
-import { ICardProps } from "./Card";
 import QuestionScreen from "./QuestionScreen";
 
 export interface IListPlayProps {
-  cards: ReactElement<ICardProps>[];
+  cards: Card[];
 }
 
 export default function ListPlay(props: IListPlayProps) {

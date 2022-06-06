@@ -1,24 +1,28 @@
-import Card from "./Card";
+import Card from "../models/Card";
 import ListPlay from "./ListPlay";
 
 export default function ListPlayController() {
-  const mockCards = [
-    Card({
+  const mockCards: Card[] = [
+    {
       id: "1",
-      text: "Hello World",
-      translation: "Hallo Welt",
       note: "",
-      isBookmarked: false,
+      sentence: {
+        id: "1",
+        text: "Hello, world!",
+        translation: "Hallo, welt!",
+      },
       hiddenWordPosition: 0,
-    }),
-    Card({
-      id: "3",
-      text: "Dragon and Wyvern",
-      translation: "Drache und Wyvern",
+    },
+    {
+      id: "2",
       note: "",
-      isBookmarked: false,
+      sentence: {
+        id: "2",
+        text: "Dragon and the Unicorn",
+        translation: "Drache und der Zebra",
+      },
       hiddenWordPosition: 1,
-    }),
+    },
   ];
 
   return <ListPlay cards={mockCards} />;
