@@ -5,31 +5,19 @@ export default function ListPlayController() {
   const mockCards = [
     Card({
       id: "1",
-      text: "Hello",
-      translation: "Hallo",
+      text: "Hello World",
+      translation: "Hallo Welt",
       note: "",
       isBookmarked: false,
-    }),
-    Card({
-      id: "2",
-      text: "World",
-      translation: "Welt",
-      note: "",
-      isBookmarked: false,
+      hiddenWordPosition: 0,
     }),
     Card({
       id: "3",
-      text: "Dragon",
-      translation: "Drache",
+      text: "Dragon and Wyvern",
+      translation: "Drache und Wyvern",
       note: "",
       isBookmarked: false,
-    }),
-    Card({
-      id: "4",
-      text: "Wyvern",
-      translation: "Wyvern",
-      note: "",
-      isBookmarked: false,
+      hiddenWordPosition: 1,
     }),
   ];
 
