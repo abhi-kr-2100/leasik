@@ -13,8 +13,6 @@ export default function ListsController() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`couldn't retrive lists: ${error.message}`}</div>;
 
-  console.log(JSON.stringify(data));
-
   const listEdges = data.sentenceLists.edges as { node: SentenceList }[];
   const sentenceLists = listEdges.map((edge) => ({
     id: edge.node.id,
