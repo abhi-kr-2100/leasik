@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_JWT_TOKEN = gql`
-  mutation GetJWTToken($username: String, $password: String) {
+  mutation GetJWTToken($username: String!, $password: String!) {
     tokenAuth(username: $username, password: $password) {
       token
     }
@@ -30,9 +30,9 @@ export const GET_SENTENCE_LISTS = gql`
   }
 `;
 
-export const GET_CARDS_UP_FOR_REVIEW = gql`
-  query GetCardsUpForReview($sentenceListId: ID!, $n: Int) {
-    cards(
+export const GET_CARDS = gql`
+  query GetCards($sentenceListId: ID!, $n: Int) {
+    cardsUpForReview: cards(
       sentenceListId: $sentenceListId
       reviewable: true
       randomize: true
@@ -50,12 +50,8 @@ export const GET_CARDS_UP_FOR_REVIEW = gql`
         }
       }
     }
-  }
-`;
 
-export const GET_CARDS_NOT_UP_FOR_REVIEW = gql`
-  query GetCardsNotUpForReview($sentenceListId: ID!, $n: Int) {
-    cards(
+    cardsNotUpForReview: cards(
       sentenceListId: $sentenceListId
       reviewable: false
       randomize: true
