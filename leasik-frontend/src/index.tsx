@@ -10,6 +10,7 @@ import App from "./App";
 import Home from "./components/Home";
 import ListsController from "./components/ListsController";
 import ListPlayController from "./components/ListPlayController";
+import LoginController from "./components/LoginController";
 
 const graphQLClient = new ApolloClient({
   uri: "http://localhost:8000/api/graphql",
@@ -28,6 +29,7 @@ root.render(
             <Route index element={<Home />} />
             <Route path="lists" element={<ListsController />} />
             <Route path="lists/:listId" element={<ListPlayController />} />
+            <Route path="login" element={<LoginController />} />
           </Route>
         </Routes>
       </BrowserRouter>
