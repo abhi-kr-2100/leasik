@@ -71,3 +71,23 @@ export const GET_CARDS = gql`
     }
   }
 `;
+
+export const INCREASE_CARD_PROFICIENCY = gql`
+  mutation UpdateCardProficiency($cardId: ID!) {
+    updateProficiency(input: { cardId: $cardId, score: 5 }) {
+      card {
+        id
+      }
+    }
+  }
+`;
+
+export const DECREASE_CARD_PROFICIENCY = gql`
+  mutation UpdateCardProficiency($cardId: ID!) {
+    updateProficiency(input: { cardId: $cardId, score: 0 }) {
+      card {
+        id
+      }
+    }
+  }
+`;
