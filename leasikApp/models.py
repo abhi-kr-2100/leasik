@@ -8,6 +8,8 @@ from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 
+from .helpers import sm2
+
 
 class Sentence(models.Model):
     """A sentence with a text and translation."""
@@ -70,6 +72,26 @@ class Card(models.Model):
         """Return True if Card needs to be reviewed, False otherwise."""
         days_passed = date.today() - self.last_review_date
         return days_passed >= self.inter_repetition_interval
+
+    def update_proficiency(self, score: int) -> None:
+        """Update the Card's proficiency based on the given score."""
+
+        if score < 0 or score > 5:
+            raise ValueError("Score must be between 0 and 5")
+
+        n, ef, i = sm2(
+            score,
+            self.repetition_number,
+            self.easiness_factor,
+            self.inter_repetition_interval,
+        )
+
+        self.repetition_number = n
+        self.easiness_factor = ef
+        self.inter_repetition_interval = i
+        self.last_review_date = date.today()
+
+        self.save()
 
 
 class SentenceList(models.Model):
