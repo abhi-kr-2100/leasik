@@ -1,7 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -12,8 +18,22 @@ import ListsController from "./components/ListsController";
 import ListPlayController from "./components/ListPlayController";
 import LoginController from "./components/LoginController";
 
-const graphQLClient = new ApolloClient({
+const httpLink = createHttpLink({
   uri: "http://localhost:8000/api/graphql",
+});
+
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("token");
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `JWT ${token}` : "",
+    },
+  };
+});
+
+const graphQLClient = new ApolloClient({
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
