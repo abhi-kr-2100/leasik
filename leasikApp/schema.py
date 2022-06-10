@@ -31,6 +31,32 @@ class CardType(DjangoObjectType):
         return root.is_up_for_review()
 
 
+class UpdateProficency(relay.ClientIDMutation):
+    class Input:
+        card_id = graphene.ID()
+        score = graphene.Int(required=True)
+
+    card = graphene.Field(CardType)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, card_id, score, **kwargs):
+        if not info.context.user.is_authenticated:
+            raise Exception("Not authenticated")
+
+        if score < 0 or score > 5:
+            raise Exception("Score must be between 0 and 5")
+
+        card_id_int = int(from_global_id(card_id)[1])
+        card: Card = Card.objects.get(id=card_id_int)
+
+        if card.owner != info.context.user:
+            raise Exception("You are not the owner of this card")
+
+        card.update_proficiency(score)
+
+        return UpdateProficency(card=card)
+
+
 class CardConnection(relay.Connection):
     class Meta:
         node = CardType
@@ -90,3 +116,7 @@ class Query(graphene.ObjectType):
         return SentenceList.objects.filter(
             Q(is_public=True) | Q(owner=info.context.user)
         )
+
+
+class Mutation(graphene.ObjectType):
+    update_proficiency = UpdateProficency.Field()
