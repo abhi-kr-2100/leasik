@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 
 import { GET_CARDS } from "../utilities/queries";
+import { randomPositionCard } from "../utilities/helperFuncs";
 import Card from "../models/Card";
 import ListPlay from "./ListPlay";
 
@@ -21,7 +22,10 @@ export default function ListPlayController() {
   }[];
 
   const cards = (cardEdges.length !== 0 ? cardEdges : backupCardEdges).map(
-    (edge) => edge.node
+    (edge) =>
+      edge.node.hiddenWordPosition !== -1
+        ? edge.node
+        : randomPositionCard(edge.node)
   );
 
   return <ListPlay cards={cards} />;

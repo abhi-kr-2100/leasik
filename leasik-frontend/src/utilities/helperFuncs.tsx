@@ -1,13 +1,20 @@
+import Card from "../models/Card";
+
+export function randomPositionCard(card: Card) {
+  const nwords = card.sentence.text.split(/\s+/).length;
+  const newCard = {
+    ...card,
+    hiddenWordPosition: Math.floor(Math.random() * nwords),
+  };
+
+  return newCard;
+}
+
 export function partitionSentence(
   sentence: string,
   position: number
 ): string[] {
   const words = sentence.split(/\s+/);
-
-  // select random position if position is invalid
-  if (position < 0 || position >= words.length) {
-    position = Math.random() * words.length;
-  }
 
   const pre = words.slice(0, position);
   const word = words[position];
