@@ -2,7 +2,13 @@ export function partitionSentence(
   sentence: string,
   position: number
 ): string[] {
-  const words = sentence.split(" ");
+  const words = sentence.split(/\s+/);
+
+  // select random position if position is invalid
+  if (position < 0 || position >= words.length) {
+    position = Math.random() * words.length;
+  }
+
   const pre = words.slice(0, position);
   const word = words[position];
   const post = words.slice(position + 1);
