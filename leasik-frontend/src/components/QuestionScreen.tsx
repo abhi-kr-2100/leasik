@@ -13,14 +13,6 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
   const [userInput, setUserInput] = useState("");
   const [isInputChecked, setIsInputChecked] = useState(false);
 
-  const getUserInput = () => {
-    return userInput;
-  };
-
-  const setInputToChecked = () => {
-    setIsInputChecked(true);
-  };
-
   return (
     <>
       <div className="my-2">
@@ -34,8 +26,8 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
       {!isInputChecked ? (
         <CheckInputBtn
           card={props.card}
-          getUserInput={getUserInput}
-          onClick={setInputToChecked}
+          userInput={userInput}
+          setIsInputChecked={setIsInputChecked}
         />
       ) : (
         <button

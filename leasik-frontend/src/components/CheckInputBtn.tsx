@@ -10,7 +10,7 @@ import { matches, partitionSentence } from "../utilities/helperFuncs";
 export interface ICheckInputBtnProps {
   card: Card;
   userInput: string;
-  onClick: () => void;
+  setIsInputChecked: (checked: boolean) => void;
 }
 
 export default function CheckInputBtn(props: ICheckInputBtnProps) {
@@ -43,7 +43,7 @@ export default function CheckInputBtn(props: ICheckInputBtnProps) {
           decreaseCardProficiency();
         }
 
-        props.onClick();
+        props.setIsInputChecked(true);
       }}
     >
       Check
