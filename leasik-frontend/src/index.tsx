@@ -19,7 +19,7 @@ import ListPlayController from "./components/ListPlayController";
 import LoginController from "./components/LoginController";
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:8000/api/graphql",
+  uri: "https://leasik.heroku.com/api/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
