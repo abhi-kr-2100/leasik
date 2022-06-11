@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import Card from "../models/Card";
-import CheckInputBtn from "./CheckInputBtn";
+import ActionButtons from "./ActionButtons";
 import Question from "./Question";
 
 export interface IQuestionScreenProps {
@@ -23,24 +23,14 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
           setUserInput={setUserInput}
         />
       </div>
-      {!isInputChecked ? (
-        <CheckInputBtn
-          card={props.card}
-          userInput={userInput}
-          setIsInputChecked={setIsInputChecked}
-        />
-      ) : (
-        <button
-          onClick={() => {
-            setUserInput("");
-            setIsInputChecked(false);
-            props.onNext();
-          }}
-          className="my-2 px-3 py-2 bg-lime-300 rounded"
-        >
-          Next
-        </button>
-      )}
+      <ActionButtons
+        card={props.card}
+        userInput={userInput}
+        setUserInput={setUserInput}
+        isInputChecked={isInputChecked}
+        setIsInputChecked={setIsInputChecked}
+        onNext={props.onNext}
+      />
     </>
   );
 }
