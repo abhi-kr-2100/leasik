@@ -11,7 +11,7 @@ export default function LoginController() {
 
   const navigate = useNavigate();
 
-  const [login, { data, loading, error }] = useMutation(GET_JWT_TOKEN, {
+  const [login] = useMutation(GET_JWT_TOKEN, {
     variables: { username, password },
     onCompleted: (data) => {
       localStorage.setItem("token", data.tokenAuth.token);
