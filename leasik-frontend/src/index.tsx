@@ -1,45 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  createHttpLink,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import "./index.css";
+import { ApolloProvider } from "@apollo/client";
+
+import graphQLClient from "./utilities/graphQLClient";
+
 import App from "./App";
 import Home from "./components/Home";
 import ListsController from "./components/ListsController";
 import ListPlayController from "./components/ListPlayController";
 import LoginController from "./components/LoginController";
 
-const httpLink = createHttpLink({
-  uri: "https://leasik.herokuapp.com/api/graphql",
-});
-
-const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("token");
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `JWT ${token}` : "",
-    },
-  };
-});
-
-const graphQLClient = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-});
+import "./index.css";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
     <ApolloProvider client={graphQLClient}>
