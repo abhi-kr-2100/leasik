@@ -25,9 +25,7 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
     <>
       <div className="my-2">
         <Question
-          text={props.card.sentence.text}
-          translation={props.card.sentence.translation}
-          hiddenWordPosition={props.card.hiddenWordPosition}
+          card={props.card}
           checked={isInputChecked}
           userInput={userInput}
           setUserInput={setUserInput}

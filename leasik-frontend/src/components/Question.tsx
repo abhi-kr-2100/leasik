@@ -1,9 +1,8 @@
+import Card from "../models/Card";
 import { partitionSentence, matches } from "../utilities/helperFuncs";
 
 export interface IQuestionProps {
-  text: string;
-  translation: string;
-  hiddenWordPosition: number;
+  card: Card;
   checked: boolean;
   userInput: string;
   setUserInput: (input: string) => void;
@@ -11,8 +10,8 @@ export interface IQuestionProps {
 
 export default function Question(props: IQuestionProps) {
   const [beforeHiddenWord, word, afterHiddenWord] = partitionSentence(
-    props.text,
-    props.hiddenWordPosition
+    props.card.sentence.text,
+    props.card.hiddenWordPosition
   );
 
   const inputBgColorClass = props.checked
@@ -37,7 +36,7 @@ export default function Question(props: IQuestionProps) {
         </div>
       </div>
       <div>
-        <p>{props.translation}</p>
+        <p>{props.card.sentence.translation}</p>
       </div>
     </div>
   );
