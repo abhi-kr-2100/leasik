@@ -13,7 +13,7 @@ export default function Lists(props: IListsProps) {
       ) : (
         <ul>
           {props.lists.map((list) => (
-            <li key={list.props.id}>{list}</li>
+            <li key={list.props.sentenceList.id}>{list}</li>
           ))}
         </ul>
       )}

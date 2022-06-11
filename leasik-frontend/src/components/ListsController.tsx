@@ -20,9 +20,7 @@ export default function ListsController() {
     description: edge.node.description,
   }));
 
-  const lists = sentenceLists.map((sl) => (
-    <List id={sl.id} name={sl.name} description={sl.description} />
-  ));
+  const lists = sentenceLists.map((sl) => <List sentenceList={sl} />);
 
   return <Lists lists={lists} />;
 }
