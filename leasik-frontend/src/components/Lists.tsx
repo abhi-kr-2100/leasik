@@ -7,7 +7,7 @@ export interface IListsProps {
 
 export default function Lists(props: IListsProps) {
   return (
-    <div>
+    <div className="h-full">
       {props.lists.length === 0 ? (
         <p>No lists to show.</p>
       ) : (

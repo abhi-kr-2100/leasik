@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="flex flex-col h-[90%] bg-emerald-400 pl-[10%] pt-[17%] text-white">
+    <div className="flex flex-col h-full bg-emerald-400 pl-[10%] pt-[17%] text-white">
       <main className="mb-10">
         <h1 className="text-8xl mb-1">Leasik</h1>
         <p className="pl-2 text-2xl">Learn languages in context</p>

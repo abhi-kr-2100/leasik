@@ -11,7 +11,7 @@ export default function ListPlay(props: IListPlayProps) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   return (
-    <div className="min-h-full flex flex-col justify-center items-center">
+    <div className="h-full flex flex-col justify-center items-center">
       {currentCardIndex >= props.cards.length ? (
         <p>Finished!</p>
       ) : (
