@@ -23,7 +23,7 @@ class CardType(DjangoObjectType):
     class Meta:
         model = Card
         interfaces = (relay.Node,)
-        fields = ("note", "owner", "sentence", "hidden_word_position")
+        fields = ("owner", "sentence", "hidden_word_position")
 
     reviewable = graphene.Boolean()
 

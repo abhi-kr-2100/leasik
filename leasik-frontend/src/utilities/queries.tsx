@@ -42,7 +42,6 @@ export const GET_CARDS = gql`
         node {
           id
           hiddenWordPosition
-          note
           sentence {
             text
             translation
@@ -61,7 +60,6 @@ export const GET_CARDS = gql`
         node {
           id
           hiddenWordPosition
-          note
           sentence {
             text
             translation

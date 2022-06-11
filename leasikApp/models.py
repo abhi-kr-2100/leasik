@@ -1,12 +1,9 @@
 from __future__ import annotations
-from typing import Any
 from datetime import date, timedelta
 
 from django.db import models
-from django.db.models.signals import post_save
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
-from django.dispatch import receiver
 
 from .helpers import sm2
 
@@ -49,9 +46,6 @@ class Card(models.Model):
     )
 
     last_review_date = models.DateField(auto_now_add=True)
-
-    # TODO: Remove this.
-    note = models.TextField(blank=True)
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
@@ -98,9 +92,6 @@ class SentenceList(models.Model):
     """A list of sentences owned by a user."""
 
     name = models.CharField(max_length=100)
-    # TODO: Remove this.
-    slug = models.SlugField(max_length=100, unique=True)
-
     description = models.TextField(blank=True)
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -110,33 +101,3 @@ class SentenceList(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-
-# TODO: Work out a better design for this.
-class Bookmark(models.Model):
-    """A bookmark relation between a SentenceList and User, and Cards."""
-
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
-    cards = models.ManyToManyField(Card, blank=True)
-
-    class Meta:
-        unique_together = ("owner", "sentence_list")
-
-    def __str__(self) -> str:
-        return f"Of {self.owner} for {self.sentence_list}."
-
-
-class UserProfile(models.Model):
-    owner = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return self.owner.username
-
-    @staticmethod
-    @receiver(post_save, sender=User)
-    def create_user_profile(
-        sender: UserProfile, instance: User, created: bool, **kwargs: Any
-    ) -> None:
-        if created:
-            UserProfile.objects.create(owner=instance)
