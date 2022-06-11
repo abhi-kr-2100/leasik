@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 
 import { GET_CARDS } from "../utilities/queries";
 import { randomPositionCard } from "../utilities/helperFuncs";
+
 import Card from "../models/Card";
+
 import ListPlay from "./ListPlay";
 
 export default function ListPlayController() {
@@ -11,6 +13,7 @@ export default function ListPlayController() {
 
   const { loading, error, data } = useQuery(GET_CARDS, {
     variables: { sentenceListId, n: 20 },
+    fetchPolicy: "no-cache",
   });
 
   if (loading) return <div>Loading...</div>;
