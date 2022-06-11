@@ -9,7 +9,7 @@ import { matches, partitionSentence } from "../utilities/helperFuncs";
 
 export interface ICheckInputBtnProps {
   card: Card;
-  getUserInput: () => string;
+  userInput: string;
   onClick: () => void;
 }
 
@@ -37,7 +37,7 @@ export default function CheckInputBtn(props: ICheckInputBtnProps) {
     <button
       className="my-2 px-3 py-2 bg-lime-300 rounded"
       onClick={() => {
-        if (matches(hiddenWord, props.getUserInput())) {
+        if (matches(hiddenWord, props.userInput)) {
           increaseCardProficiency();
         } else {
           decreaseCardProficiency();
