@@ -14,7 +14,16 @@ export default function List(props: IListProps) {
           <h2>{props.sentenceList.name}</h2>
         </header>
         <div className="p-2">
-          <div>{props.sentenceList.description}</div>
+          <div>
+            {props.sentenceList.description
+              .split("\n")
+              .filter((d) => d.trim() !== "")
+              .map((d, i) => (
+                <p key={i} className={i !== 0 ? "pt-2" : ""}>
+                  {d}
+                </p>
+              ))}
+          </div>
           <div>
             <Link to={`/lists/${props.sentenceList.id}`}>
               <div className="mt-2 px-1 py-1 bg-emerald-300 w-3/12 text-center text-white rounded">
