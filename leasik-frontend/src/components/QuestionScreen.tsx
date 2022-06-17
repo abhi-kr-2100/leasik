@@ -1,35 +1,30 @@
-import { useState } from "react";
-
 import Card from "../models/Card";
 import ActionButtons from "./ActionButtons";
 import Question from "./Question";
 
 export interface IQuestionScreenProps {
   card: Card;
-  onNext: () => void;
+  primaryAction: () => void;
+  inputStatus: "unchecked" | "correct" | "incorrect";
+  userInput: string;
+  setUserInput: (input: string) => void;
 }
 
 export default function QuestionScreen(props: IQuestionScreenProps) {
-  const [userInput, setUserInput] = useState("");
-  const [isInputChecked, setIsInputChecked] = useState(false);
-
   return (
     <>
       <div className="my-2">
         <Question
           card={props.card}
-          checked={isInputChecked}
-          userInput={userInput}
-          setUserInput={setUserInput}
+          inputStatus={props.inputStatus}
+          userInput={props.userInput}
+          setUserInput={props.setUserInput}
+          primaryAction={props.primaryAction}
         />
       </div>
       <ActionButtons
-        card={props.card}
-        userInput={userInput}
-        setUserInput={setUserInput}
-        isInputChecked={isInputChecked}
-        setIsInputChecked={setIsInputChecked}
-        onNext={props.onNext}
+        inputStatus={props.inputStatus}
+        primaryAction={props.primaryAction}
       />
     </>
   );

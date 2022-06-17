@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Card from "../models/Card";
 
-import QuestionScreen from "./QuestionScreen";
+import Card from "../models/Card";
+import QuestionScreenController from "./QuestionScreenController";
 
 export interface IListPlayProps {
   cards: Card[];
@@ -15,7 +15,7 @@ export default function ListPlay(props: IListPlayProps) {
       {currentCardIndex >= props.cards.length ? (
         <p>Finished!</p>
       ) : (
-        <QuestionScreen
+        <QuestionScreenController
           card={props.cards[currentCardIndex]}
           onNext={() => setCurrentCardIndex(currentCardIndex + 1)}
         />
