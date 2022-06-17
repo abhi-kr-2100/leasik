@@ -92,6 +92,15 @@ class Query(graphene.ObjectType):
         if info.context.user.is_anonymous:
             return Card.objects.none()
 
+        # create some cards in case some sentences don't have cards yet
+        for s in Sentence.objects.all().order_by("?")[:100]:
+            if s.card_set.filter(owner=info.context.user).count() == 0:
+                Card.objects.create(
+                    owner=info.context.user,
+                    sentence=s,
+                    hidden_word_position=-1,
+                )
+
         cards = Card.objects.filter(owner=info.context.user)
         if reviewable is not None:
             compatible_ids = [
