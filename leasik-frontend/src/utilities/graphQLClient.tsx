@@ -2,7 +2,7 @@ import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
 const httpLink = createHttpLink({
-  uri: "https://leasik.herokuapp.com/api/graphql",
+  uri: process.env.REACT_APP_GRAPHQL_API_URI,
 });
 
 const authLink = setContext((_, { headers }) => {
