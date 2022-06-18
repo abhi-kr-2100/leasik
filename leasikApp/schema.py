@@ -26,9 +26,16 @@ class CardType(DjangoObjectType):
         fields = ("owner", "sentence", "hidden_word_position")
 
     reviewable = graphene.Boolean()
+    hidden_word_positions = graphene.List(graphene.Int)
 
     def resolve_reviewable(root, info):
         return root.is_up_for_review()
+
+    def resolve_hidden_word_positions(root, info):
+        sentence = root.sentence
+        cards = sentence.card_set.filter(owner=root.owner)
+        hidden_word_positions = [c.hidden_word_position for c in cards]
+        return hidden_word_positions
 
 
 class UpdateProficency(relay.ClientIDMutation):
