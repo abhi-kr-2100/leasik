@@ -2,15 +2,16 @@ import Card from "../models/Card";
 
 export function normalizedCard(card: Card): Card {
   const nwords = toWords(card.sentence.text).length;
+  const randomReplacement = randRange(nwords);
 
-  const newCard = {
+  const newCard: Card = {
     ...card,
     hiddenWordPosition:
       card.hiddenWordPosition === -1
-        ? randRange(nwords)
+        ? randomReplacement
         : card.hiddenWordPosition,
     hiddenWordPositions: card.hiddenWordPositions.map((pos) =>
-      pos === -1 ? randRange(nwords) : pos
+      pos === -1 ? randomReplacement : pos
     ),
   };
 
