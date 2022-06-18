@@ -1,13 +1,24 @@
 import Card from "../models/Card";
 
-export function randomPositionCard(card: Card) {
+export function normalizedCard(card: Card): Card {
   const nwords = card.sentence.text.split(/\s+/).length;
+
   const newCard = {
     ...card,
-    hiddenWordPosition: Math.floor(Math.random() * nwords),
+    hiddenWordPosition:
+      card.hiddenWordPosition === -1
+        ? randRange(nwords)
+        : card.hiddenWordPosition,
+    hiddenWordPositions: card.hiddenWordPositions.map((pos) =>
+      pos === -1 ? randRange(nwords) : pos
+    ),
   };
 
   return newCard;
+}
+
+export function randRange(max: number): number {
+  return Math.floor(Math.random() * max);
 }
 
 export function partitionSentence(
