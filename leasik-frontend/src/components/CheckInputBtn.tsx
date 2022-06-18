@@ -5,7 +5,7 @@ import {
   INCREASE_CARD_PROFICIENCY,
   DECREASE_CARD_PROFICIENCY,
 } from "../utilities/queries";
-import { matches, partitionSentence } from "../utilities/helperFuncs";
+import { matches, toWords } from "../utilities/helperFuncs";
 
 export interface ICheckInputBtnProps {
   card: Card;
@@ -14,10 +14,8 @@ export interface ICheckInputBtnProps {
 }
 
 export default function CheckInputBtn(props: ICheckInputBtnProps) {
-  const [, hiddenWord] = partitionSentence(
-    props.card.sentence.text,
-    props.card.hiddenWordPosition
-  );
+  const words = toWords(props.card.sentence.text);
+  const hiddenWord = words[props.card.hiddenWordPosition];
 
   const [increaseCardProficiency] = useMutation(INCREASE_CARD_PROFICIENCY, {
     variables: { cardId: props.card.id },

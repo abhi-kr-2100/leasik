@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 
-import { matches, partitionSentence } from "../utilities/helperFuncs";
+import { matches, toWords } from "../utilities/helperFuncs";
 import {
   INCREASE_CARD_PROFICIENCY,
   DECREASE_CARD_PROFICIENCY,
@@ -42,10 +42,8 @@ export default function QuestionScreenController(
       setInputStatus("unchecked");
       props.onNext();
     } else {
-      const [, hiddenWord] = partitionSentence(
-        props.card.sentence.text,
-        props.card.hiddenWordPosition
-      );
+      const words = toWords(props.card.sentence.text);
+      const hiddenWord = words[props.card.hiddenWordPosition];
 
       if (matches(userInput, hiddenWord)) {
         increaseCardProficiency();

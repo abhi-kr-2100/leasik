@@ -1,7 +1,7 @@
 import Card from "../models/Card";
 
 export function normalizedCard(card: Card): Card {
-  const nwords = card.sentence.text.split(/\s+/).length;
+  const nwords = toWords(card.sentence.text).length;
 
   const newCard = {
     ...card,
@@ -15,6 +15,10 @@ export function normalizedCard(card: Card): Card {
   };
 
   return newCard;
+}
+
+export function toWords(text: string): string[] {
+  return text.split(/\s+/);
 }
 
 export function randRange(max: number): number {
