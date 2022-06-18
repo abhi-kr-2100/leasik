@@ -42,7 +42,7 @@ class Card(models.Model):
     inter_repetition_interval = models.DurationField(
         default=timedelta(days=0),
         verbose_name="inter-repetition interval",
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(timedelta(days=0))],
     )
 
     last_review_date = models.DateField(auto_now_add=True)
