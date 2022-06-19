@@ -14,7 +14,13 @@ export interface IQuestionProps {
 export default function Question(props: IQuestionProps) {
   return (
     <div className="text-center">
-      <QuestionInput card={props.card} userInput={props.userInput} setUserInput={props.setUserInput} inputStatus={props.inputStatus} primaryAction={props.primaryAction} />
+      <QuestionInput
+        card={props.card}
+        userInput={props.userInput}
+        setUserInput={props.setUserInput}
+        inputStatus={props.inputStatus}
+        primaryAction={props.primaryAction}
+      />
       <QuestionAnswer card={props.card} inputStatus={props.inputStatus} />
       <p>{props.card.sentence.translation}</p>
     </div>
