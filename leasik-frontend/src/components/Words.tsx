@@ -13,7 +13,7 @@ export default function Words(props: IWords) {
       }`}
     >
       {props.wordsXIsHiddenMatrix.map((mat) => (
-        <span>
+        <>
           <span
             className={`${
               mat.isHidden && props.inputStatus !== "unchecked"
@@ -23,7 +23,7 @@ export default function Words(props: IWords) {
           >
             {mat.word}
           </span>{" "}
-        </span>
+        </>
       ))}
     </p>
   );
