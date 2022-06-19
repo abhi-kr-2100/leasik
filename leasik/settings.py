@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from os import getenv
+from sys import stderr, exit
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -33,15 +34,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
+debug_mode = False if getenv("DJANGO_DEBUG_MODE") is None else True
+debug_secret_key = "tkukh(3t!l!nc4s*a8tq)tc3i34dkn%=0s)m!7*l+xmm#4t0%@"
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = debug_secret_key if debug_mode else getenv("DJANGO_SECRET_KEY")
+if SECRET_KEY is None:
+    print("django: no secret key set", file=stderr)
+    exit(1)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = getenv("DJANGO_DEVELOPMENT_MODE", False)
+DEBUG = debug_mode
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
-ALLOWED_HOSTS = getenv("DJANGO_ALLOWED_HOST").split()
+allowed_hosts_env_val = getenv("DJANGO_ALLOWED_HOST")
+if allowed_hosts_env_val is None and not debug_mode:
+    print("django: no allowed hosts provided", file=stderr)
+    exit(1)
+
+ALLOWED_HOSTS = [] if debug_mode else allowed_hosts_env_val.split()
 
 
 # Application definition
@@ -95,17 +107,16 @@ WSGI_APPLICATION = "leasik.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-database_url = getenv("DJANGO_DATABASE_URL")
-conn_max_age = getenv("DJANGO_DB_CON_MAX_AGE")
-engine = "django_cockroachdb"
-if conn_max_age is not None:
-    conn_max_age = int(conn_max_age)
-if DEBUG:
-    engine = None
+database_url = (
+    "sqlite:///db.sqlite" if debug_mode else getenv("DJANGO_DATABASE_URL")
+)
+engine = None if debug_mode else "django_cockroachdb"
 
-DATABASES = {
-    "default": dj_database_url.parse(database_url, engine, conn_max_age)
-}
+if database_url is None:
+    print("django: a valid database URL has not been provided", file=stderr)
+    exit(1)
+
+DATABASES = {"default": dj_database_url.parse(database_url, engine)}
 
 DISABLE_COCKROACHDB_TELEMETRY = True
 
@@ -167,7 +178,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 
-CORS_ALLOWED_ORIGINS = getenv("DJANGO_CORS_ALLOWED_ORIGIN").split()
+cors_allowed_origins_env_val = getenv("DJANGO_CORS_ALLOWED_ORIGIN")
+if cors_allowed_origins_env_val is None and not debug_mode:
+    print("django: no allowed CORS origins provided", file=stderr)
+    exit(1)
+
+CORS_ALLOWED_ORIGINS = (
+    [] if debug_mode else cors_allowed_origins_env_val.split()
+)
+CORS_ORIGIN_ALLOW_ALL = debug_mode
+
 
 GRAPHENE = {
     "SCHEMA": "leasik.schema.schema",
