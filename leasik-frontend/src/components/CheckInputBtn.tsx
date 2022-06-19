@@ -17,6 +17,7 @@ export default function CheckInputBtn(props: ICheckInputBtnProps) {
   const words = toWords(props.card.sentence.text);
   const hiddenWord = words[props.card.hiddenWordPosition];
 
+  // TODO: Combine the two into one
   const [increaseCardProficiency] = useMutation(INCREASE_CARD_PROFICIENCY, {
     variables: { cardId: props.card.id },
     onError: (error) => {
