@@ -1,5 +1,6 @@
 import Card from "../models/Card";
 import { InputStatusType } from "../utilities/types";
+import WordsController from "./WordsController";
 
 export interface IQuestionAnswerProps {
   card: Card;
@@ -7,13 +8,5 @@ export interface IQuestionAnswerProps {
 }
 
 export default function QuestionAnswer(props: IQuestionAnswerProps) {
-  return (
-    <p
-      className={`my-3 ${
-        props.inputStatus === "unchecked" ? "text-transparent" : ""
-      }`}
-    >
-      {props.card.sentence.text}
-    </p>
-  );
+  return <WordsController card={props.card} inputStatus={props.inputStatus} />;
 }
