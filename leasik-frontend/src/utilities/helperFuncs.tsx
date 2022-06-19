@@ -2,28 +2,14 @@ import Card from "../models/Card";
 
 export function normalizedCard(card: Card): Card {
   const nwords = toWords(card.sentence.text).length;
-  const randomReplacement = randRange(nwords);
 
   const newCard: Card = {
     ...card,
+    hiddenWordPosition:
+      card.hiddenWordPosition === -1
+        ? randRange(nwords)
+        : card.hiddenWordPosition,
   };
-
-  // The job of this function is to deal with a hidden word position of -1
-  // consistently, i.e., all -1s should map to a single value. However, only
-  // the hidden word position of the card is significant (as opposed to the
-  // hidden word positions of the sister cards). Hence, when the hidden word
-  // position of the main card is already valid, we simply remove all -1s from
-  // the hidden word positions of the sister cards.
-  if (newCard.hiddenWordPosition === -1) {
-    newCard.hiddenWordPosition = randomReplacement;
-    newCard.hiddenWordPositions = card.hiddenWordPositions.map((hwp) =>
-      hwp === -1 ? randomReplacement : hwp
-    );
-  } else {
-    newCard.hiddenWordPositions = newCard.hiddenWordPositions.filter(
-      (hwp) => hwp !== -1
-    );
-  }
 
   return newCard;
 }

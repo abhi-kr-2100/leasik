@@ -34,7 +34,11 @@ class CardType(DjangoObjectType):
     def resolve_hidden_word_positions(root, info):
         sentence = root.sentence
         cards = sentence.card_set.filter(owner=root.owner)
-        hidden_word_positions = [c.hidden_word_position for c in cards]
+        hidden_word_positions = [
+            c.hidden_word_position
+            for c in cards
+            if c.hidden_word_position != -1
+        ]
         return hidden_word_positions
 
 
