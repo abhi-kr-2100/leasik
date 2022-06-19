@@ -36,22 +36,6 @@ export function randRange(max: number): number {
   return Math.floor(Math.random() * max);
 }
 
-export function partitionSentence(
-  sentence: string,
-  position: number
-): string[] {
-  const words = sentence.split(/\s+/);
-
-  const pre = words.slice(0, position);
-  const word = words[position];
-  const post = words.slice(position + 1);
-
-  const preSentence = pre.join(" ");
-  const postSentence = post.join(" ");
-
-  return [preSentence, word, postSentence];
-}
-
 export function matches(s1: string, s2: string) {
   // lower -> upper so that Turkish İ's and I's are considered the same
   // a (bad) fix for https://github.com/abhi-kr-2100/leasik/issues/11
