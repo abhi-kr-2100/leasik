@@ -7,7 +7,7 @@ export interface IWordProps {
 export default function Word(props: IWordProps) {
   return (
     <span
-      onClick={props.onClick}
+      onClick={() => props.onClick()}
       className={props.isHighlighted ? "bg-blue-500" : ""}
     >
       {props.word}
