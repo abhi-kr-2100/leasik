@@ -1,6 +1,6 @@
 import Card from "../models/Card";
 import { InputStatusType } from "../utilities/types";
-import QuestionAnswer from "./QuestionAnswer";
+import WordsController from "./WordsController";
 import QuestionInput from "./QuestionInput";
 
 export interface IQuestionProps {
@@ -21,7 +21,7 @@ export default function Question(props: IQuestionProps) {
         inputStatus={props.inputStatus}
         primaryAction={props.primaryAction}
       />
-      <QuestionAnswer card={props.card} inputStatus={props.inputStatus} />
+      <WordsController card={props.card} inputStatus={props.inputStatus} />
       <p>{props.card.sentence.translation}</p>
     </div>
   );
