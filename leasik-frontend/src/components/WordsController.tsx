@@ -10,20 +10,14 @@ export interface IWordsControllerProps {
 
 export default function WordsController(props: IWordsControllerProps) {
   const words = toWords(props.card.sentence.text);
-  const hiddenWordPositions = props.card.hiddenWordPositions.slice().sort();
 
-  let wordsXIsHiddenMatrix: { word: string; isHidden: boolean }[] = [];
-  let hwpi = 0;
-  for (let i = 0; i < words.length; i++) {
-    if (hwpi >= hiddenWordPositions.length) {
-      wordsXIsHiddenMatrix.push({ word: words[i], isHidden: false });
-    } else if (i === hiddenWordPositions[hwpi]) {
-      wordsXIsHiddenMatrix.push({ word: words[i], isHidden: true });
-      hwpi++;
-    } else {
-      wordsXIsHiddenMatrix.push({ word: words[i], isHidden: false });
-    }
-  }
+  const wordsXIsHiddenMatrix: { word: string; isHidden: boolean }[] = words.map(
+    (w) => ({ word: w, isHidden: false })
+  );
+
+  props.card.hiddenWordPositions.forEach((pos) => {
+    wordsXIsHiddenMatrix[pos].isHidden = true;
+  });
 
   return (
     <Words
