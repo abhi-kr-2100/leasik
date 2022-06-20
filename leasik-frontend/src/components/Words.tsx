@@ -15,7 +15,7 @@ export default function Words(props: IWordsProps) {
   return (
     <p className={`my-3 ${bgClassName}`}>
       {props.wordsXIsHiddenMatrix.map((mat, i) => (
-        <span key={i}>
+        <span key={`${props.card.id}-${i}`}>
           <WordController
             inputStatus={props.inputStatus}
             card={props.card}
