@@ -1,10 +1,7 @@
 import { useMutation } from "@apollo/client";
 
 import Card from "../models/Card";
-import {
-  INCREASE_CARD_PROFICIENCY,
-  DECREASE_CARD_PROFICIENCY,
-} from "../utilities/queries";
+import { SCORE_ANSWER } from "../utilities/queries";
 import { matches, toWords } from "../utilities/helperFuncs";
 
 export interface ICheckInputBtnProps {
@@ -17,18 +14,9 @@ export default function CheckInputBtn(props: ICheckInputBtnProps) {
   const words = toWords(props.card.sentence.text);
   const hiddenWord = words[props.card.hiddenWordPosition];
 
-  // TODO: Combine the two into one
-  const [increaseCardProficiency] = useMutation(INCREASE_CARD_PROFICIENCY, {
-    variables: { cardId: props.card.id },
+  const [scoreAnswer] = useMutation(SCORE_ANSWER, {
     onError: (error) => {
-      alert(`couldn't update card proficiency: ${error.message}`);
-    },
-  });
-
-  const [decreaseCardProficiency] = useMutation(DECREASE_CARD_PROFICIENCY, {
-    variables: { cardId: props.card.id },
-    onError: (error) => {
-      alert(`couldn't update card proficiency: ${error.message}`);
+      alert(`could not score answer: ${error}`);
     },
   });
 
@@ -37,9 +25,9 @@ export default function CheckInputBtn(props: ICheckInputBtnProps) {
       className="my-2 px-3 py-2 bg-lime-300 rounded"
       onClick={() => {
         if (matches(hiddenWord, props.userInput)) {
-          increaseCardProficiency();
+          scoreAnswer({ variables: { cardId: props.card.id, score: 5 } });
         } else {
-          decreaseCardProficiency();
+          scoreAnswer({ variables: { cardId: props.card.id, score: 0 } });
         }
 
         props.setIsInputChecked(true);
