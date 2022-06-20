@@ -63,7 +63,7 @@ export default function WordController(props: IWordControllerProps) {
     <Word
       word={props.word}
       isHighlighted={isHighlighted && props.inputStatus !== "unchecked"}
-      onClick={toggleStatus}
+      onClick={() => toggleStatus()}
     />
   );
 }
