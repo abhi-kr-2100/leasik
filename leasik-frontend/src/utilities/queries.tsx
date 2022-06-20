@@ -91,3 +91,29 @@ export const DECREASE_CARD_PROFICIENCY = gql`
     }
   }
 `;
+
+export const ADD_CARD = gql`
+  mutation AddCard($sentenceId: ID!, $hiddenWordPosition: Int!) {
+    addCard(
+      input: {
+        sentenceId: $sentenceId
+        hiddenWordPosition: $hiddenWordPosition
+      }
+    ) {
+      clientMutationId
+    }
+  }
+`;
+
+export const REMOVE_CARD = gql`
+  mutation RemoveCard($sentenceId: ID!, $hiddenWordPosition: Int!) {
+    removeCard(
+      input: {
+        sentenceId: $sentenceId
+        hiddenWordPosition: $hiddenWordPosition
+      }
+    ) {
+      clientMutationId
+    }
+  }
+`;

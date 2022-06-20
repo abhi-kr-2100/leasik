@@ -14,9 +14,10 @@ class SentenceType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class SentenceConnection(relay.Connection):
+class SentenceListType(DjangoObjectType):
     class Meta:
-        node = SentenceType
+        model = SentenceList
+        interfaces = (relay.Node,)
 
 
 class CardType(DjangoObjectType):
@@ -40,6 +41,65 @@ class CardType(DjangoObjectType):
             if c.hidden_word_position != -1
         ]
         return hidden_word_positions
+
+
+class SentenceConnection(relay.Connection):
+    class Meta:
+        node = SentenceType
+
+
+class SentenceListConnection(relay.Connection):
+    class Meta:
+        node = SentenceListType
+
+
+class CardConnection(relay.Connection):
+    class Meta:
+        node = CardType
+
+
+class AddCard(relay.ClientIDMutation):
+    class Input:
+        sentence_id = graphene.ID()
+        hidden_word_position = graphene.Int(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(
+        cls, root, info, sentence_id, hidden_word_position, **kwargs
+    ):
+        if not info.context.user.is_authenticated:
+            raise Exception("Not authenticated")
+
+        sentence_id_int = int(from_global_id(sentence_id)[1])
+        sentence: Sentence = Sentence.objects.get(id=sentence_id_int)
+
+        sentence.card_set.get_or_create(
+            owner=info.context.user, hidden_word_position=hidden_word_position
+        )
+
+        return AddCard()
+
+
+class RemoveCard(relay.ClientIDMutation):
+    class Input:
+        sentence_id = graphene.ID()
+        hidden_word_position = graphene.Int(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(
+        cls, root, info, sentence_id, hidden_word_position, **kwargs
+    ):
+        if not info.context.user.is_authenticated:
+            raise Exception("Not authenticated")
+
+        sentence_id_int = int(from_global_id(sentence_id)[1])
+        sentence: Sentence = Sentence.objects.get(id=sentence_id_int)
+
+        sentence.card_set.filter(
+            owner=info.context.user, hidden_word_position=hidden_word_position
+        ).delete()
+
+        return RemoveCard()
 
 
 class UpdateProficency(relay.ClientIDMutation):
@@ -66,22 +126,6 @@ class UpdateProficency(relay.ClientIDMutation):
         card.update_proficiency(score)
 
         return UpdateProficency(card=card)
-
-
-class CardConnection(relay.Connection):
-    class Meta:
-        node = CardType
-
-
-class SentenceListType(DjangoObjectType):
-    class Meta:
-        model = SentenceList
-        interfaces = (relay.Node,)
-
-
-class SentenceListConnection(relay.Connection):
-    class Meta:
-        node = SentenceListType
 
 
 class Query(graphene.ObjectType):
@@ -140,3 +184,5 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     update_proficiency = UpdateProficency.Field()
+    add_card = AddCard.Field()
+    remove_card = RemoveCard.Field()
