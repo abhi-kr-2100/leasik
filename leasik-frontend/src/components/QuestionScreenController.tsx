@@ -1,10 +1,11 @@
 import { useState } from "react";
-
-import { matches, toWords } from "../utilities/helperFuncs";
+import { useMutation } from "@apollo/client";
 
 import Card from "../models/Card";
 import QuestionScreen from "./QuestionScreen";
 import { InputStatusType } from "../utilities/types";
+import { SCORE_ANSWER } from "../utilities/queries";
+import { matches, toWords } from "../utilities/helperFuncs";
 
 export interface IQuestionScreenControllerProps {
   card: Card;
@@ -17,6 +18,12 @@ export default function QuestionScreenController(
   const [userInput, setUserInput] = useState("");
   const [inputStatus, setInputStatus] = useState<InputStatusType>("unchecked");
 
+  const [scoreAnswer] = useMutation(SCORE_ANSWER, {
+    onError: (error) => {
+      alert(`could not score answer: ${error}`);
+    },
+  });
+
   const primaryAction = () => {
     if (inputStatus !== "unchecked") {
       setUserInput("");
@@ -28,8 +35,10 @@ export default function QuestionScreenController(
 
       if (matches(userInput, hiddenWord)) {
         setInputStatus("correct");
+        scoreAnswer({ variables: { cardId: props.card.id, score: 5 } });
       } else {
         setInputStatus("incorrect");
+        scoreAnswer({ variables: { cardId: props.card.id, score: 0 } });
       }
     }
   };
