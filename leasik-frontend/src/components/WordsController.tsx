@@ -27,6 +27,7 @@ export default function WordsController(props: IWordsControllerProps) {
 
   return (
     <Words
+      card={props.card}
       wordsXIsHiddenMatrix={wordsXIsHiddenMatrix}
       inputStatus={props.inputStatus}
     />
