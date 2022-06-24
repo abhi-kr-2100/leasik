@@ -27,4 +27,9 @@ def sm2(
     ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
     ef = max(ef, 1.3)
 
+    # As values of n greater than or equal to 2 are treated the
+    # same, we cap n at 2. This prevents overflow in case of very
+    # large values of n.
+    n = n % 3
+
     return (n, ef, i)
