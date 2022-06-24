@@ -32,4 +32,9 @@ def sm2(
     # large values of n.
     n = n % 3
 
+    # SM-2 doesn't specify any upper limit on inter-repetition interval.
+    # However, since computer memory is finite, we're capping it at a very
+    # large time interval.
+    i = min(i, timedelta(days=365 * 10))
+
     return (n, ef, i)
