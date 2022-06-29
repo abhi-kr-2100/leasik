@@ -134,3 +134,19 @@ export const REMOVE_CARD = gql`
     }
   }
 `;
+
+export const ADD_BOOKMARK = gql`
+  mutation AddBookmark($cardId: ID!) {
+    addBookmark(input: { cardId: $cardId }) {
+      clientMutationId
+    }
+  }
+`;
+
+export const REMOVE_BOOKMARK = gql`
+  mutation RemoveBookmark($cardId: ID!) {
+    removeBookmark(input: { cardId: $cardId }) {
+      clientMutationId
+    }
+  }
+`;

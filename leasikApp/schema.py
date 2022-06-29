@@ -102,6 +102,46 @@ class RemoveCard(relay.ClientIDMutation):
         return RemoveCard()
 
 
+class AddBookmark(relay.ClientIDMutation):
+    class Input:
+        card_id = graphene.ID()
+
+    card = graphene.Field(CardType)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, card_id, **kwargs):
+        if not info.context.user.is_authenticated:
+            raise Exception("Not authenticated")
+
+        card_id_int = int(from_global_id(card_id)[1])
+        card: Card = Card.objects.get(id=card_id_int)
+
+        card.is_bookmarked = True
+        card.save()
+
+        return AddBookmark(card=card)
+
+
+class RemoveBookmark(relay.ClientIDMutation):
+    class Input:
+        card_id = graphene.ID()
+
+    card = graphene.Field(CardType)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, card_id, **kwargs):
+        if not info.context.user.is_authenticated:
+            raise Exception("Not authenticated")
+
+        card_id_int = int(from_global_id(card_id)[1])
+        card: Card = Card.objects.get(id=card_id_int)
+
+        card.is_bookmarked = False
+        card.save()
+
+        return RemoveBookmark(card=card)
+
+
 class UpdateProficency(relay.ClientIDMutation):
     class Input:
         card_id = graphene.ID()
@@ -199,3 +239,5 @@ class Mutation(graphene.ObjectType):
     update_proficiency = UpdateProficency.Field()
     add_card = AddCard.Field()
     remove_card = RemoveCard.Field()
+    add_bookmark = AddBookmark.Field()
+    remove_bookmark = RemoveBookmark.Field()
