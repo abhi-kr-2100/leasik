@@ -5,6 +5,7 @@ type Card = {
   sentence: Sentence;
   hiddenWordPosition: number;
   hiddenWordPositions: number[];
+  isBookmarked: boolean;
 };
 
 export default Card;

@@ -43,6 +43,7 @@ export const GET_BOOKMARKED_CARDS = gql`
           id
           hiddenWordPosition
           hiddenWordPositions
+          isBookmarked
           sentence {
             id
             text
@@ -67,6 +68,7 @@ export const GET_CARDS = gql`
           id
           hiddenWordPosition
           hiddenWordPositions
+          isBookmarked
           sentence {
             id
             text
@@ -87,6 +89,7 @@ export const GET_CARDS = gql`
           id
           hiddenWordPosition
           hiddenWordPositions
+          isBookmarked
           sentence {
             id
             text

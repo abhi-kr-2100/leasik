@@ -23,6 +23,7 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
         />
       </div>
       <ActionButtons
+        card={props.card}
         inputStatus={props.inputStatus}
         primaryAction={props.primaryAction}
       />
