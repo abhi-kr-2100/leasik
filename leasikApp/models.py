@@ -53,6 +53,8 @@ class Card(models.Model):
     # -1 means a random word will be selected each time
     hidden_word_position = models.SmallIntegerField(default=-1)
 
+    is_bookmarked = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ("owner", "sentence", "hidden_word_position")
 
@@ -101,11 +103,3 @@ class SentenceList(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-
-class Bookmark(models.Model):
-    """A bookmark for a card, of a list's sentence, created by a user."""
-
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
-    sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
