@@ -16,8 +16,13 @@ export default function List(props: IListProps) {
       <div className="p-2">
         <ListDescription text={props.sentenceList.description} />
         <Link to={`/lists/${props.sentenceList.id}`}>
-          <button className="mt-2 px-1 py-1 bg-emerald-300 w-3/12 text-center text-white rounded">
+          <button className="mt-2 mr-2 px-1 py-1 bg-emerald-300 w-3/12 text-center text-white rounded">
             Play
+          </button>
+        </Link>
+        <Link to={`/lists/${props.sentenceList.id}/bookmarks`}>
+          <button className="mt-2 mr-2 px-1 py-1 bg-emerald-300 w-3/12 text-center text-white rounded">
+            Bookmarks
           </button>
         </Link>
       </div>

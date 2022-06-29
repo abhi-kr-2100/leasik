@@ -30,6 +30,30 @@ export const GET_SENTENCE_LISTS = gql`
   }
 `;
 
+export const GET_BOOKMARKED_CARDS = gql`
+  query GetBookmarkedCards($sentenceListId: ID!, $n: Int) {
+    cards(
+      sentenceListId: $sentenceListId
+      bookmarked: true
+      randomize: true
+      first: $n
+    ) {
+      edges {
+        node {
+          id
+          hiddenWordPosition
+          hiddenWordPositions
+          sentence {
+            id
+            text
+            translation
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_CARDS = gql`
   query GetCards($sentenceListId: ID!, $n: Int) {
     cardsUpForReview: cards(
