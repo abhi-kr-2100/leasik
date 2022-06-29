@@ -133,6 +133,7 @@ class Query(graphene.ObjectType):
     cards = relay.ConnectionField(
         CardConnection,
         reviewable=graphene.Boolean(required=False),
+        bookmarked=graphene.Boolean(required=False),
         sentence_list_id=graphene.ID(required=False),
         randomize=graphene.Boolean(required=False, default_value=False),
     )
@@ -142,7 +143,13 @@ class Query(graphene.ObjectType):
         return Sentence.objects.all()
 
     def resolve_cards(
-        root, info, randomize, reviewable=None, sentence_list_id=None, **kwargs
+        root,
+        info,
+        randomize,
+        reviewable=None,
+        bookmarked=None,
+        sentence_list_id=None,
+        **kwargs
     ):
         if info.context.user.is_anonymous:
             return Card.objects.none()
@@ -162,6 +169,12 @@ class Query(graphene.ObjectType):
                 card.id
                 for card in cards
                 if card.is_up_for_review() == reviewable
+            ]
+            cards = cards.filter(id__in=compatible_ids)
+
+        if bookmarked is not None:
+            compatible_ids = [
+                card.id for card in cards if card.is_bookmarked == bookmarked
             ]
             cards = cards.filter(id__in=compatible_ids)
 
