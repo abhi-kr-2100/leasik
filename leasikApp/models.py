@@ -104,8 +104,8 @@ class SentenceList(models.Model):
 
 
 class Bookmark(models.Model):
-    """A bookmark for a sentence of a list created by a user."""
+    """A bookmark for a card, of a list's sentence, created by a user."""
 
-    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
     sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
