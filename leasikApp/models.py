@@ -101,3 +101,11 @@ class SentenceList(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Bookmark(models.Model):
+    """A bookmark for a sentence of a list created by a user."""
+
+    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
+    sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
