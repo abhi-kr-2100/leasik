@@ -16,6 +16,7 @@ export default function ListPlay(props: IListPlayProps) {
         <p>Finished!</p>
       ) : (
         <QuestionScreenController
+          key={currentCardIndex}
           card={props.cards[currentCardIndex]}
           onNext={() => setCurrentCardIndex(currentCardIndex + 1)}
         />
