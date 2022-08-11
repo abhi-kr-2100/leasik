@@ -178,15 +178,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 
-cors_allowed_origins_env_val = getenv("DJANGO_CORS_ALLOWED_ORIGIN")
-if cors_allowed_origins_env_val is None and not debug_mode:
-    print("django: no allowed CORS origins provided", file=stderr)
-    exit(1)
+# cors_allowed_origins_env_val = getenv("DJANGO_CORS_ALLOWED_ORIGIN")
+# if cors_allowed_origins_env_val is None and not debug_mode:
+#     print("django: no allowed CORS origins provided", file=stderr)
+#     exit(1)
 
-CORS_ALLOWED_ORIGINS = (
-    [] if debug_mode else cors_allowed_origins_env_val.split()
-)
-CORS_ORIGIN_ALLOW_ALL = debug_mode
+# CORS_ALLOWED_ORIGINS = (
+#     [] if debug_mode else cors_allowed_origins_env_val.split()
+# )
+# CORS_ORIGIN_ALLOW_ALL = debug_mode
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 GRAPHENE = {
