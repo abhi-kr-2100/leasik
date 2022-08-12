@@ -107,14 +107,20 @@ WSGI_APPLICATION = "leasik.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-database_url = (
-    "sqlite:///db.sqlite" if debug_mode else getenv("DJANGO_DATABASE_URL")
-)
-engine = None if debug_mode else "django_cockroachdb"
+database_url_env = getenv("DJANGO_DATABASE_URL")
+debug_database_url = "sqlite:///db.sqlite"
 
-if database_url is None:
+database_url = None
+engine = None
+
+if database_url_env is None and not debug_mode:
     print("django: a valid database URL has not been provided", file=stderr)
     exit(1)
+elif database_url_env is None:
+    database_url = debug_database_url
+else:
+    database_url = database_url_env
+    engine = "django_cockroachdb"
 
 DATABASES = {"default": dj_database_url.parse(database_url, engine)}
 
