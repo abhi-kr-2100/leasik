@@ -21,15 +21,38 @@ class Sentence(models.Model):
         return f"{self.text} ({self.translation})"
 
 
-class Card(models.Model):
-    """A card relates a sentence with a hidden word position.
+class SentenceList(models.Model):
+    """A list of sentences owned by a user."""
 
-    The hidden word position determines which word in the sentence the user
-    will be tested on. If it's -1, a random word is selected each time.
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
 
-    Card is used to implement the SM-2 algorithm. See
-    https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=True)
+
+    sentences = models.ManyToManyField(Sentence, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class WordCard(models.Model):
+    """A WordCard relates a SentenceList and a word. It is owned by a user.
+
+    The idea is to allow users to learn SentenceList specific words. For
+    example, in a Turkish list, the word "biliyorum" may appear several times.
+    When a user correctly answers "biliyorum", the progress is reflected in
+    all sentences that contain this word within that SentenceList. Progress on
+    "biliyorum" in other lists should not be affected, as often languages have
+    common words.
+
+    WordCard also implements the SM-2 algorithm to allow efficient learning.
+    See: https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.
     """
+
+    sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    word = models.CharField(max_length=50)
 
     repetition_number = models.IntegerField(
         default=0, validators=[MinValueValidator(0)]
@@ -47,30 +70,20 @@ class Card(models.Model):
 
     last_review_date = models.DateField(auto_now_add=True)
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
-
-    # -1 means a random word will be selected each time
-    hidden_word_position = models.SmallIntegerField(default=-1)
-
-    is_bookmarked = models.BooleanField(default=False)
-
     class Meta:
-        unique_together = ("owner", "sentence", "hidden_word_position")
+        unique_together = ("owner", "sentence_list", "word")
 
     def __str__(self) -> str:
-        return (
-            f"<{self.sentence.text}> of {self.owner.username}. "
-            f"HWP: {self.hidden_word_position}"
-        )
+        return f"<{self.word}> of {self.sentence_list.name}."
 
     def is_up_for_review(self) -> bool:
-        """Return True if Card needs to be reviewed, False otherwise."""
+        """Return True if the card needs to be reviewed, False otherwise."""
+        
         days_passed = date.today() - self.last_review_date
         return days_passed >= self.inter_repetition_interval
 
     def update_proficiency(self, score: int) -> None:
-        """Update the Card's proficiency based on the given score."""
+        """Update the card's SM-2 parameters based on the given score."""
 
         if score < 0 or score > 5:
             raise ValueError("Score must be between 0 and 5")
@@ -88,18 +101,3 @@ class Card(models.Model):
         self.last_review_date = date.today()
 
         self.save()
-
-
-class SentenceList(models.Model):
-    """A list of sentences owned by a user."""
-
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    is_public = models.BooleanField(default=True)
-
-    sentences = models.ManyToManyField(Sentence, blank=True)
-
-    def __str__(self) -> str:
-        return self.name
