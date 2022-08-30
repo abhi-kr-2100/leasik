@@ -78,7 +78,7 @@ class WordCard(models.Model):
 
     def is_up_for_review(self) -> bool:
         """Return True if the card needs to be reviewed, False otherwise."""
-        
+
         days_passed = date.today() - self.last_review_date
         return days_passed >= self.inter_repetition_interval
 
@@ -101,3 +101,8 @@ class WordCard(models.Model):
         self.last_review_date = date.today()
 
         self.save()
+
+
+class UserProfile(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    played_lists = models.ManyToManyField(SentenceList)
