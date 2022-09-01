@@ -1,5 +1,6 @@
 from __future__ import annotations
 from datetime import date, timedelta
+from string import punctuation
 
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -34,6 +35,34 @@ class SentenceList(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def prepare_word_cards(self, owner: User):
+        """Re-create WordCards for all the words in the SentenceList.
+
+        The created WordCards are owned by the given owner.
+        NOTE: All existing WordCards for the given owner for this SentenceList
+        will be deleted. This is done to allow bulk creation of WordCards.
+        """
+
+        sentences = self.sentences.all()
+        words = set()
+        for s in sentences:
+            # words stripped of punctuations
+            s_words = [
+                w.translate(str.maketrans("", "", punctuation)).lower()
+                for w in s.text.split()
+            ]
+
+            words.update(s_words)
+
+        word_cards = [
+            WordCard(sentence_list=self, owner=owner, word=w) for w in words
+        ]
+
+        # delete at the very end to delay destructive action as much as
+        # possible
+        WordCard.objects.filter(sentence_list=self, owner=owner).delete()
+        WordCard.objects.bulk_create(word_cards)
 
 
 class WordCard(models.Model):

@@ -3,7 +3,7 @@ from datetime import timedelta, date
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from .models import SentenceList, WordCard
+from .models import Sentence, SentenceList, WordCard
 
 
 class WordCardModelTests(TestCase):
@@ -61,3 +61,140 @@ class WordCardModelTests(TestCase):
         card.inter_repetition_interval = timedelta(days=1)
 
         self.assertFalse(card.is_up_for_review())
+
+
+class SentenceListModelTests(TestCase):
+    def setUp(self):
+        User.objects.create(username="mock", password="mock")
+        SentenceList.objects.create(
+            name="mock sentence list", owner=User.objects.get()
+        )
+
+    def test_prepare_word_cards_on_empty_sentence_list(self):
+        SentenceList.objects.get().prepare_word_cards(User.objects.get())
+
+        self.assertCountEqual(WordCard.objects.all(), [])
+
+    def test_prepare_word_cards_on_non_empty_sentence_list_with_no_cards(self):
+        sl = SentenceList.objects.get()
+        sl.sentences.add(
+            Sentence.objects.create(text="A boy.", translation="Bir çocuk.")
+        )
+        sl.sentences.add(
+            Sentence.objects.create(text="A girl.", translation="Une fille.")
+        )
+        sl.sentences.add(
+            Sentence.objects.create(text="The man.", translation="L'uomo.")
+        )
+
+        sl.prepare_word_cards(User.objects.get())
+
+        self.assertEqual(WordCard.objects.count(), 5)
+        self.assertEqual(
+            str(WordCard.objects.get(word="a")),
+            str(
+                WordCard(sentence_list=sl, owner=User.objects.get(), word="a")
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="boy")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="boy"
+                )
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="girl")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="girl"
+                )
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="the")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="the"
+                )
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="man")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="man"
+                )
+            ),
+        )
+
+    def test_prepare_word_cards_with_existing_cards(self):
+        sl = SentenceList.objects.get()
+        sl.sentences.add(
+            Sentence.objects.create(text="A boy.", translation="Bir çocuk.")
+        )
+        sl.sentences.add(
+            Sentence.objects.create(text="A girl.", translation="Une fille.")
+        )
+        sl.sentences.add(
+            Sentence.objects.create(text="The man.", translation="L'uomo.")
+        )
+
+        sl.prepare_word_cards(User.objects.get())
+
+        sl.sentences.add(
+            Sentence.objects.create(
+                text="The sandwich.", translation="Il panino."
+            )
+        )
+
+        sl.prepare_word_cards(User.objects.get())
+
+        self.assertEqual(WordCard.objects.count(), 6)
+        self.assertEqual(
+            str(WordCard.objects.get(word="a")),
+            str(
+                WordCard(sentence_list=sl, owner=User.objects.get(), word="a")
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="boy")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="boy"
+                )
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="girl")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="girl"
+                )
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="the")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="the"
+                )
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="man")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="man"
+                )
+            ),
+        )
+        self.assertEqual(
+            str(WordCard.objects.get(word="sandwich")),
+            str(
+                WordCard(
+                    sentence_list=sl, owner=User.objects.get(), word="sandwich"
+                )
+            ),
+        )
