@@ -1,11 +1,8 @@
-import { useMutation } from "@apollo/client";
-import { useState } from "react";
-
-import Card from "../models/Card";
+import WordCard from "../models/WordCard";
 import { InputStatusType } from "../utilities/types";
 
 export interface IActionButtonsProps {
-  card: Card;
+  wordCard: WordCard;
   inputStatus: InputStatusType;
   primaryAction: () => void;
 }

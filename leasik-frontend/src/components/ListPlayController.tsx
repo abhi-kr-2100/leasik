@@ -1,17 +1,16 @@
 import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 
-import { GET_CARDS } from "../utilities/queries";
-import { normalizedCard } from "../utilities/helperFuncs";
+import { GET_WORD_CARDS } from "../utilities/queries";
 
-import Card from "../models/Card";
+import WordCard from "../models/WordCard";
 
 import ListPlay from "./ListPlay";
 
 export default function ListPlayController() {
   const sentenceListId = useParams().listId;
 
-  const { loading, error, data } = useQuery(GET_CARDS, {
+  const { loading, error, data } = useQuery(GET_WORD_CARDS, {
     variables: { sentenceListId, n: 20 },
     fetchPolicy: "no-cache",
   });
@@ -19,14 +18,8 @@ export default function ListPlayController() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`Error loading cards: ${error.message}`}</div>;
 
-  const cardEdges = data.cardsUpForReview.edges as { node: Card }[];
-  const backupCardEdges = data.cardsNotUpForReview.edges as {
-    node: Card;
-  }[];
+  const wordCardEdges = data.wordCards.edges as { node: WordCard }[];
+  const wordCards = wordCardEdges.map(edge => edge.node)
 
-  const cards = (cardEdges.length !== 0 ? cardEdges : backupCardEdges).map(
-    (edge) => normalizedCard(edge.node)
-  );
-
-  return <ListPlay cards={cards} />;
+  return <ListPlay wordCards={wordCards} />;
 }
