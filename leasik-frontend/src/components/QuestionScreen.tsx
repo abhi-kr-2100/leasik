@@ -1,9 +1,8 @@
-import Card from "../models/Card";
-import ActionButtons from "./ActionButtons";
+import WordCard from "../models/WordCard";
 import Question from "./Question";
 
 export interface IQuestionScreenProps {
-  card: Card;
+  wordCard: WordCard;
   primaryAction: () => void;
   inputStatus: "unchecked" | "correct" | "incorrect";
   userInput: string;
@@ -15,18 +14,19 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
     <>
       <div className="my-2">
         <Question
-          card={props.card}
+          wordCard={props.wordCard}
           inputStatus={props.inputStatus}
           userInput={props.userInput}
           setUserInput={props.setUserInput}
           primaryAction={props.primaryAction}
         />
       </div>
-      <ActionButtons
-        card={props.card}
-        inputStatus={props.inputStatus}
-        primaryAction={props.primaryAction}
-      />
+      <button
+        onClick={props.primaryAction}
+        className="my-2 mr-2 px-3 py-2 bg-lime-300 rounded"
+      >
+        {props.inputStatus === "unchecked" ? "Check" : "Next"}
+      </button>
     </>
   );
 }
