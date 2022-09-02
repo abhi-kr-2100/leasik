@@ -54,7 +54,7 @@ export const GET_WORD_CARDS = gql`
 
 export const SCORE_ANSWER = gql`
   mutation UpdateCardProficiency($cardId: ID!, $score: Int!) {
-    updateProficiency(input: { cardId: $cardId, score: $score }) {
+    updateProficiency(input: { wordCardId: $cardId, score: $score }) {
       clientMutationId
     }
   }

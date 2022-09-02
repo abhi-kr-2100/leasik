@@ -109,5 +109,29 @@ class Query(graphene.ObjectType):
         # whether the card is up for review
 
 
+class UpdateProficiency(relay.ClientIDMutation):
+    class Input:
+        word_card_id = graphene.ID()
+        score = graphene.Int(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, word_card_id, score, **kwargs):
+        if not info.context.user.is_authenticated:
+            raise Exception("Not authenticated")
+
+        if score < 0 or score > 5:
+            raise Exception("Score must be between 0 and 5")
+
+        int_id = int(from_global_id(word_card_id)[1])
+        word_card = WordCard.objects.get(id=int_id)
+
+        if word_card.owner != info.context.user:
+            raise Exception("You are not the owner of this card")
+
+        word_card.update_proficiency(score)
+
+        return UpdateProficiency()
+
+
 class Mutation(graphene.ObjectType):
-    pass
+    update_proficiency = UpdateProficiency.Field()
