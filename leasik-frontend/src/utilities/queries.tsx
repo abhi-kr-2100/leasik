@@ -35,10 +35,12 @@ export const GET_WORD_CARDS = gql`
     wordCards(sentenceListId: $sentenceListId, first: $n) {
       edges {
         node {
+          id
           word
           sentences(first: 1) {
             edges {
               node {
+                id
                 text
                 translation
               }
