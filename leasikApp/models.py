@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import date, timedelta
-from string import punctuation
+from string import punctuation, whitespace
 
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -49,10 +49,9 @@ class SentenceList(models.Model):
         for s in sentences:
             # words stripped of punctuations
             s_words = [
-                w.translate(str.maketrans("", "", punctuation)).lower()
+                w.strip(punctuation + whitespace).lower()
                 for w in s.text.split()
             ]
-
             words.update(s_words)
 
         word_cards = [
