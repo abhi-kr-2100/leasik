@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import date, timedelta
-from string import punctuation, whitespace
+from string import digits, punctuation, whitespace
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -53,8 +53,9 @@ class SentenceList(models.Model):
         for s in sentences:
             # words stripped of punctuations
             s_words = [
-                w.strip(punctuation + whitespace).lower()
+                w.strip(punctuation + whitespace + digits).lower()
                 for w in s.text.split()
+                if w.strip(punctuation + whitespace + digits) != ""
             ]
             words.update(s_words)
 
