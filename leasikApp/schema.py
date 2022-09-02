@@ -67,7 +67,9 @@ class WordCardType(DjangoObjectType):
 
         final_regex = f"(({regex00})|({regex01})|({regex10})|({regex11}))"
 
-        return Sentence.objects.filter(text__iregex=final_regex).order_by("?")
+        return root.sentence_list.sentences.filter(
+            text__iregex=final_regex
+        ).order_by("?")
 
 
 class WordCardConnection(relay.Connection):
