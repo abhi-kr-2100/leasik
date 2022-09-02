@@ -39,6 +39,7 @@ class WordCardType(DjangoObjectType):
     sentences = graphene.ConnectionField(SentenceConnection)
 
     def resolve_sentences(root, info):
+        # try to return only those sentences which contain the whole word
         return Sentence.objects.filter(
             text__iregex=rf"(?:^|\W){root.word}(?:$|\W)"
         )
