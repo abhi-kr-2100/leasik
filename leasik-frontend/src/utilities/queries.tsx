@@ -30,45 +30,19 @@ export const GET_SENTENCE_LISTS = gql`
   }
 `;
 
-export const GET_CARDS = gql`
-  query GetCards($sentenceListId: ID!, $n: Int) {
-    cardsUpForReview: cards(
-      sentenceListId: $sentenceListId
-      reviewable: true
-      randomize: true
-      first: $n
-    ) {
+export const GET_WORD_CARDS = gql`
+  query GetWordCards($sentenceListId: ID!, $n: Int) {
+    wordCards(sentenceListId: $sentenceListId, first: $n) {
       edges {
         node {
-          id
-          hiddenWordPosition
-          hiddenWordPositions
-          isBookmarked
-          sentence {
-            id
-            text
-            translation
-          }
-        }
-      }
-    }
-
-    cardsNotUpForReview: cards(
-      sentenceListId: $sentenceListId
-      reviewable: false
-      randomize: true
-      first: $n
-    ) {
-      edges {
-        node {
-          id
-          hiddenWordPosition
-          hiddenWordPositions
-          isBookmarked
-          sentence {
-            id
-            text
-            translation
+          word
+          sentences(first: 1) {
+            edges {
+              node {
+                text
+                translation
+              }
+            }
           }
         }
       }
