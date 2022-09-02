@@ -3,8 +3,10 @@ from datetime import date, timedelta
 from string import punctuation, whitespace
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.core.validators import MinValueValidator
-from django.contrib.auth.models import User
+from django.conf import settings
 
 from .helpers import sm2
 
@@ -28,7 +30,9 @@ class SentenceList(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
     is_public = models.BooleanField(default=True)
 
     sentences = models.ManyToManyField(Sentence, blank=True)
@@ -36,7 +40,7 @@ class SentenceList(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def prepare_word_cards(self, owner: User):
+    def prepare_word_cards(self, owner: settings.AUTH_USER_MODEL):
         """Re-create WordCards for all the words in the SentenceList.
 
         The created WordCards are owned by the given owner.
@@ -79,7 +83,9 @@ class WordCard(models.Model):
     """
 
     sentence_list = models.ForeignKey(SentenceList, on_delete=models.CASCADE)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
     word = models.CharField(max_length=50)
 
     repetition_number = models.IntegerField(
@@ -132,5 +138,12 @@ class WordCard(models.Model):
 
 
 class UserProfile(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
     played_lists = models.ManyToManyField(SentenceList)
+
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
