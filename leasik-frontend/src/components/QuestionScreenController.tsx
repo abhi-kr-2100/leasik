@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 
-import Card from "../models/Card";
+import WordCard from "../models/WordCard";
 import QuestionScreen from "./QuestionScreen";
 import { InputStatusType } from "../utilities/types";
 import { SCORE_ANSWER } from "../utilities/queries";
-import { matches, toWords } from "../utilities/helperFuncs";
+import { matches } from "../utilities/helperFuncs";
 
 export interface IQuestionScreenControllerProps {
-  card: Card;
+  wordCard: WordCard;
   onNext: () => void;
 }
 
@@ -30,21 +30,19 @@ export default function QuestionScreenController(
       setInputStatus("unchecked");
       props.onNext();
     } else {
-      const words = toWords(props.card.sentence.text);
-
-      if (matches(userInput, words[0])) {
+      if (matches(userInput, props.wordCard.word)) {
         setInputStatus("correct");
-        scoreAnswer({ variables: { cardId: props.card.id, score: 5 } });
+        scoreAnswer({ variables: { cardId: props.wordCard.id, score: 5 } });
       } else {
         setInputStatus("incorrect");
-        scoreAnswer({ variables: { cardId: props.card.id, score: 0 } });
+        scoreAnswer({ variables: { cardId: props.wordCard.id, score: 0 } });
       }
     }
   };
 
   return (
     <QuestionScreen
-      card={props.card}
+      wordCard={props.wordCard}
       primaryAction={primaryAction}
       inputStatus={inputStatus}
       userInput={userInput}
