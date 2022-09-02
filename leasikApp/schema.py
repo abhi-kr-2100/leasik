@@ -4,13 +4,7 @@ import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 
-from .models import Sentence, SentenceList
-
-
-class SentenceType(DjangoObjectType):
-    class Meta:
-        model = Sentence
-        interfaces = (relay.Node,)
+from .models import SentenceList
 
 
 class SentenceListType(DjangoObjectType):
@@ -19,22 +13,13 @@ class SentenceListType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class SentenceConnection(relay.Connection):
-    class Meta:
-        node = SentenceType
-
-
 class SentenceListConnection(relay.Connection):
     class Meta:
         node = SentenceListType
 
 
 class Query(graphene.ObjectType):
-    sentences = relay.ConnectionField(SentenceConnection)
     sentence_lists = relay.ConnectionField(SentenceListConnection)
-
-    def resolve_sentences(root, info, **kwargs):
-        return Sentence.objects.all()
 
     def resolve_sentence_lists(root, info, **kwargs):
         if info.context.user.is_anonymous:
