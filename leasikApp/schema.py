@@ -1,3 +1,5 @@
+from string import digits, punctuation, whitespace
+
 from django.db.models import Q
 
 import graphene
@@ -39,10 +41,33 @@ class WordCardType(DjangoObjectType):
     sentences = graphene.ConnectionField(SentenceConnection)
 
     def resolve_sentences(root, info, **kwargs):
-        # try to return only those sentences which contain the whole word
-        return Sentence.objects.filter(
-            text__iregex=rf"(?:^|\W){root.word}(?:$|\W)"
-        ).order_by("?")
+        # Try to return only those sentences which contain the whole word.
+        #
+        # When word is "abc", matches: "abc.", "'abc'", "I'm abc.", etc.
+        # Shouldn't match: "abcd", "a'bc", etc.
+        #
+        # A few heuristics:
+        # 1. if word is followed by punctuation or digit, the word must be
+        #   the last word, or be followed by space. This disallows "abc..d"
+        # 2. if a word starts with a punctuation or digit, before the very
+        #   first digit or punctuation, there must either be nothing or one
+        #   or more spaces. This disqualifies "İstanbul'abc".
+
+        # doesn't start or end with punctuations or digits
+        regex00 = f"(^|[{whitespace}]+){root.word}($|[{whitespace}]+)"
+
+        # doesn't start with a punctuation or digit but ends with one
+        regex01 = f"(^|[{whitespace}]+){root.word}[{punctuation}{digits}]+($|[{whitespace}]+)"
+
+        # starts with a punctuation or digit but doesn't end with one
+        regex10 = f"(^|[{whitespace}]+)[{punctuation}{digits}]+{root.word}($|[{whitespace}]+)"
+
+        # starts with a punctuation or digit and also ends with one
+        regex11 = f"(^|[{whitespace}]+)[{punctuation}{digits}]+{root.word}[{punctuation}{digits}]+($|[{whitespace}]+)"
+
+        final_regex = f"(({regex00})|({regex01})|({regex10})|({regex11}))"
+
+        return Sentence.objects.filter(text__iregex=final_regex).order_by("?")
 
 
 class WordCardConnection(relay.Connection):
