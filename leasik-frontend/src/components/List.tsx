@@ -20,11 +20,6 @@ export default function List(props: IListProps) {
             Play
           </button>
         </Link>
-        <Link to={`/lists/${props.sentenceList.id}/bookmarks`}>
-          <button className="mt-2 mr-2 px-1 py-1 bg-emerald-300 w-3/12 text-center text-white rounded">
-            Bookmarks
-          </button>
-        </Link>
       </div>
     </article>
   );

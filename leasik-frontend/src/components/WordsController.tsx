@@ -15,10 +15,6 @@ export default function WordsController(props: IWordsControllerProps) {
     (w) => ({ word: w, isHidden: false })
   );
 
-  props.card.hiddenWordPositions.forEach((pos) => {
-    wordsXIsHiddenMatrix[pos].isHidden = true;
-  });
-
   return (
     <Words
       card={props.card}

@@ -30,31 +30,6 @@ export const GET_SENTENCE_LISTS = gql`
   }
 `;
 
-export const GET_BOOKMARKED_CARDS = gql`
-  query GetBookmarkedCards($sentenceListId: ID!, $n: Int) {
-    cards(
-      sentenceListId: $sentenceListId
-      bookmarked: true
-      randomize: true
-      first: $n
-    ) {
-      edges {
-        node {
-          id
-          hiddenWordPosition
-          hiddenWordPositions
-          isBookmarked
-          sentence {
-            id
-            text
-            translation
-          }
-        }
-      }
-    }
-  }
-`;
-
 export const GET_CARDS = gql`
   query GetCards($sentenceListId: ID!, $n: Int) {
     cardsUpForReview: cards(
@@ -104,48 +79,6 @@ export const GET_CARDS = gql`
 export const SCORE_ANSWER = gql`
   mutation UpdateCardProficiency($cardId: ID!, $score: Int!) {
     updateProficiency(input: { cardId: $cardId, score: $score }) {
-      clientMutationId
-    }
-  }
-`;
-
-export const ADD_CARD = gql`
-  mutation AddCard($sentenceId: ID!, $hiddenWordPosition: Int!) {
-    addCard(
-      input: {
-        sentenceId: $sentenceId
-        hiddenWordPosition: $hiddenWordPosition
-      }
-    ) {
-      clientMutationId
-    }
-  }
-`;
-
-export const REMOVE_CARD = gql`
-  mutation RemoveCard($sentenceId: ID!, $hiddenWordPosition: Int!) {
-    removeCard(
-      input: {
-        sentenceId: $sentenceId
-        hiddenWordPosition: $hiddenWordPosition
-      }
-    ) {
-      clientMutationId
-    }
-  }
-`;
-
-export const ADD_BOOKMARK = gql`
-  mutation AddBookmark($cardId: ID!) {
-    addBookmark(input: { cardId: $cardId }) {
-      clientMutationId
-    }
-  }
-`;
-
-export const REMOVE_BOOKMARK = gql`
-  mutation RemoveBookmark($cardId: ID!) {
-    removeBookmark(input: { cardId: $cardId }) {
       clientMutationId
     }
   }

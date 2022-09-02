@@ -14,7 +14,6 @@ import ListPlayController from "./components/ListPlayController";
 import LoginController from "./components/LoginController";
 
 import "./index.css";
-import BookmarkPlayController from "./components/BookmarkPlayController";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -29,10 +28,6 @@ root.render(
             <Route index element={<Home />} />
             <Route path="lists" element={<ListsController />} />
             <Route path="lists/:listId" element={<ListPlayController />} />
-            <Route
-              path="lists/:listId/bookmarks"
-              element={<BookmarkPlayController />}
-            />
             <Route path="login" element={<LoginController />} />
           </Route>
         </Routes>

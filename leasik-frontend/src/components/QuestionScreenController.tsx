@@ -31,9 +31,8 @@ export default function QuestionScreenController(
       props.onNext();
     } else {
       const words = toWords(props.card.sentence.text);
-      const hiddenWord = words[props.card.hiddenWordPosition];
 
-      if (matches(userInput, hiddenWord)) {
+      if (matches(userInput, words[0])) {
         setInputStatus("correct");
         scoreAnswer({ variables: { cardId: props.card.id, score: 5 } });
       } else {
