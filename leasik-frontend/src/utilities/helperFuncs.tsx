@@ -1,19 +1,3 @@
-import Card from "../models/Card";
-
-export function normalizedCard(card: Card): Card {
-  const nwords = toWords(card.sentence.text).length;
-
-  const newCard: Card = {
-    ...card,
-    hiddenWordPosition:
-      card.hiddenWordPosition === -1
-        ? randRange(nwords)
-        : card.hiddenWordPosition,
-  };
-
-  return newCard;
-}
-
 export function toWords(text: string): string[] {
   return text.split(/\s+/);
 }
