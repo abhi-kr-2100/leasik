@@ -3,9 +3,8 @@ import { useParams } from "react-router-dom";
 
 import { GET_WORD_CARDS } from "../utilities/queries";
 
-import WordCard from "../models/WordCard";
-
 import ListPlay from "./ListPlay";
+import { WordCardEdge } from "../utilities/types";
 
 export default function ListPlayController() {
   const sentenceListId = useParams().listId;
@@ -18,8 +17,11 @@ export default function ListPlayController() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`Error loading cards: ${error.message}`}</div>;
 
-  const wordCardEdges = data.wordCards.edges as { node: WordCard }[];
-  const wordCards = wordCardEdges.map(edge => edge.node)
+  const wordCards = (data.wordCards.edges as WordCardEdge[]).map(edge => ({
+    id: edge.node.id,
+    word: edge.node.word,
+    sentence: edge.node.sentences.edges[0].node
+  }))
 
   return <ListPlay wordCards={wordCards} />;
 }
