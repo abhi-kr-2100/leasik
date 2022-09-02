@@ -1,8 +1,9 @@
 import Sentence from "./Sentence";
 
-type Card = {
+type WordCard = {
   id: string;
+  word: string;
   sentence: Sentence;
 };
 
-export default Card;
+export default WordCard;
