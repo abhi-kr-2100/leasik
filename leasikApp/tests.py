@@ -1,16 +1,16 @@
 from datetime import timedelta, date
 
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from .models import Sentence, SentenceList, WordCard
 
 
 class WordCardModelTests(TestCase):
     def setUp(self):
-        User.objects.create(username="mock", password="mock")
+        get_user_model().objects.create(username="mock", password="mock")
         SentenceList.objects.create(
-            name="mock sentence list", owner=User.objects.get()
+            name="mock sentence list", owner=get_user_model().objects.get()
         )
 
     def test_is_up_for_review_with_newly_created_card(self):
@@ -18,7 +18,7 @@ class WordCardModelTests(TestCase):
 
         newly_created_card = WordCard.objects.create(
             sentence_list=SentenceList.objects.get(),
-            owner=User.objects.get(),
+            owner=get_user_model().objects.get(),
             word="mock",
         )
 
@@ -29,7 +29,7 @@ class WordCardModelTests(TestCase):
 
         old_card = WordCard.objects.create(
             sentence_list=SentenceList.objects.get(),
-            owner=User.objects.get(),
+            owner=get_user_model().objects.get(),
             word="mock",
         )
         old_card.last_review_date = date.today() - timedelta(days=10)
@@ -42,7 +42,7 @@ class WordCardModelTests(TestCase):
 
         card = WordCard.objects.create(
             sentence_list=SentenceList.objects.get(),
-            owner=User.objects.get(),
+            owner=get_user_model().objects.get(),
             word="mock",
         )
         card.last_review_date = date.today() - timedelta(days=10)
@@ -55,7 +55,7 @@ class WordCardModelTests(TestCase):
 
         card = WordCard.objects.create(
             sentence_list=SentenceList.objects.get(),
-            owner=User.objects.get(),
+            owner=get_user_model().objects.get(),
             word="mock",
         )
         card.inter_repetition_interval = timedelta(days=1)
@@ -65,13 +65,15 @@ class WordCardModelTests(TestCase):
 
 class SentenceListModelTests(TestCase):
     def setUp(self):
-        User.objects.create(username="mock", password="mock")
+        get_user_model().objects.create(username="mock", password="mock")
         SentenceList.objects.create(
-            name="mock sentence list", owner=User.objects.get()
+            name="mock sentence list", owner=get_user_model().objects.get()
         )
 
     def test_prepare_word_cards_on_empty_sentence_list(self):
-        SentenceList.objects.get().prepare_word_cards(User.objects.get())
+        SentenceList.objects.get().prepare_word_cards(
+            get_user_model().objects.get()
+        )
 
         self.assertCountEqual(WordCard.objects.all(), [])
 
@@ -87,20 +89,26 @@ class SentenceListModelTests(TestCase):
             Sentence.objects.create(text="The man.", translation="L'uomo.")
         )
 
-        sl.prepare_word_cards(User.objects.get())
+        sl.prepare_word_cards(get_user_model().objects.get())
 
         self.assertEqual(WordCard.objects.count(), 5)
         self.assertEqual(
             str(WordCard.objects.get(word="a")),
             str(
-                WordCard(sentence_list=sl, owner=User.objects.get(), word="a")
+                WordCard(
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="a",
+                )
             ),
         )
         self.assertEqual(
             str(WordCard.objects.get(word="boy")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="boy"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="boy",
                 )
             ),
         )
@@ -108,7 +116,9 @@ class SentenceListModelTests(TestCase):
             str(WordCard.objects.get(word="girl")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="girl"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="girl",
                 )
             ),
         )
@@ -116,7 +126,9 @@ class SentenceListModelTests(TestCase):
             str(WordCard.objects.get(word="the")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="the"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="the",
                 )
             ),
         )
@@ -124,7 +136,9 @@ class SentenceListModelTests(TestCase):
             str(WordCard.objects.get(word="man")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="man"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="man",
                 )
             ),
         )
@@ -141,7 +155,7 @@ class SentenceListModelTests(TestCase):
             Sentence.objects.create(text="The man.", translation="L'uomo.")
         )
 
-        sl.prepare_word_cards(User.objects.get())
+        sl.prepare_word_cards(get_user_model().objects.get())
 
         sl.sentences.add(
             Sentence.objects.create(
@@ -149,20 +163,26 @@ class SentenceListModelTests(TestCase):
             )
         )
 
-        sl.prepare_word_cards(User.objects.get())
+        sl.prepare_word_cards(get_user_model().objects.get())
 
         self.assertEqual(WordCard.objects.count(), 6)
         self.assertEqual(
             str(WordCard.objects.get(word="a")),
             str(
-                WordCard(sentence_list=sl, owner=User.objects.get(), word="a")
+                WordCard(
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="a",
+                )
             ),
         )
         self.assertEqual(
             str(WordCard.objects.get(word="boy")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="boy"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="boy",
                 )
             ),
         )
@@ -170,7 +190,9 @@ class SentenceListModelTests(TestCase):
             str(WordCard.objects.get(word="girl")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="girl"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="girl",
                 )
             ),
         )
@@ -178,7 +200,9 @@ class SentenceListModelTests(TestCase):
             str(WordCard.objects.get(word="the")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="the"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="the",
                 )
             ),
         )
@@ -186,7 +210,9 @@ class SentenceListModelTests(TestCase):
             str(WordCard.objects.get(word="man")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="man"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="man",
                 )
             ),
         )
@@ -194,7 +220,9 @@ class SentenceListModelTests(TestCase):
             str(WordCard.objects.get(word="sandwich")),
             str(
                 WordCard(
-                    sentence_list=sl, owner=User.objects.get(), word="sandwich"
+                    sentence_list=sl,
+                    owner=get_user_model().objects.get(),
+                    word="sandwich",
                 )
             ),
         )
