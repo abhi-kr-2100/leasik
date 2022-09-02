@@ -101,12 +101,17 @@ class Query(graphene.ObjectType):
             sl.prepare_word_cards(info.context.user)
             user_profile.played_lists.add(sl)
 
-        return WordCard.objects.filter(
-            sentence_list=sl, owner=info.context.user
-        ).order_by(
-            "easiness_factor", "-last_review_date", "inter_repetition_interval"
-        )  # TODO: Replace with a proper check on
-        # whether the card is up for review
+        return (
+            WordCard.objects.filter(sentence_list=sl, owner=info.context.user)
+            # TODO: Replace with a proper check on whether the card is up for
+            # review
+            .order_by(
+                "easiness_factor",
+                "-last_review_date",
+                "inter_repetition_interval",
+                "?",
+            )
+        )
 
 
 class UpdateProficiency(relay.ClientIDMutation):
