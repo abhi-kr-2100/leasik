@@ -11,11 +11,21 @@ from django.conf import settings
 from .helpers import sm2
 
 
+class Tag(models.Model):
+    """A tag made up of a short string."""
+
+    label = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return f"{self.label}"
+
+
 class Sentence(models.Model):
     """A sentence with a text and translation."""
 
     text = models.TextField()
     translation = models.TextField()
+    tags = models.ManyToManyField(Tag)
 
     class Meta:
         unique_together = ("text", "translation")
