@@ -5,6 +5,8 @@ import { GET_WORD_CARDS } from "../utilities/queries";
 
 import ListPlay from "./ListPlay";
 import { WordCardEdge } from "../utilities/types";
+import { findWordPositions, randomChoice, toWords } from "../utilities/helperFuncs";
+import { ExtendedWordCard } from "../utilities/types";
 
 export default function ListPlayController() {
   const sentenceListId = useParams().listId;
@@ -23,5 +25,12 @@ export default function ListPlayController() {
     sentence: edge.node.sentences.edges[0].node
   }))
 
-  return <ListPlay wordCards={wordCards} />;
+  const extendedWordCards = wordCards.map((wc) => ({
+    ...wc,
+    hiddenWordPosition: randomChoice(
+      findWordPositions(toWords(wc.sentence.text), wc.word)
+    )
+  } as ExtendedWordCard))
+
+  return <ListPlay extendedWordCards={extendedWordCards} />;
 }

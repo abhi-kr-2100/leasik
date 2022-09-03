@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-import WordCard from "../models/WordCard";
+import { ExtendedWordCard } from "../utilities/types";
 import QuestionScreenController from "./QuestionScreenController";
 
 export interface IListPlayProps {
-  wordCards: WordCard[];
+  extendedWordCards: ExtendedWordCard[];
 }
 
 export default function ListPlay(props: IListPlayProps) {
@@ -12,12 +12,12 @@ export default function ListPlay(props: IListPlayProps) {
 
   return (
     <div className="h-full flex flex-col justify-center items-center">
-      {currentCardIndex >= props.wordCards.length ? (
+      {currentCardIndex >= props.extendedWordCards.length ? (
         <p>Finished!</p>
       ) : (
         <QuestionScreenController
           key={currentCardIndex}
-          wordCard={props.wordCards[currentCardIndex]}
+          extendedWordCard={props.extendedWordCards[currentCardIndex]}
           onNext={() => setCurrentCardIndex(currentCardIndex + 1)}
         />
       )}

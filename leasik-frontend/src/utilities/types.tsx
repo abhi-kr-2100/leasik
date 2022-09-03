@@ -1,3 +1,5 @@
+import Sentence from "../models/Sentence";
+
 export type InputStatusType = "unchecked" | "correct" | "incorrect";
 
 type SentenceNode = {
@@ -18,4 +20,11 @@ type WordCardNode = {
 
 export type WordCardEdge = {
     node: WordCardNode;
+}
+
+export type ExtendedWordCard = {
+    id: string;
+    word: string;
+    sentence: Sentence;
+    hiddenWordPosition: number;
 }

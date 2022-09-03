@@ -1,9 +1,8 @@
-import WordCard from "../models/WordCard";
-import { findWordPositions, randomChoice, toWords } from "../utilities/helperFuncs";
-import { InputStatusType } from "../utilities/types";
+import { toWords } from "../utilities/helperFuncs";
+import { InputStatusType, ExtendedWordCard } from "../utilities/types";
 
 export interface IQuestionInputProps {
-  wordCard: WordCard;
+  extendedWordCard: ExtendedWordCard;
 
   userInput: string;
   setUserInput: (input: string) => void;
@@ -13,11 +12,10 @@ export interface IQuestionInputProps {
 }
 
 export default function QuestionInput(props: IQuestionInputProps) {
-  const words = toWords(props.wordCard.sentence.text);
-  const hiddenWordPosition = randomChoice(findWordPositions(words, props.wordCard.word));
-  const beforeHiddenWord = words.slice(0, hiddenWordPosition).join(" ");
-  const hiddenWord = words[hiddenWordPosition];
-  const afterHiddenWord = words.slice(hiddenWordPosition + 1).join(" ");
+  const words = toWords(props.extendedWordCard.sentence.text);
+  const beforeHiddenWord = words.slice(0, props.extendedWordCard.hiddenWordPosition).join(" ");
+  const hiddenWord = words[props.extendedWordCard.hiddenWordPosition];
+  const afterHiddenWord = words.slice(props.extendedWordCard.hiddenWordPosition + 1).join(" ");
 
   const inputBgColorClass =
     props.inputStatus === "correct"
