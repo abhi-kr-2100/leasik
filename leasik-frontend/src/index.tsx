@@ -14,6 +14,7 @@ import ListPlayController from "./components/ListPlayController";
 import LoginController from "./components/LoginController";
 
 import "./index.css";
+import LogoutController from "./components/LogoutController";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -29,6 +30,7 @@ root.render(
             <Route path="lists" element={<ListsController />} />
             <Route path="lists/:listId" element={<ListPlayController />} />
             <Route path="login" element={<LoginController />} />
+            <Route path="logout" element={<LogoutController />} />
           </Route>
         </Routes>
       </BrowserRouter>
