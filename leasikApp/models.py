@@ -50,12 +50,15 @@ class SentenceList(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def prepare_word_cards(self, owner: settings.AUTH_USER_MODEL):
+    def prepare_word_cards(
+        self, owner: settings.AUTH_USER_MODEL, in_bulk=False
+    ):
         """Re-create WordCards for all the words in the SentenceList.
 
         The created WordCards are owned by the given owner.
         NOTE: All existing WordCards for the given owner for this SentenceList
-        will be deleted. This is done to allow bulk creation of WordCards.
+        will be deleted if in_bulk is True. This is done to allow bulk creation
+        of WordCards. Creating WordCards in bulk is faster.
         """
 
         sentences = self.sentences.all()
@@ -69,14 +72,18 @@ class SentenceList(models.Model):
             ]
             words.update(s_words)
 
-        word_cards = [
-            WordCard(sentence_list=self, owner=owner, word=w) for w in words
-        ]
-
-        # delete at the very end to delay destructive action as much as
-        # possible
-        WordCard.objects.filter(sentence_list=self, owner=owner).delete()
-        WordCard.objects.bulk_create(word_cards)
+        if in_bulk:
+            word_cards = [
+                WordCard(sentence_list=self, owner=owner, word=w)
+                for w in words
+            ]
+            WordCard.objects.filter(sentence_list=self, owner=owner).delete()
+            WordCard.objects.bulk_create(word_cards)
+        else:
+            for w in words:
+                WordCard.objects.get_or_create(
+                    sentence_list=self, owner=owner, word=w
+                )
 
 
 class WordCard(models.Model):
