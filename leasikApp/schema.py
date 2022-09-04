@@ -1,6 +1,7 @@
+from datetime import date
 from string import digits, punctuation, whitespace
 
-from django.db.models import Q
+from django.db.models import Q, F
 
 import graphene
 from graphene import relay
@@ -101,17 +102,18 @@ class Query(graphene.ObjectType):
             sl.prepare_word_cards(info.context.user, in_bulk=True)
             user_profile.played_lists.add(sl)
 
-        return (
-            WordCard.objects.filter(sentence_list=sl, owner=info.context.user)
-            # TODO: Replace with a proper check on whether the card is up for
-            # review
-            .order_by(
-                "inter_repetition_interval",
-                "easiness_factor",
-                "-last_review_date",
-                "?",
+        # higher score means needs reviewing more
+        with_reviewable_score = WordCard.objects.annotate(
+            reviewable_score=(
+                date.today()
+                - F("last_review_date")
+                - F("inter_repetition_interval")
             )
         )
+
+        return with_reviewable_score.filter(
+            sentence_list=sl, owner=info.context.user
+        ).order_by("-reviewable_score", "?")
 
 
 class UpdateProficiency(relay.ClientIDMutation):
