@@ -106,9 +106,9 @@ class Query(graphene.ObjectType):
             # TODO: Replace with a proper check on whether the card is up for
             # review
             .order_by(
+                "inter_repetition_interval",
                 "easiness_factor",
                 "-last_review_date",
-                "inter_repetition_interval",
                 "?",
             )
         )
