@@ -98,7 +98,7 @@ class Query(graphene.ObjectType):
         sl_int_id = int(from_global_id(sentence_list_id)[1])
         sl = SentenceList.objects.get(id=sl_int_id)
         if not user_profile.played_lists.contains(sl):
-            sl.prepare_word_cards(info.context.user)
+            sl.prepare_word_cards(info.context.user, in_bulk=True)
             user_profile.played_lists.add(sl)
 
         return (
