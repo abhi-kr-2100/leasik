@@ -14,7 +14,7 @@ from .helpers import sm2
 class Tag(models.Model):
     """A tag made up of a short string."""
 
-    label = models.CharField(max_length=50)
+    label = models.CharField(max_length=50, unique=True)
 
     def __str__(self) -> str:
         return f"{self.label}"
