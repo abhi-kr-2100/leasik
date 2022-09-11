@@ -43,6 +43,7 @@ export const GET_WORD_CARDS = gql`
                 id
                 text
                 translation
+                textLanguage
               }
             }
           }

@@ -37,6 +37,17 @@ export default function QuestionScreenController(
         setInputStatus("incorrect");
         scoreAnswer({ variables: { cardId: props.extendedWordCard.id, score: 0 } });
       }
+
+      if (props.extendedWordCard.sentence.textLanguage !== "") {
+        let utterence = new SpeechSynthesisUtterance();
+        utterence.text = props.extendedWordCard.sentence.text;
+        utterence.lang = props.extendedWordCard.sentence.textLanguage;
+        utterence.rate = 0.9;
+
+        console.log(utterence);
+
+        speechSynthesis.speak(utterence);
+      }
     }
   };
 
