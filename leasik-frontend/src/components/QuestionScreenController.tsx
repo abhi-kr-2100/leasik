@@ -44,8 +44,6 @@ export default function QuestionScreenController(
         utterence.lang = props.extendedWordCard.sentence.textLanguage;
         utterence.rate = 0.9;
 
-        console.log(utterence);
-
         speechSynthesis.speak(utterence);
       }
     }
