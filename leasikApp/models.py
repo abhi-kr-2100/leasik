@@ -25,6 +25,10 @@ class Sentence(models.Model):
 
     text = models.TextField()
     translation = models.TextField()
+
+    # ISO 639-1 language code: https://en.wikipedia.org/wiki/ISO_639-1
+    text_language = models.CharField(max_length=2, blank=True)
+
     tags = models.ManyToManyField(Tag)
 
     class Meta:
