@@ -70,7 +70,10 @@ class SentenceList(models.Model):
         for s in sentences:
             # words stripped of punctuations
             s_words = [
-                w.strip(punctuation + whitespace + digits).lower()
+                # upper -> lower so that Turkish İ's and I's are considered the
+                # same a (bad) fix for
+                # https://github.com/abhi-kr-2100/leasik/issues/11
+                w.strip(punctuation + whitespace + digits).upper().lower()
                 for w in s.text.split()
                 if w.strip(punctuation + whitespace + digits) != ""
             ]
