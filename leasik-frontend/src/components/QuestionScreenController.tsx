@@ -28,6 +28,7 @@ export default function QuestionScreenController(
     if (inputStatus !== "unchecked") {
       setUserInput("");
       setInputStatus("unchecked");
+      speechSynthesis.cancel();
       props.onNext();
     } else {
       if (matches(userInput, props.extendedWordCard.word)) {
