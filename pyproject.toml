@@ -21,6 +21,7 @@ gunicorn = "^20.1.0"
 graphene-django = "^2.15.0"
 django-graphql-jwt = "^0.3.4"
 ipython = "^8.4.0"
+PyICU = "^2.9"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.960"
