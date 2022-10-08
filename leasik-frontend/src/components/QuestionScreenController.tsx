@@ -31,7 +31,11 @@ export default function QuestionScreenController(
       speechSynthesis.cancel();
       props.onNext();
     } else {
-      if (matches(userInput, props.extendedWordCard.word)) {
+      if (matches(
+        userInput,
+        props.extendedWordCard.word,
+        props.extendedWordCard.sentence.textLanguage
+      )) {
         setInputStatus("correct");
         scoreAnswer({ variables: { cardId: props.extendedWordCard.id, score: 5 } });
       } else {

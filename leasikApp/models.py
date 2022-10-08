@@ -2,6 +2,8 @@ from __future__ import annotations
 from datetime import date, timedelta
 from string import digits, punctuation, whitespace
 
+from icu import UnicodeString, Locale
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -69,16 +71,16 @@ class SentenceList(models.Model):
         sentences = self.sentences.all()
         words = set()
         for s in sentences:
-            # words stripped of punctuations
-            s_words = [
-                # upper -> lower so that Turkish İ's and I's are considered the
-                # same a (bad) fix for
-                # https://github.com/abhi-kr-2100/leasik/issues/11
-                w.strip(punctuation + whitespace + digits).upper().lower()
-                for w in s.text.split()
-                if w.strip(punctuation + whitespace + digits) != ""
-            ]
-            words.update(s_words)
+            locale = Locale(s.text_locale)
+
+            stripped_words = []
+            for w in s.text.split():
+                stripped_w = w.strip(punctuation + whitespace + digits)
+                if stripped_w:
+                    stripped_words.append(
+                        UnicodeString(stripped_w).toLower(locale)
+                    )
+            words.update(stripped_words)
 
         if in_bulk:
             word_cards = [

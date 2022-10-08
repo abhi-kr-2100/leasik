@@ -27,16 +27,16 @@ export function randRange(max: number): number {
   return Math.floor(Math.random() * max);
 }
 
-export function matches(s1: string, s2: string) {
-  // upper -> lower so that Turkish İ's and I's are considered the same
-  // a (bad) fix for https://github.com/abhi-kr-2100/leasik/issues/11
+export function matches(s1: string, s2: string, locale: string = "") {
+  if (locale === "") {
+    locale = "default";
+  }
+
   const s1N = trim(s1, punctuation + whitespace + digits)
-    .toUpperCase()
-    .toLowerCase();
+    .toLocaleLowerCase(locale);
 
   const s2N = trim(s2, punctuation + whitespace + digits)
-    .toUpperCase()
-    .toLowerCase();
+    .toLocaleLowerCase(locale);
 
   return s1N === s2N;
 }
