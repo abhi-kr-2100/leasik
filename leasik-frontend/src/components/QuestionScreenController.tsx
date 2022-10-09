@@ -34,7 +34,7 @@ export default function QuestionScreenController(
       if (matches(
         userInput,
         props.extendedWordCard.word,
-        props.extendedWordCard.sentence.textLanguage
+        props.extendedWordCard.sentence.textLocale
       )) {
         setInputStatus("correct");
         scoreAnswer({ variables: { cardId: props.extendedWordCard.id, score: 5 } });
