@@ -25,22 +25,22 @@ export default function QuestionScreenController(
   });
 
   const primaryAction = () => {
+    const correctAnswer = props.extendedWordCard.word;
+    const locale = props.extendedWordCard.sentence.textLocale;
+    const cardId = props.extendedWordCard.id;
+
     if (inputStatus !== "unchecked") {
       setUserInput("");
       setInputStatus("unchecked");
       speechSynthesis.cancel();
       props.onNext();
     } else {
-      if (matches(
-        userInput,
-        props.extendedWordCard.word,
-        props.extendedWordCard.sentence.textLocale
-      )) {
+      if (matches(userInput, correctAnswer, locale)) {
         setInputStatus("correct");
-        scoreAnswer({ variables: { cardId: props.extendedWordCard.id, score: 5 } });
+        scoreAnswer({ variables: { cardId: cardId, score: 5 } });
       } else {
         setInputStatus("incorrect");
-        scoreAnswer({ variables: { cardId: props.extendedWordCard.id, score: 0 } });
+        scoreAnswer({ variables: { cardId: cardId, score: 0 } });
       }
 
       if (props.extendedWordCard.sentence.textLanguage !== "") {
