@@ -1,13 +1,15 @@
 import { toWords } from "../utilities/helperFuncs";
-import { InputStatusType, ExtendedWordCard } from "../utilities/types";
+import { InputStatusType, ExtendedWordCard, InputPrelimStatusType } from "../utilities/types";
 
 export interface IQuestionInputProps {
   extendedWordCard: ExtendedWordCard;
 
   userInput: string;
-  setUserInput: (input: string) => void;
+  onUserInputChange: (newInput: string) => void;
 
   inputStatus: InputStatusType;
+  inputPrelimStatus: InputPrelimStatusType;
+
   primaryAction: () => void;
 }
 
@@ -24,14 +26,21 @@ export default function QuestionInput(props: IQuestionInputProps) {
         ? "bg-red-300"
         : "";
 
+  const inputTextColorClass =
+    props.inputStatus !== "unchecked"
+      ? ""
+      : props.inputPrelimStatus === "correct"
+        ? "text-green-300"
+        : "text-red-300"
+
   return (
     <div className="text-xl my-3">
       <p className="inline">{beforeHiddenWord}</p>
       <input
-        className={`inline mx-1 p-2 text-center ${inputBgColorClass}`}
+        className={`inline mx-1 p-2 text-center ${inputBgColorClass} ${inputTextColorClass}`}
         autoFocus
         value={props.inputStatus !== "unchecked" ? hiddenWord : props.userInput}
-        onChange={(e) => props.setUserInput(e.target.value)}
+        onChange={(e) => props.onUserInputChange(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             props.primaryAction();

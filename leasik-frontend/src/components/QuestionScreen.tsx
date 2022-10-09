@@ -1,12 +1,13 @@
-import { ExtendedWordCard } from "../utilities/types";
+import { ExtendedWordCard, InputPrelimStatusType, InputStatusType } from "../utilities/types";
 import Question from "./Question";
 
 export interface IQuestionScreenProps {
   extendedWordCard: ExtendedWordCard;
   primaryAction: () => void;
-  inputStatus: "unchecked" | "correct" | "incorrect";
+  inputStatus: InputStatusType;
+  inputPrelimStatus: InputPrelimStatusType;
   userInput: string;
-  setUserInput: (input: string) => void;
+  onUserInputChange: (newInput: string) => void;
 }
 
 export default function QuestionScreen(props: IQuestionScreenProps) {
@@ -16,8 +17,9 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
         <Question
           extendedWordCard={props.extendedWordCard}
           inputStatus={props.inputStatus}
+          inputPrelimStatus={props.inputPrelimStatus}
           userInput={props.userInput}
-          setUserInput={props.setUserInput}
+          onUserInputChange={props.onUserInputChange}
           primaryAction={props.primaryAction}
         />
       </div>
