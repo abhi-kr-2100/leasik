@@ -28,7 +28,7 @@ export default function ListPlayController() {
   const extendedWordCards = wordCards.map((wc) => ({
     ...wc,
     hiddenWordPosition: randomChoice(
-      findWordPositions(toWords(wc.sentence.text), wc.word)
+      findWordPositions(toWords(wc.sentence.text), wc.word, wc.sentence.textLocale)
     )
   } as ExtendedWordCard))
 

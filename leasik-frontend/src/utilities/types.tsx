@@ -17,6 +17,8 @@ type SentenceNode = {
     id: string;
     text: string;
     translation: string;
+    textLanguage: string;
+    textLocale: string;
 }
 
 type SentenceEdge = {

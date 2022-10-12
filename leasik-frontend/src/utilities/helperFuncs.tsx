@@ -8,10 +8,10 @@ export function toWords(text: string): string[] {
   return text.split(/\s+/);
 }
 
-export function findWordPositions(words: string[], word: string): number[] {
+export function findWordPositions(words: string[], word: string, locale: string = ""): number[] {
   let positions: number[] = [];
   for (let i = 0; i < words.length; ++i) {
-    if (matches(word, words[i])) {
+    if (matches(word, words[i], locale)) {
       positions.push(i);
     }
   }
