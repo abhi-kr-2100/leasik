@@ -1,3 +1,4 @@
+import re
 from datetime import date
 from string import digits, punctuation, whitespace
 
@@ -7,6 +8,8 @@ import graphene
 from graphene import relay
 from graphql_relay import from_global_id
 from graphene_django import DjangoObjectType
+
+from icu import Locale, UnicodeString
 
 from .models import Sentence, SentenceList, UserProfile, WordCard
 
@@ -68,9 +71,19 @@ class WordCardType(DjangoObjectType):
 
         final_regex = f"(({regex00})|({regex01})|({regex10})|({regex11}))"
 
-        return root.sentence_list.sentences.filter(
-            text__iregex=final_regex
-        ).order_by("?")
+        sentences = []
+        for s in root.sentence_list.sentences.all().order_by("?"):
+            locale = Locale(s.text_locale)
+
+            word = str(UnicodeString(root.word).toLower(locale))
+            text = str(UnicodeString(s.text).toLower(locale))
+
+            regex = final_regex.replace(root.word, word)
+
+            if re.search(regex, text) is not None:
+                sentences.append(s)
+
+        return sentences
 
 
 class WordCardConnection(relay.Connection):
