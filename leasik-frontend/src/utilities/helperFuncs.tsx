@@ -40,3 +40,8 @@ export function matches(s1: string, s2: string, locale: string = "") {
 
   return s1N === s2N;
 }
+
+export function startsWith(prefix: string, str: string, locale: string = "") {
+  const barePrefix = trim(prefix, punctuation + whitespace + digits);
+  return matches(barePrefix, str.slice(0, barePrefix.length), locale);
+}

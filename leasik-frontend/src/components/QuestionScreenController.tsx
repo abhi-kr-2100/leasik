@@ -5,7 +5,7 @@ import { ExtendedWordCard, InputPrelimStatusType } from "../utilities/types";
 import QuestionScreen from "./QuestionScreen";
 import { InputStatusType } from "../utilities/types";
 import { SCORE_ANSWER } from "../utilities/queries";
-import { matches } from "../utilities/helperFuncs";
+import { matches, startsWith } from "../utilities/helperFuncs";
 
 export interface IQuestionScreenControllerProps {
   extendedWordCard: ExtendedWordCard;
@@ -17,7 +17,7 @@ export default function QuestionScreenController(
 ) {
   const [userInput, setUserInput] = useState("");
   const [inputStatus, setInputStatus] = useState<InputStatusType>("unchecked");
-  const [inputPrelimStatus, setInputPrelimStatus] = useState<InputPrelimStatusType>("incorrect");
+  const [inputPrelimStatus, setInputPrelimStatus] = useState<InputPrelimStatusType>("partial");
 
   const [scoreAnswer] = useMutation(SCORE_ANSWER, {
     onError: (error) => {
@@ -68,8 +68,10 @@ export default function QuestionScreenController(
 
     setUserInput(newInput);
     setInputPrelimStatus(
-      matches(newInput, correctAnswer, locale) ? "correct" : "incorrect"
-    )
+      startsWith(newInput, correctAnswer, locale)
+        ? (matches(newInput, correctAnswer, locale) ? "correct" : "partial")
+        : "incorrect"
+    );
   }
 
   return (

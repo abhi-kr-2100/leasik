@@ -26,12 +26,20 @@ export default function QuestionInput(props: IQuestionInputProps) {
         ? "bg-red-300"
         : "";
 
-  const inputTextColorClass =
-    props.inputStatus !== "unchecked"
-      ? ""
-      : props.inputPrelimStatus === "correct"
-        ? "text-green-300"
-        : "text-red-300"
+  const inputTextColorClass = ((stat: InputStatusType, prelimStat: InputPrelimStatusType) => {
+    if (stat !== "unchecked") {
+      return "";
+    }
+
+    switch (prelimStat) {
+      case "correct":
+        return "text-green-300";
+      case "incorrect":
+        return "text-red-300";
+      case "partial":
+        return "text-gray-300";
+    }
+  })(props.inputStatus, props.inputPrelimStatus);
 
   return (
     <div className="text-xl my-3">
