@@ -25,8 +25,8 @@ class Tag(models.Model):
 class Sentence(models.Model):
     """A sentence with a text and translation."""
 
-    text = models.TextField()
-    translation = models.TextField()
+    text = models.CharField(max_length=255)
+    translation = models.CharField(max_length=255)
 
     # ISO 639-1 language code: https://en.wikipedia.org/wiki/ISO_639-1
     text_language = models.CharField(max_length=2, blank=True)
@@ -45,7 +45,7 @@ class SentenceList(models.Model):
     """A list of sentences owned by a user."""
 
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
+    description = models.TextField(max_length=2500, blank=True)
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
