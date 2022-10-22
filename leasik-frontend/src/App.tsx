@@ -11,14 +11,12 @@ export default function App() {
 
   return (
     <AuthContext.Provider value={{ token: authToken, setToken: setAuthToken }}>
-      <div className="h-screen">
-        <div className="h-[10vh]">
-          <NavBar />
-        </div>
-        <div className="h-[90vh]">
-          <Outlet />
-        </div>
+      <div className="h-[10vh]">
+        <NavBar />
       </div>
-    </AuthContext.Provider>
+      <div className="h-[90vh]">
+        <Outlet />
+      </div>
+    </AuthContext.Provider >
   );
 }

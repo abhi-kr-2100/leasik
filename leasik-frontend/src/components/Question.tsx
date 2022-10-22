@@ -21,7 +21,7 @@ export default function Question(props: IQuestionProps) {
         onUserInputChange={props.onUserInputChange}
         primaryAction={props.primaryAction}
       />
-      <p>{props.extendedWordCard.sentence.translation}</p>
+      <p className="my-2">{props.extendedWordCard.sentence.translation}</p>
     </div>
   );
 }

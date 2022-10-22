@@ -6,30 +6,20 @@ export default function NavBar() {
   const { token } = useContext(AuthContext);
 
   return (
-    <nav className="h-full px-5 bg-emerald-400 py-3">
-      <ul className="flex gap-x-1">
-        <li className="text-white hover:bg-emerald-600 rounded">
-          <Link to="/" className="block py-2 px-2 mx-1">
+    <nav className="h-full bg-emerald-400">
+      <ul className="h-full flex">
+        <li className="text-white hover:bg-emerald-600">
+          <Link to="/" className="h-full flex flex-col justify-center py-2 px-2">
             Home
           </Link>
         </li>
-        <li className="text-white hover:bg-emerald-600 rounded">
-          <Link to="/lists" className="block py-2 px-2 mx-1">
+        <li className="text-white hover:bg-emerald-600">
+          <Link to="/lists" className="h-full flex flex-col justify-center py-2 px-2">
             Lists
           </Link>
         </li>
-        <li className="text-white hover:bg-emerald-600 rounded">
-          <a
-            href="https://github.com/abhi-kr-2100/"
-            target="_blank"
-            rel="noreferrer"
-            className="block py-2 px-2 mx-1"
-          >
-            abhi-kr-2100
-          </a>
-        </li>
-        <li className="text-white hover:bg-emerald-600 rounded ml-auto">
-          <Link to={(token !== null) ? "/logout" : "/login"} className="block py-2 px-2 mx-1">
+        <li className="text-white hover:bg-emerald-600 ml-auto">
+          <Link to={(token !== null) ? "/logout" : "/login"} className="h-full flex flex-col justify-center py-2 px-2">
             {(token !== null) ? "Logout" : "Login"}
           </Link>
         </li>

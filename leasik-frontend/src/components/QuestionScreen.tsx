@@ -13,19 +13,17 @@ export interface IQuestionScreenProps {
 export default function QuestionScreen(props: IQuestionScreenProps) {
   return (
     <>
-      <div className="my-2">
-        <Question
-          extendedWordCard={props.extendedWordCard}
-          inputStatus={props.inputStatus}
-          inputPrelimStatus={props.inputPrelimStatus}
-          userInput={props.userInput}
-          onUserInputChange={props.onUserInputChange}
-          primaryAction={props.primaryAction}
-        />
-      </div>
+      <Question
+        extendedWordCard={props.extendedWordCard}
+        inputStatus={props.inputStatus}
+        inputPrelimStatus={props.inputPrelimStatus}
+        userInput={props.userInput}
+        onUserInputChange={props.onUserInputChange}
+        primaryAction={props.primaryAction}
+      />
       <button
         onClick={props.primaryAction}
-        className="my-2 mr-2 px-3 py-2 bg-lime-300 rounded"
+        className="my-2 px-3 py-2 bg-emerald-400 rounded-sm"
       >
         {props.inputStatus === "unchecked" ? "Check" : "Next"}
       </button>

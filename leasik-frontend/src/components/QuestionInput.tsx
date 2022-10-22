@@ -42,10 +42,10 @@ export default function QuestionInput(props: IQuestionInputProps) {
   })(props.inputStatus, props.inputPrelimStatus);
 
   return (
-    <div className="text-xl my-3">
-      <p className="inline">{beforeHiddenWord}</p>
+    <div className="text-xl">
+      <p>{beforeHiddenWord}</p>
       <input
-        className={`inline mx-1 p-2 text-center ${inputBgColorClass} ${inputTextColorClass}`}
+        className={`p-2 text-center ${inputBgColorClass} ${inputTextColorClass}`}
         autoFocus
         value={props.inputStatus !== "unchecked" ? hiddenWord : props.userInput}
         onChange={(e) => props.onUserInputChange(e.target.value)}
@@ -55,7 +55,7 @@ export default function QuestionInput(props: IQuestionInputProps) {
           }
         }}
       />
-      <p className="inline">{afterHiddenWord}</p>
+      <p>{afterHiddenWord}</p>
     </div>
   );
 }

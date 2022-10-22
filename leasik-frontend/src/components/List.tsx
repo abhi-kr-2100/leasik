@@ -9,18 +9,16 @@ export interface IListProps {
 
 export default function List(props: IListProps) {
   return (
-    <article className="my-2 mx-auto w-9/10 lg:w-1/2 md:w-3/4 border rounded">
-      <header className="p-1 bg-emerald-300 text-white text-xl">
-        <h2>{props.sentenceList.name}</h2>
-      </header>
+    <div className="border-b">
+      <h2 className="p-1 bg-emerald-300 text-white text-xl">
+        {props.sentenceList.name}
+      </h2>
       <div className="p-2">
         <ListDescription text={props.sentenceList.description} />
-        <Link to={`/lists/${props.sentenceList.id}`}>
-          <button className="mt-2 mr-2 px-1 py-1 bg-emerald-300 w-3/12 text-center text-white rounded">
-            Play
-          </button>
+        <Link className="inline-block rounded-sm px-3 py-1 bg-emerald-400 text-white" to={`/lists/${props.sentenceList.id}`}>
+          Play
         </Link>
       </div>
-    </article>
+    </div>
   );
 }
