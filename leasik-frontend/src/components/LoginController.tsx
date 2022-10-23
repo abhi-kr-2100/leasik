@@ -25,11 +25,24 @@ export default function LoginController() {
     },
   });
 
+  const [loginAsGuest] = useMutation(GET_JWT_TOKEN, {
+    variables: { username: "guest", password: "guest" },
+    onCompleted: (data) => {
+      localStorage.setItem("token", data.tokenAuth.token);
+      setToken(localStorage.getItem("token"));
+      navigate("/");
+    },
+    onError: (error) => {
+      alert(`Guest login failed: ${error.message}`);
+    },
+  });
+
   return (
     <Login
       setUsername={setUsername}
       setPassword={setPassword}
       onLogin={login}
+      onGuestLogin={loginAsGuest}
     />
   );
 }

@@ -2,6 +2,7 @@ export interface ILoginProps {
   setUsername: (u: string) => void;
   setPassword: (p: string) => void;
   onLogin: () => void;
+  onGuestLogin: () => void;
 }
 
 export default function Login(props: ILoginProps) {
@@ -18,9 +19,14 @@ export default function Login(props: ILoginProps) {
         className="p-3 rounded-sm"
         onChange={(e) => props.setPassword(e.target.value)}
       />
-      <button className="bg-yellow-400 p-3 rounded-sm" onClick={props.onLogin}>
-        Login
-      </button>
+      <div className="flex gap-x-2">
+        <button className="bg-yellow-400 p-3 rounded-sm" onClick={props.onLogin}>
+          Login
+        </button>
+        <button className="bg-yellow-200 p-3 rounded-sm" onClick={props.onGuestLogin}>
+          Guest Login
+        </button>
+      </div>
     </div>
   );
 }
