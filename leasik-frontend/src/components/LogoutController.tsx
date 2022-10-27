@@ -10,7 +10,7 @@ export default function LogoutController() {
         setToken(null);
         localStorage.removeItem("token");
         navigate("/");
-    }, []);
+    }, [navigate, setToken]);
 
     return <></>
 }
