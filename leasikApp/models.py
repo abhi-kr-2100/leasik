@@ -133,8 +133,7 @@ class WordCard(models.Model):
     last_review_date = models.DateField(auto_now_add=True)
 
     class Meta:
-        # unique_together = ("owner", "sentence_list", "word")
-        unique_together = ("owner", "sentence_list")
+        unique_together = ("owner", "sentence_list", "word")
 
     def __str__(self) -> str:
         return f"<{self.word}> of {self.sentence_list.name}."
