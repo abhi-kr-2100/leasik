@@ -49,6 +49,8 @@ class WordCardType(DjangoObjectType):
     def resolve_sentences(root, info, **kwargs):
         """Return only those sentences which contain the whole root.word."""
         
+        # Randomize the order of search_space so that the user doesn't see
+        # the same sentences mapped to a word
         search_space: Iterable[Sentence] = \
             root.sentence_list.sentences.all().order_by("?")
         sentences = [s for s in search_space if s.contains_word(root.word)]
