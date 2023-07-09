@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Iterable
 from datetime import date, timedelta
 from string import digits, punctuation, whitespace
 
@@ -43,6 +44,16 @@ class Sentence(models.Model):
     class Meta:
         unique_together = ("text", "translation")
 
+    def get_words(self):
+        """Return the set of all words in the text of this sentence."""
+
+        words = self.text.split()
+        stripped_words = [word.strip(punctuation + whitespace + digits) for word in words]
+
+        locale = Locale(self.text_lo)
+        localized = [UnicodeString(word).toLower(locale) for word in stripped_words]
+        return set(localized)
+    
     def __str__(self) -> str:
         return f"{self.text} ({self.translation})"
 
@@ -62,6 +73,34 @@ class SentenceList(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+    def get_all_words(self):
+        """Return the set of all words from the sentences of this list."""
+
+        sentences: Iterable[Sentence] = self.sentences.all()
+        words = set()
+        for s in sentences:
+            words.update(s.get_words())
+        return words
+    
+    def _bulk_prepare_word_cards(self, owner: settings.AUTH_USER_MODEL):
+        """Delete existing WordCards for this list and owner, and recreate in bulk."""
+
+        words = self.get_all_words()
+        word_cards = [
+            WordCard(sentence_list=self, owner=owner, word=w)
+            for w in words
+        ]
+        WordCard.objects.filter(sentence_list=self, owner=owner).delete()
+        WordCard.objects.bulk_create(word_cards)
+
+    def _create_missing_word_cards(self, owner: settings.AUTH_USER_MODEL):
+        """Create WordCards for words that don't have WordCards."""
+
+        words = self.get_all_words()
+        for w in words:
+            WordCard.objects.get_or_create(
+                sentence_list=self, owner=owner, word=w)
 
     def prepare_word_cards(
         self, owner: settings.AUTH_USER_MODEL, in_bulk=False
@@ -74,33 +113,10 @@ class SentenceList(models.Model):
         of WordCards. Creating WordCards in bulk is faster.
         """
 
-        sentences = self.sentences.all()
-        words = set()
-        for s in sentences:
-            locale = Locale(s.text_locale)
-
-            stripped_words = []
-            for w in s.text.split():
-                stripped_w = w.strip(punctuation + whitespace + digits)
-                if stripped_w:
-                    stripped_words.append(
-                        UnicodeString(stripped_w).toLower(locale)
-                    )
-            words.update(stripped_words)
-
         if in_bulk:
-            word_cards = [
-                WordCard(sentence_list=self, owner=owner, word=w)
-                for w in words
-            ]
-            WordCard.objects.filter(sentence_list=self, owner=owner).delete()
-            WordCard.objects.bulk_create(word_cards)
+            self._bulk_prepare_word_cards(owner)
         else:
-            for w in words:
-                WordCard.objects.get_or_create(
-                    sentence_list=self, owner=owner, word=w
-                )
-
+            self._create_missing_word_cards(owner)
 
 class WordCard(models.Model):
     """A WordCard relates a SentenceList and a word. It is owned by a user.
