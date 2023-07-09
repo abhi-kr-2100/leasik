@@ -129,6 +129,12 @@ class UpdateProficiency(relay.ClientIDMutation):
         word_card_id = graphene.ID()
         score = graphene.Int(required=True)
 
+    def _get_word_card_from_gql_id(id: str) -> WordCard:
+        """Return the WordCard given it's GraphQL global ID."""
+
+        normal_id = int(from_global_id(id)[1])
+        return WordCard.objects.get(id=normal_id)
+
     @classmethod
     def mutate_and_get_payload(cls, root, info, word_card_id, score, **kwargs):
         if not info.context.user.is_authenticated:
@@ -137,14 +143,11 @@ class UpdateProficiency(relay.ClientIDMutation):
         if score < 0 or score > 5:
             raise Exception("Score must be between 0 and 5")
 
-        int_id = int(from_global_id(word_card_id)[1])
-        word_card = WordCard.objects.get(id=int_id)
-
+        word_card = UpdateProficiency._get_word_card_from_gql_id(word_card_id)
         if word_card.owner != info.context.user:
             raise Exception("You are not the owner of this card")
 
         word_card.update_proficiency(score)
-
         return UpdateProficiency()
 
 
