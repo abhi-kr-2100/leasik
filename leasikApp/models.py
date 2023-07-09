@@ -188,9 +188,16 @@ class WordCard(models.Model):
 
 
 class UserProfile(models.Model):
+    """UserProfile which stores extra information about a User."""
+
     owner = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
+
+    # When a user plays a list for the very first time, word cards are prepared
+    # for all words in the list. This is an expensive operation, and is only
+    # performed once for every (user, list) tuple. This field is used to
+    # determine if user is playing the list for the very first time.
     played_lists = models.ManyToManyField(SentenceList)
 
     @receiver(post_save, sender=settings.AUTH_USER_MODEL)
