@@ -23,7 +23,11 @@ class Tag(models.Model):
 
 
 class Sentence(models.Model):
-    """A sentence with a text and translation."""
+    """A sentence with a text and translation.
+    
+    Text is in the language the user is learning, and translation is in the
+    language that the user already understands.
+    """
 
     text = models.CharField(max_length=255)
     translation = models.CharField(max_length=255)
