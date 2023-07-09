@@ -30,6 +30,8 @@ class Sentence(models.Model):
 
     # ISO 639-1 language code: https://en.wikipedia.org/wiki/ISO_639-1
     text_language = models.CharField(max_length=2, blank=True)
+    # Similar to ISO 639, but may contain additional information, for example,
+    # regional variant: en-US, en-GB, en-IN, etc.
     text_locale = models.CharField(max_length=50, blank=True)
 
     tags = models.ManyToManyField(Tag)
