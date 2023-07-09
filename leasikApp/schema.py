@@ -87,7 +87,7 @@ class Query(graphene.ObjectType):
             return
         sentence_list.prepare_word_cards(owner=True, in_bulk=True)
 
-    def _get_sentence_list_from_gql_id(id) -> int:
+    def _get_sentence_list_from_gql_id(id) -> SentenceList:
         """Return the SentenceList given GraphQL's global ID."""
 
         normal_id = int(from_global_id(id)[1])
