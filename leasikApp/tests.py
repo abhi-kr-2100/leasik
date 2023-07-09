@@ -226,3 +226,61 @@ class SentenceListModelTests(TestCase):
                 )
             ),
         )
+
+
+class SentenceModelTests(TestCase):
+    def setUp(self) -> None:
+        Sentence.objects.create(
+            text="I'm İstanbul'abc am k!ng: 'Fish go to.goto' inkspot.1 relax",
+            translation="",
+        )
+
+    def test_contains_word_with_non_existent_word(self):
+        """Should return False if word is not found inside text."""
+
+        s = Sentence.objects.get()
+        self.assertFalse(s.contains_word("amsterdam"))
+
+    def test_contains_word_with_non_word_substring(self):
+        """Should return False if found string is not word by itself.
+        
+        Example: m is not a whole word in the text, "I'm"."""
+
+        s = Sentence.objects.get()
+        self.assertFalse(s.contains_word("m"))
+        self.assertFalse(s.contains_word("abc"))
+        self.assertFalse(s.contains_word("to"))
+
+    def test_contains_word_with_isolated_word(self):
+        """Should return True for words surrounded by space on both sides."""
+
+        s = Sentence.objects.get()
+        self.assertTrue(s.contains_word("am"))
+        self.assertTrue(s.contains_word("go"))
+
+    def test_contains_word_with_words_at_start_or_end_of_text(self):
+        """Should return True if word is found at start or end of sentences."""
+
+        s = Sentence.objects.get()
+        self.assertTrue(s.contains_word("I'm"))
+        self.assertTrue(s.contains_word("relax"))
+
+    def test_contains_word_with_words_mixed_with_punctuation_and_digits(self):
+        """Should return True for words surrounded by punctuation and digits.
+        
+        Should return False if punctuation or digit occurs in the middle
+        of the word.
+        """
+
+        s = Sentence.objects.get()
+        
+        self.assertTrue(s.contains_word("fish"))
+        self.assertTrue(s.contains_word("inkspot"))
+        
+        self.assertFalse(s.contains_word("m"))
+        self.assertFalse(s.contains_word("abc"))
+        self.assertFalse(s.contains_word("i"))
+        self.assertFalse(s.contains_word("İstanbul"))
+        self.assertFalse(s.contains_word("m"))
+        self.assertFalse(s.contains_word("to"))
+        self.assertFalse(s.contains_word("goto"))

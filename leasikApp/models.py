@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Iterable
 from datetime import date, timedelta
 from string import digits, punctuation, whitespace
+import re
 
 from icu import UnicodeString, Locale
 
@@ -50,9 +51,58 @@ class Sentence(models.Model):
         words = self.text.split()
         stripped_words = [word.strip(punctuation + whitespace + digits) for word in words]
 
-        locale = Locale(self.text_lo)
+        locale = Locale(self.text_locale)
         localized = [UnicodeString(word).toLower(locale) for word in stripped_words]
         return set(localized)
+    
+    def contains_word(self, word: str) -> bool:
+        """Return True if text contains the given word."""
+
+        stripped_word = word.strip(punctuation + whitespace + digits)
+        stripped_text = self.text.strip(punctuation + whitespace + digits)
+
+        locale = Locale(self.text_locale)
+
+        normalized_word = str(UnicodeString(stripped_word).toLower(locale))
+        normalized_text = str(UnicodeString(stripped_text).toLower(locale))
+        
+        regex = Sentence._get_match_regex(normalized_word)
+        return re.search(regex, normalized_text) is not None
+
+    def _get_match_regex(w: str) -> str:
+        """Return a regex so that w is found in text iff it is valid word.
+        
+        When word is "abc", following would be some examples of texts
+        containing the word: "A abc B.", "A 'abc' B", "abc", "A abc!", etc.
+        These texts don't contain "abc": "I'm abcd.", "He is a'bc.", etc.
+        
+        A few heuristics ({w} is the word we're looking for):
+        1. If the text has the pattern "{w}[punctuation|digit]", it should
+           match only if "{w}[punctuation|digit]" is the end of the text, or if
+           "{w}[punctuation|digit]" is followed by whitespace. This disallows
+           "abc..d"
+        2. If the text has the pattern "[punctuation|digit]{w}", it should
+           match only if "[punctuation|digit]{w}" is at the very start of the
+           sentence, or if it follows a whitespace. This disqualifies
+           "İstanbul'abc"
+        """
+
+        # doesn't start or end with punctuations or digits
+        regex00 = f"(^|[{whitespace}]+){w}($|[{whitespace}]+)"
+
+        # doesn't start with a punctuation or digit but ends with one
+        regex01 = f"(^|[{whitespace}]+){w}[{punctuation}{digits}]+($|[{whitespace}]+)"
+
+        # starts with a punctuation or digit but doesn't end with one
+        regex10 = f"(^|[{whitespace}]+)[{punctuation}{digits}]+{w}($|[{whitespace}]+)"
+
+        # starts with a punctuation or digit and also ends with one
+        regex11 = f"(^|[{whitespace}]+)[{punctuation}{digits}]+{w}[{punctuation}{digits}]+($|[{whitespace}]+)"
+
+        final_regex = f"(({regex00})|({regex01})|({regex10})|({regex11}))"
+
+        return final_regex
+
     
     def __str__(self) -> str:
         return f"{self.text} ({self.translation})"
