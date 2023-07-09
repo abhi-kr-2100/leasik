@@ -19,11 +19,13 @@ export default function ListPlayController() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`Error loading cards: ${error.message}`}</div>;
 
-  const wordCards = (data.wordCards.edges as WordCardEdge[]).map(edge => ({
-    id: edge.node.id,
-    word: edge.node.word,
-    sentence: edge.node.sentences.edges[0].node
-  }))
+  const wordCards = (data.wordCards.edges as WordCardEdge[])
+    .filter((edge) => edge.node.sentences.edges.length !== 0)
+    .map(edge => ({
+      id: edge.node.id,
+      word: edge.node.word,
+      sentence: edge.node.sentences.edges[0].node
+    }));
 
   const extendedWordCards = wordCards.map((wc) => ({
     ...wc,
