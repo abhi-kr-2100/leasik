@@ -102,16 +102,9 @@ class Query(graphene.ObjectType):
         The word cards are ordered based on the need to review them.
         """
 
-        with_reviewableness_score = WordCard.objects.annotate(
-            reviewableness_score=(
-                F("easiness_factor") * 10 -
-                (date.today().day - F("last_review_date__day"))
-            )
-        )
-
-        return with_reviewableness_score.filter(
+        return WordCard.objects.filter(
             sentence_list=sentence_list, owner=owner
-        ).order_by("reviewableness_score")
+        ).order_by("easiness_factor", "?")
 
     def resolve_word_cards(root, info, sentence_list_id, **kwargs):
         if info.context.user.is_anonymous:
