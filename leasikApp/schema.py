@@ -104,15 +104,14 @@ class Query(graphene.ObjectType):
 
         with_reviewableness_score = WordCard.objects.annotate(
             reviewableness_score=(
-                date.today()
-                - F("last_review_date")
-                - F("inter_repetition_interval")
+                F("easiness_factor") * 10 -
+                (date.today().day - F("last_review_date__day"))
             )
         )
 
         return with_reviewableness_score.filter(
             sentence_list=sentence_list, owner=owner
-        ).order_by("-reviewableness_score")
+        ).order_by("reviewableness_score")
 
     def resolve_word_cards(root, info, sentence_list_id, **kwargs):
         if info.context.user.is_anonymous:

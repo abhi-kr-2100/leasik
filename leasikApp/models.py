@@ -191,7 +191,12 @@ class WordCard(models.Model):
     repetition_number = models.IntegerField(
         default=0, validators=[MinValueValidator(0)]
     )
-    easiness_factor = models.FloatField(default=2.5)
+
+    # According the the SM-2 algorithm mentioned on Wikipedia, the default
+    # value should be 2.5. However, we now schedule cards based on the
+    # easiness_factor. Hence, the easiness_factor of newer cards should be low
+    # so that they are scheduled before older cards.
+    easiness_factor = models.FloatField(default=1.3)
 
     # The default value for inter-repetition interval is not mentioned on the
     # Wikipedia page for SM-2. A default of 0 has been chosen so that users can
