@@ -51,7 +51,8 @@ class Sentence(models.Model):
     def get_word_scores(self, owner: settings.AUTH_USER_MODEL):
         words = self.get_word_models()
         word_scores = [
-            WordScore.objects.get(word=w, owner=owner) for w in words
+            WordScore.objects.get_or_create(word=w, owner=owner)[0]
+            for w in words
         ]
 
         return word_scores
