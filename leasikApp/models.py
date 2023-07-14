@@ -7,12 +7,12 @@ import re
 from icu import UnicodeString, Locale
 
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator
 from django.conf import settings
 
-from .helpers import sm2
+from .helpers import sm2, is_being_created
 
 
 class Tag(models.Model):
@@ -26,7 +26,7 @@ class Tag(models.Model):
 
 class Sentence(models.Model):
     """A sentence with a text and translation.
-    
+
     Text is in the language the user is learning, and translation is in the
     language that the user already understands.
     """
@@ -49,12 +49,16 @@ class Sentence(models.Model):
         """Return the set of all words in the text of this sentence."""
 
         words = self.text.split()
-        stripped_words = [word.strip(punctuation + whitespace + digits) for word in words]
+        stripped_words = [
+            word.strip(punctuation + whitespace + digits) for word in words
+        ]
 
         locale = Locale(self.text_locale)
-        localized = [UnicodeString(word).toLower(locale) for word in stripped_words]
-        return set(localized)
-    
+        localized = [
+            UnicodeString(word).toLower(locale) for word in stripped_words
+        ]
+        return set(str(s) for s in localized)
+
     def contains_word(self, word: str) -> bool:
         """Return True if text contains the given word."""
 
@@ -65,17 +69,17 @@ class Sentence(models.Model):
 
         normalized_word = str(UnicodeString(stripped_word).toLower(locale))
         normalized_text = str(UnicodeString(stripped_text).toLower(locale))
-        
+
         regex = Sentence._get_match_regex(normalized_word)
         return re.search(regex, normalized_text) is not None
 
     def _get_match_regex(w: str) -> str:
         """Return a regex so that w is found in text iff it is valid word.
-        
+
         When word is "abc", following would be some examples of texts
         containing the word: "A abc B.", "A 'abc' B", "abc", "A abc!", etc.
         These texts don't contain "abc": "I'm abcd.", "He is a'bc.", etc.
-        
+
         A few heuristics ({w} is the word we're looking for):
         1. If the text has the pattern "{w}[punctuation|digit]", it should
            match only if "{w}[punctuation|digit]" is the end of the text, or if
@@ -103,9 +107,22 @@ class Sentence(models.Model):
 
         return final_regex
 
-    
     def __str__(self) -> str:
         return f"{self.text} ({self.translation})"
+
+
+@receiver(post_save, sender=Sentence)
+def create_word_models(sender, instance: Sentence, *args, **kwargs):
+    words = instance.get_words()
+    for word in words:
+        Word.objects.create(word=word, sentence=instance)
+
+
+class Word(models.Model):
+    word = models.CharField(max_length=50)
+
+    # the sentence to whose text this word belongs
+    sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
 
 
 class SentenceList(models.Model):
@@ -123,7 +140,7 @@ class SentenceList(models.Model):
 
     def __str__(self) -> str:
         return self.name
-    
+
     def get_all_words(self):
         """Return the set of all words from the sentences of this list."""
 
@@ -132,14 +149,13 @@ class SentenceList(models.Model):
         for s in sentences:
             words.update(s.get_words())
         return words
-    
+
     def _bulk_prepare_word_cards(self, owner: settings.AUTH_USER_MODEL):
         """Delete existing WordCards for this list and owner, and recreate in bulk."""
 
         words = self.get_all_words()
         word_cards = [
-            WordCard(sentence_list=self, owner=owner, word=w)
-            for w in words
+            WordCard(sentence_list=self, owner=owner, word=w) for w in words
         ]
         WordCard.objects.filter(sentence_list=self, owner=owner).delete()
         WordCard.objects.bulk_create(word_cards)
@@ -150,7 +166,8 @@ class SentenceList(models.Model):
         words = self.get_all_words()
         for w in words:
             WordCard.objects.get_or_create(
-                sentence_list=self, owner=owner, word=w)
+                sentence_list=self, owner=owner, word=w
+            )
 
     def prepare_word_cards(
         self, owner: settings.AUTH_USER_MODEL, in_bulk=False
@@ -167,6 +184,7 @@ class SentenceList(models.Model):
             self._bulk_prepare_word_cards(owner)
         else:
             self._create_missing_word_cards(owner)
+
 
 class WordCard(models.Model):
     """A WordCard relates a SentenceList and a word. It is owned by a user.

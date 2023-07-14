@@ -4,6 +4,12 @@
 from typing import Tuple
 from datetime import timedelta
 
+from django.db.models import Model
+
+
+def is_being_created(model: Model):
+    return model.pk is None
+
 
 def sm2(
     q: int, n: int, ef: float, i: timedelta

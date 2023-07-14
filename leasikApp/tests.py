@@ -3,7 +3,7 @@ from datetime import timedelta, date
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from .models import Sentence, SentenceList, WordCard
+from .models import Sentence, SentenceList, WordCard, Word
 
 
 class WordCardModelTests(TestCase):
@@ -235,6 +235,16 @@ class SentenceModelTests(TestCase):
             translation="",
         )
 
+    def test_word_models_are_created(self):
+        s = Sentence.objects.get()
+        words = s.get_words()
+        word_models = Word.objects.all()
+
+        self.assertEqual(len(words), word_models.count())
+
+        for wm in word_models:
+            self.assertTrue(wm.word in words)
+
     def test_contains_word_with_non_existent_word(self):
         """Should return False if word is not found inside text."""
 
@@ -243,7 +253,7 @@ class SentenceModelTests(TestCase):
 
     def test_contains_word_with_non_word_substring(self):
         """Should return False if found string is not word by itself.
-        
+
         Example: m is not a whole word in the text, "I'm"."""
 
         s = Sentence.objects.get()
@@ -267,16 +277,16 @@ class SentenceModelTests(TestCase):
 
     def test_contains_word_with_words_mixed_with_punctuation_and_digits(self):
         """Should return True for words surrounded by punctuation and digits.
-        
+
         Should return False if punctuation or digit occurs in the middle
         of the word.
         """
 
         s = Sentence.objects.get()
-        
+
         self.assertTrue(s.contains_word("fish"))
         self.assertTrue(s.contains_word("inkspot"))
-        
+
         self.assertFalse(s.contains_word("m"))
         self.assertFalse(s.contains_word("abc"))
         self.assertFalse(s.contains_word("i"))
