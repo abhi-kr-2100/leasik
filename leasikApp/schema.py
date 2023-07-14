@@ -6,6 +6,17 @@ from graphene_django import DjangoObjectType
 from .models import Sentence, Book, Word, WordScore
 
 
+class WordType(DjangoObjectType):
+    class Meta:
+        model = Word
+        interfaces = (relay.Node,)
+
+
+class WordConnection(relay.Connection):
+    class Meta:
+        node = WordType
+
+
 class SentenceType(DjangoObjectType):
     class Meta:
         model = Sentence
