@@ -107,6 +107,9 @@ class Book(models.Model):
             reverse=True,
         )
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class Word(models.Model):
     word = models.CharField(max_length=50)
@@ -179,3 +182,6 @@ class WordScore(models.Model):
         self.last_review_date = date.today()
 
         self.save()
+
+    def __str__(self) -> str:
+        return f"{self.word} of {self.owner.username}"
