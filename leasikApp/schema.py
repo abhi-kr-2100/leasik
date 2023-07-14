@@ -11,6 +11,17 @@ class WordType(DjangoObjectType):
         model = Word
         interfaces = (relay.Node,)
 
+    proficiency_score = graphene.Float()
+
+    def resolve_proficiency_score(root: Word, info, **kwargs):
+        if not info.context.user.is_authenticated:
+            raise PermissionError("Not authenticated.")
+
+        word_score = WordScore.objects.get_or_create(
+            word=root, owner=info.context.user
+        )[0]
+        return word_score.get_proficiency_score()
+
 
 class WordConnection(relay.Connection):
     class Meta:
