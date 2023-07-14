@@ -1,8 +1,8 @@
-from typing import Tuple, TYPE_CHECKING, Iterable
+from typing import Tuple, Iterable
 from datetime import timedelta
 
 
-def weighted_avg(weights_with_terms: Iterable[Tuple[float, float]]):
+def weighted_avg(weights_with_terms: Iterable[Tuple[float, float]]) -> float:
     total_weight = sum(weight for (weight, _) in weights_with_terms)
     numerator = sum(weight * term for (weight, term) in weights_with_terms)
 
