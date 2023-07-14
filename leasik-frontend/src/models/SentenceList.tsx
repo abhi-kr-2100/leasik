@@ -1,7 +1,7 @@
-type SentenceList = {
+type Book = {
   id: string;
   name: string;
   description: string;
 };
 
-export default SentenceList;
+export default Book;

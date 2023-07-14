@@ -16,9 +16,9 @@ export const VERIFY_TOKEN = gql`
   }
 `;
 
-export const GET_SENTENCE_LISTS = gql`
-  query GetSentenceLists {
-    sentenceLists {
+export const GET_BOOKS = gql`
+  query GetBooks {
+    books {
       edges {
         node {
           id

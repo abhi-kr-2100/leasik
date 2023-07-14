@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { IListProps } from "./List";
+import { IListProps } from "./Book";
 
 export interface IListsProps {
   lists: ReactElement<IListProps>[];
@@ -13,7 +13,7 @@ export default function Lists(props: IListsProps) {
       ) : (
         <ul>
           {props.lists.map((list) => (
-            <li key={list.props.sentenceList.id}>{list}</li>
+            <li key={list.props.book.id}>{list}</li>
           ))}
         </ul>
       )}

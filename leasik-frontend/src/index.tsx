@@ -9,8 +9,8 @@ import graphQLClient from "./utilities/graphQLClient";
 
 import App from "./App";
 import Home from "./components/Home";
-import ListsController from "./components/ListsController";
-import ListPlayController from "./components/ListPlayController";
+import ListsController from "./components/BooksController";
+import ListPlayController from "./components/BookPlayController";
 import LoginController from "./components/LoginController";
 
 import "./index.css";
