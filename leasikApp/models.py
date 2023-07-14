@@ -209,6 +209,26 @@ class WordScore(models.Model):
             - self.inter_repetition_interval
         ).days
 
+    def update_word_score(self, score: int):
+        """Update the SM-2 parameters based on the given score."""
+
+        if score not in range(0, 5 + 1):
+            raise ValueError("Score must be an integer from 0 to 5.")
+
+        n, ef, i = sm2(
+            score,
+            self.repetition_number,
+            self.easiness_factor,
+            self.inter_repetition_interval,
+        )
+
+        self.repetition_number = n
+        self.easiness_factor = ef
+        self.inter_repetition_interval = i
+        self.last_review_date = date.today()
+
+        self.save()
+
 
 class SentenceList(models.Model):
     """A list of sentences owned by a user."""
