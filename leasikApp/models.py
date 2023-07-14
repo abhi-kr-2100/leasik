@@ -7,12 +7,12 @@ import re
 from icu import UnicodeString, Locale
 
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator
 from django.conf import settings
 
-from .helpers import sm2, is_being_created
+from .helpers import get_overall_proficiency_score, sm2
 
 
 class Tag(models.Model):
@@ -44,6 +44,25 @@ class Sentence(models.Model):
 
     class Meta:
         unique_together = ("text", "translation")
+
+    def get_word_models(self):
+        return Word.objects.filter(sentence=self)
+
+    def get_word_scores(self, owner: settings.AUTH_USER_MODEL):
+        words = self.get_word_models()
+        word_scores = [
+            WordScore.objects.get(word=w, owner=owner) for w in words
+        ]
+
+        return word_scores
+
+    def get_proficiency_score(self, owner: settings.AUTH_USER_MODEL):
+        """The proficiency of the owner is in using the words in this
+        sentence's text in the context of this sentence.
+        """
+
+        word_scores = self.get_word_scores(owner)
+        return get_overall_proficiency_score(word_scores)
 
     def get_words(self):
         """Return the set of all words in the text of this sentence."""
@@ -129,6 +148,46 @@ class Word(models.Model):
 
     def __str__(self):
         return f"<{self.word}> of {self.sentence}"
+
+
+class WordScore(models.Model):
+    """The proficiency score of a user on a particular word.
+
+    The proficiency score is calculated using the SM-2 algorithm.
+    See: https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
+    """
+
+    word = models.ForeignKey(Word, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
+
+    class Meta:
+        unique_together = ("word", "owner")
+
+    repetition_number = models.IntegerField(
+        default=0, validators=[MinValueValidator(0)]
+    )
+
+    easiness_factor = models.FloatField(default=2.5)
+
+    # The default value for inter-repetition interval is not mentioned on the
+    # Wikipedia page for SM-2. A default of 0 has been chosen so that users can
+    # review newly added cards. It is always in whole days.
+    inter_repetition_interval = models.DurationField(
+        default=timedelta(days=0),
+        verbose_name="inter-repetition interval",
+        validators=[MinValueValidator(timedelta(days=0))],
+    )
+
+    last_review_date = models.DateField(auto_now_add=True)
+
+    def get_proficiency_score(self):
+        return (
+            date.today()
+            - self.last_review_date
+            - self.inter_repetition_interval
+        ).days
 
 
 class SentenceList(models.Model):

@@ -1,14 +1,28 @@
-"""Helper or utility functions for the leasikApp app."""
-
-
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING, Iterable
 from datetime import timedelta
 
-from django.db.models import Model
+
+def weighted_avg(weights_with_terms: Iterable[Tuple[float, float]]):
+    total_weight = sum(weight for (weight, _) in weights_with_terms)
+    numerator = sum(weight * term for (weight, term) in weights_with_terms)
+
+    return numerator / total_weight
 
 
-def is_being_created(model: Model):
-    return model.pk is None
+def get_overall_proficiency_score(word_scores: Iterable):
+    """Return the weighted average proficiency score of the given WordScores.
+
+    The average is weighted by the inverse of the easiness factor (difficulty
+    factor). The higher the difficulty factor, the more it contributes to the
+    average.
+    """
+
+    weights_with_terms = [
+        (1 / ws.easiness_factor, ws.get_proficiency_score())
+        for ws in word_scores
+    ]
+
+    return weighted_avg(weights_with_terms)
 
 
 def sm2(
