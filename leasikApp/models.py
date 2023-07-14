@@ -124,6 +124,9 @@ class Word(models.Model):
     # the sentence to whose text this word belongs
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"<{self.word}> of {self.sentence}"
+
 
 class SentenceList(models.Model):
     """A list of sentences owned by a user."""
