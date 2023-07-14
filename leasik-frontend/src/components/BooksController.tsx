@@ -4,23 +4,23 @@ import { GET_BOOKS } from "../utilities/queries";
 
 import Book from "../models/Book";
 
-import Lists from "./Books";
-import List from "./Book";
+import Books from "./Books";
+import BookComponent from "./Book";
 
-export default function ListsController() {
+export default function BooksController() {
   const { loading, error, data } = useQuery(GET_BOOKS);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>{`couldn't retrive lists: ${error.message}`}</div>;
+  if (error) return <div>{`couldn't retrive books: ${error.message}`}</div>;
 
-  const listEdges = data.books.edges as { node: Book }[];
-  const books = listEdges.map((edge) => ({
+  const bookEdges = data.books.edges as { node: Book }[];
+  const books = bookEdges.map((edge) => ({
     id: edge.node.id,
     name: edge.node.name,
     description: edge.node.description,
   }));
 
-  const lists = books.map((sl) => <List book={sl} />);
+  const bookComponents = books.map((sl) => <BookComponent book={sl} />);
 
-  return <Lists lists={lists} />;
+  return <Books books={bookComponents} />;
 }

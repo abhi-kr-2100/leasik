@@ -1,19 +1,19 @@
 import { ReactElement } from "react";
-import { IListProps } from "./Book";
+import { IBookProps } from "./Book";
 
-export interface IListsProps {
-  lists: ReactElement<IListProps>[];
+export interface IBooksProps {
+  books: ReactElement<IBookProps>[];
 }
 
-export default function Lists(props: IListsProps) {
+export default function Books(props: IBooksProps) {
   return (
     <>
-      {props.lists.length === 0 ? (
-        <p>No lists to show.</p>
+      {props.books.length === 0 ? (
+        <p>No books to show.</p>
       ) : (
         <ul>
-          {props.lists.map((list) => (
-            <li key={list.props.book.id}>{list}</li>
+          {props.books.map((book) => (
+            <li key={book.props.book.id}>{book}</li>
           ))}
         </ul>
       )}

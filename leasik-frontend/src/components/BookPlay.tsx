@@ -3,11 +3,11 @@ import { useState } from "react";
 import { ExtendedWordCard } from "../utilities/types";
 import QuestionScreenController from "./QuestionScreenController";
 
-export interface IListPlayProps {
+export interface IBookPlayProps {
   extendedWordCards: ExtendedWordCard[];
 }
 
-export default function ListPlay(props: IListPlayProps) {
+export default function BookPlay(props: IBookPlayProps) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   return (

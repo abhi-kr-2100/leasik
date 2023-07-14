@@ -3,13 +3,13 @@ import { useParams } from "react-router-dom";
 
 import { GET_WORD_CARDS } from "../utilities/queries";
 
-import ListPlay from "./BookPlay";
+import BookPlay from "./BookPlay";
 import { WordCardEdge } from "../utilities/types";
 import { findWordPositions, randomChoice, toWords } from "../utilities/helperFuncs";
 import { ExtendedWordCard } from "../utilities/types";
 
-export default function ListPlayController() {
-  const bookId = useParams().listId;
+export default function BookPlayController() {
+  const bookId = useParams().bookId;
 
   const { loading, error, data } = useQuery(GET_WORD_CARDS, {
     variables: { sentenceListId: bookId, n: 20 },
@@ -34,5 +34,5 @@ export default function ListPlayController() {
     )
   } as ExtendedWordCard))
 
-  return <ListPlay extendedWordCards={extendedWordCards} />;
+  return <BookPlay extendedWordCards={extendedWordCards} />;
 }

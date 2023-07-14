@@ -9,8 +9,8 @@ import graphQLClient from "./utilities/graphQLClient";
 
 import App from "./App";
 import Home from "./components/Home";
-import ListsController from "./components/BooksController";
-import ListPlayController from "./components/BookPlayController";
+import BooksController from "./components/BooksController";
+import BookPlayController from "./components/BookPlayController";
 import LoginController from "./components/LoginController";
 
 import "./index.css";
@@ -27,8 +27,8 @@ root.render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
-            <Route path="lists" element={<ListsController />} />
-            <Route path="lists/:listId" element={<ListPlayController />} />
+            <Route path="books" element={<BooksController />} />
+            <Route path="books/:bookId" element={<BookPlayController />} />
             <Route path="login" element={<LoginController />} />
             <Route path="logout" element={<LogoutController />} />
           </Route>

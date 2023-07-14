@@ -1,8 +1,8 @@
-export interface IListDescriptionProps {
+export interface IBookDescriptionProps {
   text: string;
 }
 
-export default function ListDescription(props: IListDescriptionProps) {
+export default function BookDescription(props: IBookDescriptionProps) {
   return (
     <>
       {props.text

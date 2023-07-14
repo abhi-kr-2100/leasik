@@ -14,8 +14,8 @@ export default function NavBar() {
           </Link>
         </li>
         <li className="text-white hover:bg-emerald-600">
-          <Link to="/lists" className="h-full flex flex-col justify-center py-2 px-2">
-            Lists
+          <Link to="/books" className="h-full flex flex-col justify-center py-2 px-2">
+            Books
           </Link>
         </li>
         <li className="text-white hover:bg-emerald-600 ml-auto">
