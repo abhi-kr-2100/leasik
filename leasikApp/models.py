@@ -138,6 +138,25 @@ def create_word_models(sender, instance: Sentence, *args, **kwargs):
         Word.objects.create(word=word, sentence=instance)
 
 
+class Book(models.Model):
+    """A collection of Sentences."""
+
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(max_length=2500, blank=True)
+
+    sentences = models.ManyToManyField(to=Sentence, blank=True)
+
+    def get_sentences_sorted_by_proficiency_score(
+        self, owner: settings.AUTH_USER_MODEL, **filter_conditions
+    ) -> Iterable[Sentence]:
+        sentences = list(self.sentences.filter(**filter_conditions))
+        return sorted(
+            sentences,
+            key=lambda s: s.get_proficiency_score(owner=owner),
+            reverse=True,
+        )
+
+
 class Word(models.Model):
     word = models.CharField(max_length=50)
 
