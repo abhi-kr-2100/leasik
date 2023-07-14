@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import Book from "../models/SentenceList";
+import Book from "../models/Book";
 import ListDescription from "./BookDescription";
 
 export interface IListProps {

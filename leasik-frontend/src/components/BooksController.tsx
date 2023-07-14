@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 
 import { GET_BOOKS } from "../utilities/queries";
 
-import Book from "../models/SentenceList";
+import Book from "../models/Book";
 
 import Lists from "./Books";
 import List from "./Book";
