@@ -1,5 +1,3 @@
-from typing import Iterable
-
 import graphene
 from graphene import relay
 from graphql_relay import from_global_id
