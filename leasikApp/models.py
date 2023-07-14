@@ -39,7 +39,7 @@ class Sentence(models.Model):
     # regional variant: en-US, en-GB, en-IN, etc.
     text_locale = models.CharField(max_length=50, blank=True)
 
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(to=Tag, blank=True)
 
     class Meta:
         unique_together = ("text", "translation")
