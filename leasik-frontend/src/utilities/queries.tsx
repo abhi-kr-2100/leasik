@@ -9,7 +9,7 @@ export const GET_JWT_TOKEN = gql`
 `;
 
 export const VERIFY_TOKEN = gql`
-  mutation VerifyToken($token: String) {
+  mutation VerifyToken($token: String!) {
     verifyToken(token: $token) {
       payload
     }
