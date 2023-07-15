@@ -49,6 +49,39 @@ class Sentence(models.Model):
         self, owner: settings.AUTH_USER_MODEL
     ):
         words = self.get_associated_word_models()
+        word_scores = []
+        for word in words:
+            ws, created = WordScore.objects.get_or_create(
+                word=word, owner=owner
+            )
+            word_scores.append(ws)
+
+            if not created:
+                continue
+
+            # New word scores inherit score from an existing word score if
+            # a word score with the same word exists for the user
+            old_ws = (
+                WordScore.objects.filter(word__word=word.word, owner=owner)
+                .order_by("?")
+                .first()
+            )
+            if old_ws is None:
+                continue
+
+            ws.repetition_number = old_ws.repetition_number
+            ws.easiness_factor = old_ws.easiness_factor
+            ws.inter_repetition_interval = old_ws.inter_repetition_interval
+            ws.last_review_date = old_ws.last_review_date
+            ws.save(
+                update_fields=[
+                    "repetition_number",
+                    "easiness_factor",
+                    "inter_repetition_interval",
+                    "last_review_date",
+                ]
+            )
+
         word_scores = [
             WordScore.objects.get_or_create(word=w, owner=owner)[0]
             for w in words
