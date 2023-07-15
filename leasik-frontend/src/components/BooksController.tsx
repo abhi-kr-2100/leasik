@@ -5,7 +5,7 @@ import { GET_BOOKS } from "../utilities/queries";
 import * as Types from "../utilities/types";
 
 import Books from "./Books";
-import Book from "./Book";
+import BookController from "./BookController";
 
 export default function BooksController() {
   const { loading, error, data } = useQuery(GET_BOOKS);
@@ -14,7 +14,7 @@ export default function BooksController() {
   if (error) return <div>{`couldn't retrive books: ${error.message}`}</div>;
 
   const books = getBooksFromResponse(data);
-  const bookComponents = books.map((sl) => <Book book={sl} />);
+  const bookComponents = books.map((sl) => <BookController book={sl} />);
 
   return <Books books={bookComponents} />;
 }

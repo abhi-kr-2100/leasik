@@ -5,6 +5,8 @@ import BookDescription from "./BookDescription";
 
 export interface IBookProps {
   book: Types.Book;
+  onTagSelection: () => any;
+  playLink: string;
 }
 
 export default function Book(props: IBookProps) {
@@ -17,10 +19,16 @@ export default function Book(props: IBookProps) {
         <BookDescription text={props.book.description} />
         <Link
           className="inline-block rounded-sm px-3 py-1 bg-emerald-400 text-white"
-          to={`/books/${props.book.id}`}
+          to={props.playLink}
         >
           Play
         </Link>
+        <button
+          className="inline-block rounded-sm px-3 py-1 bg-emerald-400 text-white ml-1"
+          onClick={props.onTagSelection}
+        >
+          Tags
+        </button>
       </div>
     </div>
   );
