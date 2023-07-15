@@ -17,6 +17,7 @@ export type Book = {
   id: string;
   name: string;
   description: string;
+  tags: string[];
 };
 
 export type Sentence = {
@@ -42,6 +43,7 @@ type BookNode = {
   id: string;
   name: string;
   description: string;
+  tags: { edges: TagEdge[] };
 };
 
 export type SentenceEdge = {
@@ -65,4 +67,13 @@ type WordNode = {
   id: string;
   word: string;
   proficiencyScore: number;
+};
+
+type TagEdge = {
+  node: TagNode;
+};
+
+type TagNode = {
+  id: string;
+  label: string;
 };

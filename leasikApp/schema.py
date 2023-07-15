@@ -3,8 +3,19 @@ from graphene import relay
 from graphql_relay import from_global_id
 from graphene_django import DjangoObjectType
 
-from .models import Sentence, Book, Word, WordScore
+from .models import Sentence, Book, Word, WordScore, Tag
 from .helpers import is_answer_correct
+
+
+class TagType(DjangoObjectType):
+    class Meta:
+        model = Tag
+        interfaces = (relay.Node,)
+
+
+class TagConnection(relay.Connection):
+    class Meta:
+        node = TagType
 
 
 class WordType(DjangoObjectType):
@@ -44,6 +55,12 @@ class BookType(DjangoObjectType):
     class Meta:
         model = Book
         interfaces = (relay.Node,)
+
+    tags = graphene.ConnectionField(TagConnection)
+
+    def resolve_tags(root: Book, info, **kwargs):
+        tags = [t for s in root.sentences.all() for t in s.tags.all()]
+        return tags
 
 
 class BookConnection(relay.Connection):

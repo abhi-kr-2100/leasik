@@ -24,6 +24,14 @@ export const GET_BOOKS = gql`
           id
           name
           description
+          tags {
+            edges {
+              node {
+                id
+                label
+              }
+            }
+          }
         }
       }
     }

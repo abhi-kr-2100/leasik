@@ -20,5 +20,8 @@ export default function BooksController() {
 }
 
 function getBooksFromResponse(resp: { books: { edges: Types.BookEdge[] } }) {
-  return resp.books.edges.map(({ node: book }) => book);
+  return resp.books.edges.map(({ node: book }) => ({
+    ...book,
+    tags: book.tags.edges.map(({ node: tag }) => tag.label),
+  }));
 }
