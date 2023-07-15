@@ -1,38 +1,34 @@
 import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 
-import { GET_WORD_CARDS } from "../utilities/queries";
+import { GET_SENTENCES } from "../utilities/queries";
 
 import BookPlay from "./BookPlay";
-import { WordCardEdge } from "../utilities/types";
-import { findWordPositions, randomChoice, toWords } from "../utilities/helperFuncs";
-import { ExtendedWordCard } from "../utilities/types";
+import { SentenceEdge } from "../utilities/types";
 
 export default function BookPlayController() {
   const bookId = useParams().bookId;
 
-  const { loading, error, data } = useQuery(GET_WORD_CARDS, {
-    variables: { sentenceListId: bookId, n: 20 },
+  const { loading, error, data } = useQuery(GET_SENTENCES, {
+    variables: { bookId, n: 20 },
     fetchPolicy: "no-cache",
   });
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`Error loading cards: ${error.message}`}</div>;
 
-  const wordCards = (data.wordCards.edges as WordCardEdge[])
-    .filter((edge) => edge.node.sentences.edges.length !== 0)
-    .map(edge => ({
+  const sentences = (data.sentences.edges as SentenceEdge[]).map((edge) => ({
+    id: edge.node.id,
+    text: edge.node.text,
+    translation: edge.node.translation,
+    locale: edge.node.textLocale,
+    language: edge.node.textLanguage,
+    words: edge.node.wordSet.edges.map((edge) => ({
       id: edge.node.id,
+      score: edge.node.proficiencyScore,
       word: edge.node.word,
-      sentence: edge.node.sentences.edges[0].node
-    }));
+    })),
+  }));
 
-  const extendedWordCards = wordCards.map((wc) => ({
-    ...wc,
-    hiddenWordPosition: randomChoice(
-      findWordPositions(toWords(wc.sentence.text), wc.word, wc.sentence.textLocale)
-    )
-  } as ExtendedWordCard))
-
-  return <BookPlay extendedWordCards={extendedWordCards} />;
+  return <BookPlay sentences={sentences} />;
 }

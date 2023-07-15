@@ -1,8 +1,14 @@
-import { toWords } from "../utilities/helperFuncs";
-import { InputStatusType, ExtendedWordCard, InputPrelimStatusType } from "../utilities/types";
+import { matches, toWords } from "../utilities/helperFuncs";
+import {
+  InputStatusType,
+  Sentence,
+  Word,
+  InputPrelimStatusType,
+} from "../utilities/types";
 
 export interface IQuestionInputProps {
-  extendedWordCard: ExtendedWordCard;
+  sentence: Sentence;
+  maskedWord: Word;
 
   userInput: string;
   onUserInputChange: (newInput: string) => void;
@@ -14,10 +20,15 @@ export interface IQuestionInputProps {
 }
 
 export default function QuestionInput(props: IQuestionInputProps) {
-  const words = toWords(props.extendedWordCard.sentence.text);
-  const beforeHiddenWord = words.slice(0, props.extendedWordCard.hiddenWordPosition).join(" ");
-  const hiddenWord = words[props.extendedWordCard.hiddenWordPosition];
-  const afterHiddenWord = words.slice(props.extendedWordCard.hiddenWordPosition + 1).join(" ");
+  const words = toWords(props.sentence.text);
+  const maskedWordPosition = words.findIndex((word) =>
+    matches(word, props.maskedWord.word, props.sentence.locale)
+  );
+  const beforeHiddenWord = words.slice(0, maskedWordPosition).join(" ");
+  const hiddenWord = words[maskedWordPosition];
+  const afterHiddenWord = words
+    .slice(maskedWordPosition + 1)
+    .join(" ");
 
   const inputBgColorClass =
     props.inputStatus === "correct"
@@ -26,7 +37,10 @@ export default function QuestionInput(props: IQuestionInputProps) {
         ? "bg-red-300"
         : "";
 
-  const inputTextColorClass = ((stat: InputStatusType, prelimStat: InputPrelimStatusType) => {
+  const inputTextColorClass = ((
+    stat: InputStatusType,
+    prelimStat: InputPrelimStatusType
+  ) => {
     if (stat !== "unchecked") {
       return "";
     }

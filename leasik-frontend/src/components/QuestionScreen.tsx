@@ -1,8 +1,9 @@
-import { ExtendedWordCard, InputPrelimStatusType, InputStatusType } from "../utilities/types";
+import { Sentence, InputPrelimStatusType, InputStatusType, Word } from "../utilities/types";
 import Question from "./Question";
 
 export interface IQuestionScreenProps {
-  extendedWordCard: ExtendedWordCard;
+  sentence: Sentence;
+  maskedWord: Word;
   primaryAction: () => void;
   inputStatus: InputStatusType;
   inputPrelimStatus: InputPrelimStatusType;
@@ -14,7 +15,8 @@ export default function QuestionScreen(props: IQuestionScreenProps) {
   return (
     <>
       <Question
-        extendedWordCard={props.extendedWordCard}
+        sentence={props.sentence}
+        maskedWord={props.maskedWord}
         inputStatus={props.inputStatus}
         inputPrelimStatus={props.inputPrelimStatus}
         userInput={props.userInput}

@@ -30,6 +30,31 @@ export const GET_BOOKS = gql`
   }
 `;
 
+export const GET_SENTENCES = gql`
+  query GetSentences($bookId: ID!, $n: Int) {
+    sentences(bookId: $bookId, first: $n) {
+      edges {
+        node {
+          id
+          text
+          translation
+          textLanguage
+          textLocale
+          wordSet {
+            edges {
+              node {
+                id
+                word
+                proficiencyScore
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 export const GET_WORD_CARDS = gql`
   query GetWordCards($sentenceListId: ID!, $n: Int) {
     wordCards(sentenceListId: $sentenceListId, first: $n) {

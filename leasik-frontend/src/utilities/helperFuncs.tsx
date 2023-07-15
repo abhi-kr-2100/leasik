@@ -1,4 +1,5 @@
 import { trim } from "lodash";
+import { Sentence, Word } from "./types";
 
 const punctuation = `!"#$%&'()*+,-./:;<=>?@[\\]^_\`{|}~`
 const digits = '0123456789'
@@ -6,6 +7,10 @@ const whitespace = ' \t\n\r\v\f'
 
 export function toWords(text: string): string[] {
   return text.split(/\s+/);
+}
+
+export function chooseMaskedWord(sentence: Sentence): Word {
+  return randomChoice(sentence.words);
 }
 
 export function findWordPositions(words: string[], word: string, locale: string = ""): number[] {

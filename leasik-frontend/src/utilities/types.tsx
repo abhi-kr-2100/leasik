@@ -1,5 +1,3 @@
-import Sentence from "../models/Sentence";
-
 // InputStatusType is useful after input has been submitted. Prior to the
 // submission of the input, it's "unchecked". Afterwards, it's either "correct"
 // or "incorrect".
@@ -15,31 +13,40 @@ export type InputStatusType = "unchecked" | "correct" | "incorrect";
 // been inspired by this comment: https://github.com/abhi-kr-2100/leasik/issues/39#issuecomment-1272548336
 export type InputPrelimStatusType = "correct" | "incorrect" | "partial";
 
-type SentenceNode = {
+type WordNode = {
+    id: string;
+    word: string;
+    proficiencyScore: number;
+}
+
+type WordEdge = {
+    node: WordNode;
+}
+
+export type SentenceNode = {
     id: string;
     text: string;
     translation: string;
-    textLanguage: string;
     textLocale: string;
+    textLanguage: string;
+    wordSet: { edges: WordEdge[] };
 }
 
-type SentenceEdge = {
+export type SentenceEdge = {
     node: SentenceNode;
 }
 
-type WordCardNode = {
+export type Word = {
     id: string;
     word: string;
-    sentences: { edges: SentenceEdge[] };
+    score: number;
 }
 
-export type WordCardEdge = {
-    node: WordCardNode;
-}
-
-export type ExtendedWordCard = {
+export type Sentence = {
     id: string;
-    word: string;
-    sentence: Sentence;
-    hiddenWordPosition: number;
+    text: string;
+    translation: string;
+    locale: string;
+    language: string;
+    words: Word[];
 }

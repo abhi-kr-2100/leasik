@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 
-import { ExtendedWordCard, InputPrelimStatusType } from "../utilities/types";
+import { Sentence, InputPrelimStatusType, Word } from "../utilities/types";
 import QuestionScreen from "./QuestionScreen";
 import { InputStatusType } from "../utilities/types";
 import { SCORE_ANSWER } from "../utilities/queries";
-import { matches, startsWith } from "../utilities/helperFuncs";
+import { matches, startsWith, chooseMaskedWord } from "../utilities/helperFuncs";
 
 export interface IQuestionScreenControllerProps {
-  extendedWordCard: ExtendedWordCard;
+  sentence: Sentence;
   onNext: () => void;
 }
 
@@ -25,10 +25,11 @@ export default function QuestionScreenController(
     },
   });
 
+  const maskedWord = chooseMaskedWord(props.sentence);
+  const locale = props.sentence.locale;
+  const maskedWordId = maskedWord.id;
+
   const primaryAction = () => {
-    const correctAnswer = props.extendedWordCard.word;
-    const locale = props.extendedWordCard.sentence.textLocale;
-    const cardId = props.extendedWordCard.id;
 
     if (inputStatus !== "unchecked") {
       setUserInput("");
@@ -36,18 +37,18 @@ export default function QuestionScreenController(
       speechSynthesis.cancel();
       props.onNext();
     } else {
-      if (matches(userInput, correctAnswer, locale)) {
+      if (matches(userInput, maskedWord.word, locale)) {
         setInputStatus("correct");
-        scoreAnswer({ variables: { cardId: cardId, score: 5 } });
+        scoreAnswer({ variables: { cardId: maskedWordId, score: 5 } });
       } else {
         setInputStatus("incorrect");
-        scoreAnswer({ variables: { cardId: cardId, score: 0 } });
+        scoreAnswer({ variables: { cardId: maskedWordId, score: 0 } });
       }
 
-      if (props.extendedWordCard.sentence.textLanguage !== "") {
+      if (props.sentence.language !== "") {
         let utterence = new SpeechSynthesisUtterance();
-        utterence.text = props.extendedWordCard.sentence.text;
-        utterence.lang = props.extendedWordCard.sentence.textLanguage;
+        utterence.text = props.sentence.text;
+        utterence.lang = props.sentence.language;
         utterence.rate = 0.9;
 
         speechSynthesis.speak(utterence);
@@ -63,8 +64,7 @@ export default function QuestionScreenController(
       return;
     }
 
-    const correctAnswer = props.extendedWordCard.word;
-    const locale = props.extendedWordCard.sentence.textLocale;
+    const correctAnswer = maskedWord.word;
 
     setUserInput(newInput);
     setInputPrelimStatus(
@@ -76,7 +76,8 @@ export default function QuestionScreenController(
 
   return (
     <QuestionScreen
-      extendedWordCard={props.extendedWordCard}
+      sentence={props.sentence}
+      maskedWord={maskedWord}
       primaryAction={primaryAction}
       inputStatus={inputStatus}
       inputPrelimStatus={inputPrelimStatus}
