@@ -80,8 +80,8 @@ export const GET_WORD_CARDS = gql`
 `;
 
 export const SCORE_ANSWER = gql`
-  mutation UpdateCardProficiency($cardId: ID!, $score: Int!) {
-    updateProficiency(input: { wordCardId: $cardId, score: $score }) {
+  mutation UpdateWordProficiency($wordId: ID!, $score: Int!) {
+    updateProficiency(input: { wordId: $wordId, score: $score }) {
       clientMutationId
     }
   }

@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
 
 import { Sentence, InputPrelimStatusType, Word } from "../utilities/types";
 import QuestionScreen from "./QuestionScreen";
 import { InputStatusType } from "../utilities/types";
 import { SCORE_ANSWER } from "../utilities/queries";
-import { matches, startsWith, chooseMaskedWord } from "../utilities/helperFuncs";
+import {
+  matches,
+  startsWith,
+  chooseMaskedWord,
+} from "../utilities/helperFuncs";
 
 export interface IQuestionScreenControllerProps {
   sentence: Sentence;
@@ -17,7 +21,8 @@ export default function QuestionScreenController(
 ) {
   const [userInput, setUserInput] = useState("");
   const [inputStatus, setInputStatus] = useState<InputStatusType>("unchecked");
-  const [inputPrelimStatus, setInputPrelimStatus] = useState<InputPrelimStatusType>("partial");
+  const [inputPrelimStatus, setInputPrelimStatus] =
+    useState<InputPrelimStatusType>("partial");
 
   const [scoreAnswer] = useMutation(SCORE_ANSWER, {
     onError: (error) => {
@@ -25,12 +30,18 @@ export default function QuestionScreenController(
     },
   });
 
-  const maskedWord = chooseMaskedWord(props.sentence);
+  const [maskedWord, setMaskedWord] = useState<Word>();
+  useEffect(() => {
+    setMaskedWord(chooseMaskedWord(props.sentence));
+  }, [props.sentence]);
+
+  if (maskedWord === undefined) {
+    return null;
+  }
+
   const locale = props.sentence.locale;
-  const maskedWordId = maskedWord.id;
 
   const primaryAction = () => {
-
     if (inputStatus !== "unchecked") {
       setUserInput("");
       setInputStatus("unchecked");
@@ -39,10 +50,10 @@ export default function QuestionScreenController(
     } else {
       if (matches(userInput, maskedWord.word, locale)) {
         setInputStatus("correct");
-        scoreAnswer({ variables: { cardId: maskedWordId, score: 5 } });
+        scoreAnswer({ variables: { wordId: maskedWord.id, score: 5 } });
       } else {
         setInputStatus("incorrect");
-        scoreAnswer({ variables: { cardId: maskedWordId, score: 0 } });
+        scoreAnswer({ variables: { wordId: maskedWord.id, score: 0 } });
       }
 
       if (props.sentence.language !== "") {
@@ -69,10 +80,12 @@ export default function QuestionScreenController(
     setUserInput(newInput);
     setInputPrelimStatus(
       startsWith(newInput, correctAnswer, locale)
-        ? (matches(newInput, correctAnswer, locale) ? "correct" : "partial")
+        ? matches(newInput, correctAnswer, locale)
+          ? "correct"
+          : "partial"
         : "incorrect"
     );
-  }
+  };
 
   return (
     <QuestionScreen
