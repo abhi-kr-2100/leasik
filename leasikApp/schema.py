@@ -61,7 +61,9 @@ class BookType(DjangoObjectType):
     tags = graphene.ConnectionField(TagConnection)
 
     def resolve_tags(root: Book, info, **kwargs):
-        tags = [t for s in root.sentences.all() for t in s.tags.all()]
+        # Not passing this through a set would cause duplicate tags since
+        # many sentences may have the same tag.
+        tags = list({t for s in root.sentences.all() for t in s.tags.all()})
         return tags
 
 
