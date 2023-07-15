@@ -19,10 +19,6 @@ export function chooseMaskedWord(sentence: Sentence): Word {
   );
   const prob_array = getSpaceByProbabilityNumbers(words, prob_nums);
 
-  console.log(words);
-  console.log(prob_nums);
-  console.log(prob_array);
-
   return randomChoice(prob_array);
 }
 
