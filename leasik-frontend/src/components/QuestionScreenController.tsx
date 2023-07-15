@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
 
 import { Sentence, InputPrelimStatus, Word } from "../utilities/types";
-import QuestionScreen from "./QuestionScreen";
 import { InputStatus } from "../utilities/types";
 import { SCORE_ANSWER } from "../utilities/queries";
 import {
@@ -10,6 +9,7 @@ import {
   startsWith,
   chooseMaskedWord,
 } from "../utilities/helperFuncs";
+import QuestionScreen from "./QuestionScreen";
 
 export interface IQuestionScreenControllerProps {
   sentence: Sentence;

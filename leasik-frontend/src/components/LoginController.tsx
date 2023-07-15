@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useMutation } from "@apollo/client";
 
 import { GET_JWT_TOKEN } from "../utilities/queries";
-import Login from "./Login";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../utilities/contexts";
+import Login from "./Login";
 
 export default function LoginController() {
   const [username, setUsername] = useState("");
