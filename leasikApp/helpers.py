@@ -12,18 +12,20 @@ def weighted_avg(weights_with_terms: Iterable[tuple[float, float]]) -> float:
 
 
 def get_overall_proficiency_score(word_scores: Iterable):
-    """Return the weighted average proficiency score of the given WordScores.
+    """Return the weighted average normalized proficiency score of WordScores.
 
     The average is weighted by the inverse of the easiness factor (whcih could
     be called the difficulty factor). The higher the difficulty factor, the
     more it contributes to the average.
+
+    Normalization ensures that the number of word scores is irrelevant.
     """
     weights_with_terms: list[tuple[float, float]] = [
         (1 / ws.easiness_factor, ws.get_proficiency_score())
         for ws in word_scores
     ]
 
-    return weighted_avg(weights_with_terms)
+    return weighted_avg(weights_with_terms) / len(word_scores)
 
 
 def is_answer_correct(score: int) -> bool:
