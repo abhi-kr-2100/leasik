@@ -64,7 +64,9 @@ class Query(graphene.ObjectType):
             raise PermissionError("Not authenticated.")
 
         book = Query._get_book_from_gql_id(book_id)
-        return book.get_sentences_sorted_by_proficiency_score()
+        return book.get_sentences_sorted_by_proficiency_score(
+            owner=info.context.user
+        )
 
     def _get_book_from_gql_id(id: str) -> Book:
         normal_id = int(from_global_id(id)[1])
