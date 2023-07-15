@@ -10,10 +10,18 @@ export function toWords(text: string): string[] {
  * sentence.
  */
 export function chooseMaskedWord(sentence: Sentence): Word {
+  // sentence.words is in random order. We need the words ordered according
+  // to their position in sentence.text
+  const words = getOrderedWordsFromSentence(sentence);
+
   const prob_nums = getProbabilityNumbers(
-    sentence.words.map((word) => word.proficiencyScore)
+    words.map((word) => word.proficiencyScore)
   );
-  const prob_array = getSpaceByProbabilityNumbers(sentence.words, prob_nums);
+  const prob_array = getSpaceByProbabilityNumbers(words, prob_nums);
+
+  console.log(words);
+  console.log(prob_nums);
+  console.log(prob_array);
 
   return randomChoice(prob_array);
 }
@@ -78,4 +86,18 @@ function normalizedString(s: string, locale: string = "") {
 
 function getLocaleOrDefault(locale: string = "") {
   return locale === "" ? "default" : locale;
+}
+
+function getOrderedWordsFromSentence(sentence: Sentence): Word[] {
+  const wordsInOriginalOrder = toWords(sentence.text);
+  let orderedWords = [];
+  for (const word of wordsInOriginalOrder) {
+    orderedWords.push(
+      sentence.words.find((w) =>
+        areEquivalent(w.word, word, sentence.textLocale)
+      )!
+    );
+  }
+
+  return orderedWords;
 }
