@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
 
-import { Sentence, InputPrelimStatusType, Word } from "../utilities/types";
+import { Sentence, InputPrelimStatus, Word } from "../utilities/types";
 import QuestionScreen from "./QuestionScreen";
-import { InputStatusType } from "../utilities/types";
+import { InputStatus } from "../utilities/types";
 import { SCORE_ANSWER } from "../utilities/queries";
 import {
   matches,
@@ -20,9 +20,9 @@ export default function QuestionScreenController(
   props: IQuestionScreenControllerProps
 ) {
   const [userInput, setUserInput] = useState("");
-  const [inputStatus, setInputStatus] = useState<InputStatusType>("unchecked");
+  const [inputStatus, setInputStatus] = useState<InputStatus>("unchecked");
   const [inputPrelimStatus, setInputPrelimStatus] =
-    useState<InputPrelimStatusType>("partial");
+    useState<InputPrelimStatus>("partial");
 
   const [scoreAnswer] = useMutation(SCORE_ANSWER, {
     onError: (error) => {

@@ -1,7 +1,7 @@
 import {
   Sentence,
-  InputPrelimStatusType,
-  InputStatusType,
+  InputPrelimStatus,
+  InputStatus,
   Word,
 } from "../utilities/types";
 import Question from "./Question";
@@ -10,8 +10,8 @@ export interface IQuestionScreenProps {
   sentence: Sentence;
   maskedWord: Word;
   primaryAction: () => void;
-  inputStatus: InputStatusType;
-  inputPrelimStatus: InputPrelimStatusType;
+  inputStatus: InputStatus;
+  inputPrelimStatus: InputPrelimStatus;
   userInput: string;
   onUserInputChange: (newInput: string) => void;
 }

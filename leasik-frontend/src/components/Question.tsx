@@ -1,16 +1,16 @@
 import {
-  InputStatusType,
+  InputStatus,
   Sentence,
   Word,
-  InputPrelimStatusType,
+  InputPrelimStatus,
 } from "../utilities/types";
 import QuestionInput from "./QuestionInput";
 
 export interface IQuestionProps {
   sentence: Sentence;
   maskedWord: Word;
-  inputStatus: InputStatusType;
-  inputPrelimStatus: InputPrelimStatusType;
+  inputStatus: InputStatus;
+  inputPrelimStatus: InputPrelimStatus;
   userInput: string;
   onUserInputChange: (newInput: string) => void;
   primaryAction: () => void;

@@ -1,9 +1,9 @@
 import { matches, toWords } from "../utilities/helperFuncs";
 import {
-  InputStatusType,
+  InputStatus,
   Sentence,
   Word,
-  InputPrelimStatusType,
+  InputPrelimStatus,
 } from "../utilities/types";
 
 export interface IQuestionInputProps {
@@ -13,8 +13,8 @@ export interface IQuestionInputProps {
   userInput: string;
   onUserInputChange: (newInput: string) => void;
 
-  inputStatus: InputStatusType;
-  inputPrelimStatus: InputPrelimStatusType;
+  inputStatus: InputStatus;
+  inputPrelimStatus: InputPrelimStatus;
 
   primaryAction: () => void;
 }
@@ -36,8 +36,8 @@ export default function QuestionInput(props: IQuestionInputProps) {
       : "";
 
   const inputTextColorClass = ((
-    stat: InputStatusType,
-    prelimStat: InputPrelimStatusType
+    stat: InputStatus,
+    prelimStat: InputPrelimStatus
   ) => {
     if (stat !== "unchecked") {
       return "";
