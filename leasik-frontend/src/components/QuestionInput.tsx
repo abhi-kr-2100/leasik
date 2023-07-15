@@ -1,4 +1,4 @@
-import { matches, toWords } from "../utilities/helperFuncs";
+import { areEquivalent, toWords } from "../utilities/helperFuncs";
 import {
   InputStatus,
   Sentence,
@@ -22,7 +22,7 @@ export interface IQuestionInputProps {
 export default function QuestionInput(props: IQuestionInputProps) {
   const words = toWords(props.sentence.text);
   const maskedWordPosition = words.findIndex((word) =>
-    matches(word, props.maskedWord.word, props.sentence.locale)
+    areEquivalent(word, props.maskedWord.word, props.sentence.locale)
   );
   const beforeHiddenWord = words.slice(0, maskedWordPosition).join(" ");
   const hiddenWord = words[maskedWordPosition];

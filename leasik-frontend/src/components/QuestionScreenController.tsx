@@ -6,7 +6,7 @@ import QuestionScreen from "./QuestionScreen";
 import { InputStatus } from "../utilities/types";
 import { SCORE_ANSWER } from "../utilities/queries";
 import {
-  matches,
+  areEquivalent,
   startsWith,
   chooseMaskedWord,
 } from "../utilities/helperFuncs";
@@ -48,7 +48,7 @@ export default function QuestionScreenController(
       speechSynthesis.cancel();
       props.onNext();
     } else {
-      if (matches(userInput, maskedWord.word, locale)) {
+      if (areEquivalent(userInput, maskedWord.word, locale)) {
         setInputStatus("correct");
         scoreAnswer({ variables: { wordId: maskedWord.id, score: 5 } });
       } else {
@@ -80,7 +80,7 @@ export default function QuestionScreenController(
     setUserInput(newInput);
     setInputPrelimStatus(
       startsWith(newInput, correctAnswer, locale)
-        ? matches(newInput, correctAnswer, locale)
+        ? areEquivalent(newInput, correctAnswer, locale)
           ? "correct"
           : "partial"
         : "incorrect"
