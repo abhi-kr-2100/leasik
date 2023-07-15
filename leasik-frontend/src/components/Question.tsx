@@ -1,4 +1,9 @@
-import { InputStatusType, Sentence, Word, InputPrelimStatusType } from "../utilities/types";
+import {
+  InputStatusType,
+  Sentence,
+  Word,
+  InputPrelimStatusType,
+} from "../utilities/types";
 import QuestionInput from "./QuestionInput";
 
 export interface IQuestionProps {

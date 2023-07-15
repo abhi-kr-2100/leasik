@@ -26,16 +26,14 @@ export default function QuestionInput(props: IQuestionInputProps) {
   );
   const beforeHiddenWord = words.slice(0, maskedWordPosition).join(" ");
   const hiddenWord = words[maskedWordPosition];
-  const afterHiddenWord = words
-    .slice(maskedWordPosition + 1)
-    .join(" ");
+  const afterHiddenWord = words.slice(maskedWordPosition + 1).join(" ");
 
   const inputBgColorClass =
     props.inputStatus === "correct"
       ? "bg-green-300"
       : props.inputStatus === "incorrect"
-        ? "bg-red-300"
-        : "";
+      ? "bg-red-300"
+      : "";
 
   const inputTextColorClass = ((
     stat: InputStatusType,

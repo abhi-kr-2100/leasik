@@ -17,18 +17,20 @@ export default function BookPlayController() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`Error loading cards: ${error.message}`}</div>;
 
-  const sentences = (data.sentences.edges as SentenceEdge[]).map((edge) => ({
-    id: edge.node.id,
-    text: edge.node.text,
-    translation: edge.node.translation,
-    locale: edge.node.textLocale,
-    language: edge.node.textLanguage,
-    words: edge.node.wordSet.edges.map((edge) => ({
-      id: edge.node.id,
-      score: edge.node.proficiencyScore,
-      word: edge.node.word,
-    })),
-  }));
+  const sentences = (data.sentences.edges as SentenceEdge[]).map(
+    ({ node: sentence }) => ({
+      id: sentence.id,
+      text: sentence.text,
+      translation: sentence.translation,
+      locale: sentence.textLocale,
+      language: sentence.textLanguage,
+      words: sentence.wordSet.edges.map(({ node: word }) => ({
+        id: word.id,
+        score: word.proficiencyScore,
+        word: word.word,
+      })),
+    })
+  );
 
   return <BookPlay sentences={sentences} />;
 }
