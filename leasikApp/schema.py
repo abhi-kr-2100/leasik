@@ -4,6 +4,7 @@ from graphql_relay import from_global_id
 from graphene_django import DjangoObjectType
 
 from .models import Sentence, Book, Word, WordScore
+from .helpers import is_answer_correct
 
 
 class WordType(DjangoObjectType):
@@ -93,6 +94,15 @@ class UpdateProficiency(relay.ClientIDMutation):
         )[0]
 
         word_score.update_word_score(score)
+
+        if is_answer_correct(score):
+            # We'll also slightly increase the score of all WordScores that
+            # have this word. Progress on a word in one context is also a
+            # little progress in every other context.
+            word_scores = WordScore.objects.filter(word__word=word.word)
+            for ws in word_scores:
+                ws.improve_word_score_slightly()
+
         return UpdateProficiency()
 
 

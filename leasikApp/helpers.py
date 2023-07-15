@@ -26,6 +26,10 @@ def get_overall_proficiency_score(word_scores: Iterable):
     return weighted_avg(weights_with_terms)
 
 
+def is_answer_correct(score: int) -> bool:
+    return score >= 3
+
+
 def sm2(
     score: int,
     repetition_number: int,

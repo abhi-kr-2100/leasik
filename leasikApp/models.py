@@ -181,5 +181,12 @@ class WordScore(models.Model):
 
         self.save()
 
+    def improve_word_score_slightly(self):
+        """Update the SM-2 parameters with a score of 3.
+
+        3 is the lowest SM-2 score for which the answer is considered correct.
+        """
+        self.update_word_score(3)
+
     def __str__(self):
         return f"{self.word} of {self.owner.username}"
