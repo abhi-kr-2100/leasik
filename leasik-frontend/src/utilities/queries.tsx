@@ -39,8 +39,18 @@ export const GET_BOOKS = gql`
 `;
 
 export const GET_SENTENCES = gql`
-  query GetSentences($bookId: ID!, $n: Int) {
-    sentences(bookId: $bookId, first: $n) {
+  query GetSentences(
+    $bookId: ID!
+    $tags: [String]
+    $includeUntagged: Boolean
+    $n: Int
+  ) {
+    sentences(
+      bookId: $bookId
+      tags: $tags
+      includeUntagged: $includeUntagged
+      first: $n
+    ) {
       edges {
         node {
           id

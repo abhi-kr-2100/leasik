@@ -1,6 +1,6 @@
 import { shuffle } from "lodash";
 import { useQuery } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 import { GET_SENTENCES } from "../utilities/queries";
 import { SentenceEdge } from "../utilities/types";
@@ -9,9 +9,15 @@ import BookPlay from "./BookPlay";
 
 export default function BookPlayController() {
   const bookId = useParams().bookId;
+  const [searchParams] = useSearchParams();
+
+  const tags = getTagsFromQueryParam(searchParams.get("tags"));
+  const includeUntagged = getIncludeUntaggedFromQueryParam(
+    searchParams.get("includeUntagged")
+  );
 
   const { loading, error, data } = useQuery(GET_SENTENCES, {
-    variables: { bookId, n: 20 },
+    variables: { bookId, n: 20, tags, includeUntagged },
     fetchPolicy: "no-cache",
   });
 
@@ -30,4 +36,13 @@ function getSentencesFromResponse(resp: {
     ...sentence,
     words: sentence.wordSet.edges.map(({ node: word }) => word),
   }));
+}
+
+function getTagsFromQueryParam(tags: string | null) {
+  return tags?.split(",");
+}
+
+function getIncludeUntaggedFromQueryParam(includeUntagged: string | null) {
+  // default is true
+  return (includeUntagged ?? "true") === "true";
 }
