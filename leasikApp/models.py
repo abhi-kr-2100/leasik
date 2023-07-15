@@ -42,11 +42,13 @@ class Sentence(models.Model):
     class Meta:
         unique_together = ("text", "translation")
 
-    def get_word_models(self):
+    def get_associated_word_models(self):
         return Word.objects.filter(sentence=self)
 
-    def get_word_scores(self, owner: settings.AUTH_USER_MODEL):
-        words = self.get_word_models()
+    def get_associated_word_score_models(
+        self, owner: settings.AUTH_USER_MODEL
+    ):
+        words = self.get_associated_word_models()
         word_scores = [
             WordScore.objects.get_or_create(word=w, owner=owner)[0]
             for w in words
@@ -56,7 +58,7 @@ class Sentence(models.Model):
 
     def get_proficiency_score(self, owner: settings.AUTH_USER_MODEL):
         """Proficiency of owner in using words in this sentence's context."""
-        word_scores = self.get_word_scores(owner)
+        word_scores = self.get_associated_word_score_models(owner)
         return get_overall_proficiency_score(word_scores)
 
     def get_words(self):
