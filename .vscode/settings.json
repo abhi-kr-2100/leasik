@@ -1,8 +1,21 @@
 {
-    "python.formatting.provider": "none",
+    "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+    },
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "python.analysis.autoFormatStrings": true,
+    "typescript.format.semicolons": "insert",
+    "javascript.format.semicolons": "insert",
+    "python.linting.mypyEnabled": true,
+    "python.linting.banditEnabled": true,
+    "python.linting.prospectorEnabled": true,
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.pydocstyleEnabled": true,
+    "python.linting.pylamaEnabled": true,
+    "python.linting.pylintEnabled": true
 }
