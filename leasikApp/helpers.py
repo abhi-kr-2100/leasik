@@ -1,10 +1,12 @@
-from typing import Tuple, Iterable
+from typing import Iterable
 from datetime import timedelta
 
 
-def weighted_avg(weights_with_terms: Iterable[Tuple[float, float]]) -> float:
-    total_weight = sum(weight for (weight, _) in weights_with_terms)
-    numerator = sum(weight * term for (weight, term) in weights_with_terms)
+def weighted_avg(weights_with_terms: Iterable[tuple[float, float]]) -> float:
+    total_weight: float = sum(weight for (weight, _) in weights_with_terms)
+    numerator: float = sum(
+        weight * term for (weight, term) in weights_with_terms
+    )
 
     return numerator / total_weight
 
@@ -16,7 +18,7 @@ def get_overall_proficiency_score(word_scores: Iterable):
     be called the difficulty factor). The higher the difficulty factor, the
     more it contributes to the average.
     """
-    weights_with_terms = [
+    weights_with_terms: list[tuple[float, float]] = [
         (1 / ws.easiness_factor, ws.get_proficiency_score())
         for ws in word_scores
     ]
@@ -29,7 +31,7 @@ def sm2(
     repetition_number: int,
     easiness_factor: float,
     inter_repetition_interval: timedelta,
-) -> Tuple[int, float, timedelta]:
+) -> tuple[int, float, timedelta]:
     """Implement the SM-2 SRS algorithm.
 
     See https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.

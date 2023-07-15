@@ -13,7 +13,7 @@ class WordType(DjangoObjectType):
 
     proficiency_score = graphene.Float()
 
-    def resolve_proficiency_score(root: Word, info, **kwargs):
+    def resolve_proficiency_score(root: Word, info, **kwargs) -> float:
         if not info.context.user.is_authenticated:
             raise PermissionError("Not authenticated.")
 
@@ -56,10 +56,10 @@ class Query(graphene.ObjectType):
         SentenceConnection, book_id=graphene.ID(required=True)
     )
 
-    def resolve_books(root, info, **kwargs):
+    def resolve_books(root, info, **kwargs) -> BookConnection:
         return Book.objects.all()
 
-    def resolve_sentences(root, info, book_id, **kwargs):
+    def resolve_sentences(root, info, book_id, **kwargs) -> SentenceConnection:
         if not info.context.user.is_authenticated:
             raise PermissionError("Not authenticated.")
 

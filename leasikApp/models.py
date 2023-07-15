@@ -74,7 +74,7 @@ class Sentence(models.Model):
         ]
         return set(str(s) for s in localized)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"{self.text} ({self.translation})"
 
 
@@ -95,8 +95,10 @@ class Book(models.Model):
 
     def get_sentences_sorted_by_proficiency_score(
         self, owner: settings.AUTH_USER_MODEL, **filter_conditions
-    ) -> Iterable[Sentence]:
-        sentences = list(self.sentences.filter(**filter_conditions))
+    ):
+        sentences: list[Sentence] = list(
+            self.sentences.filter(**filter_conditions)
+        )
         return sorted(
             sentences,
             key=lambda s: s.get_proficiency_score(owner=owner),
@@ -152,7 +154,7 @@ class WordScore(models.Model):
 
     last_review_date = models.DateField(auto_now_add=True)
 
-    def get_proficiency_score(self):
+    def get_proficiency_score(self) -> int:
         return (
             date.today()
             - self.last_review_date
@@ -179,5 +181,5 @@ class WordScore(models.Model):
 
         self.save()
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"{self.word} of {self.owner.username}"
