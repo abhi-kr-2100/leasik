@@ -130,8 +130,6 @@ class Book(models.Model):
     def get_sentences_sorted_by_proficiency_score(
         self, owner: settings.AUTH_USER_MODEL, *filters, **filter_conditions
     ):
-        print(filters)
-        print(filter_conditions)
         sentences: list[Sentence] = list(
             self.sentences.filter(Q(*filters, **filter_conditions))
         )
