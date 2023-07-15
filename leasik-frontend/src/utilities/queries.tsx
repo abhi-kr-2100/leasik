@@ -53,30 +53,6 @@ export const GET_SENTENCES = gql`
       }
     }
   }
-`
-
-export const GET_WORD_CARDS = gql`
-  query GetWordCards($sentenceListId: ID!, $n: Int) {
-    wordCards(sentenceListId: $sentenceListId, first: $n) {
-      edges {
-        node {
-          id
-          word
-          sentences(first: 1) {
-            edges {
-              node {
-                id
-                text
-                translation
-                textLanguage
-                textLocale
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 `;
 
 export const SCORE_ANSWER = gql`
