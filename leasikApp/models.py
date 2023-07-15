@@ -6,6 +6,7 @@ from string import digits, punctuation, whitespace
 from icu import UnicodeString, Locale
 
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator
@@ -127,10 +128,12 @@ class Book(models.Model):
     sentences = models.ManyToManyField(to=Sentence, blank=True)
 
     def get_sentences_sorted_by_proficiency_score(
-        self, owner: settings.AUTH_USER_MODEL, **filter_conditions
+        self, owner: settings.AUTH_USER_MODEL, *filters, **filter_conditions
     ):
+        print(filters)
+        print(filter_conditions)
         sentences: list[Sentence] = list(
-            self.sentences.filter(**filter_conditions)
+            self.sentences.filter(Q(*filters, **filter_conditions))
         )
         return sorted(
             sentences,

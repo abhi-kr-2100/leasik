@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 import graphene
 from graphene import relay
 from graphql_relay import from_global_id
@@ -71,19 +73,37 @@ class BookConnection(relay.Connection):
 class Query(graphene.ObjectType):
     books = relay.ConnectionField(BookConnection)
     sentences = relay.ConnectionField(
-        SentenceConnection, book_id=graphene.ID(required=True)
+        SentenceConnection,
+        book_id=graphene.ID(required=True),
+        tags=graphene.List(graphene.String),
+        includeUntagged=graphene.Boolean(),
     )
 
     def resolve_books(root, info, **kwargs) -> BookConnection:
         return Book.objects.all()
 
-    def resolve_sentences(root, info, book_id, **kwargs) -> SentenceConnection:
+    def resolve_sentences(
+        root, info, book_id, tags=None, includeUntagged=True, **kwargs
+    ) -> SentenceConnection:
         if not info.context.user.is_authenticated:
             raise PermissionError("Not authenticated.")
 
         book = Query._get_book_from_gql_id(book_id)
+
+        filter = None
+        if tags is None and not includeUntagged:
+            filter = ~Q(tags=None)
+        elif tags is not None and includeUntagged:
+            filter = Q(tags__label__in=tags) | Q(tags=None)
+        elif tags is not None and not includeUntagged:
+            filter = Q(tags__label__in=tags) & ~Q(tags=None)
+
+        if filter is None:
+            return book.get_sentences_sorted_by_proficiency_score(
+                owner=info.context.user
+            )
         return book.get_sentences_sorted_by_proficiency_score(
-            owner=info.context.user
+            info.context.user, filter
         )
 
     def _get_book_from_gql_id(id: str) -> Book:
