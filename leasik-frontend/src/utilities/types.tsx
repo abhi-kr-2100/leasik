@@ -34,6 +34,16 @@ export type Word = {
   proficiencyScore: number;
 };
 
+export type BookEdge = {
+  node: BookNode;
+};
+
+type BookNode = {
+  id: string;
+  name: string;
+  description: string;
+};
+
 export type SentenceEdge = {
   node: SentenceNode;
 };

@@ -19,6 +19,6 @@ export default function BooksController() {
   return <Books books={bookComponents} />;
 }
 
-function getBooksFromResponse(resp: { books: { edges: Types.Book[] } }) {
-  return resp.books.edges;
+function getBooksFromResponse(resp: { books: { edges: Types.BookEdge[] } }) {
+  return resp.books.edges.map(({ node: book }) => book);
 }
