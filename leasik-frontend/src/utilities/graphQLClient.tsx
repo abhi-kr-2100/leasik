@@ -1,11 +1,11 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
-const httpLink = createHttpLink({
+const backendAPI = createHttpLink({
   uri: process.env.REACT_APP_GRAPHQL_API_URI,
 });
 
-const authLink = setContext((_, { headers }) => {
+const withAuthToken = setContext((_, { headers }) => {
   const token = localStorage.getItem("token");
   return {
     headers: {
@@ -16,7 +16,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const graphQLClient = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: withAuthToken.concat(backendAPI),
   cache: new InMemoryCache(),
 });
 
