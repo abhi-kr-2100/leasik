@@ -12,9 +12,9 @@ import Home from "./components/Home";
 import BooksController from "./components/BooksController";
 import BookPlayController from "./components/BookPlayController";
 import LoginController from "./components/LoginController";
+import LogoutController from "./components/LogoutController";
 
 import "./index.css";
-import LogoutController from "./components/LogoutController";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
