@@ -12,7 +12,7 @@ export default function BookPlay(props: IBookPlayProps) {
 
   return (
     <div className="h-full flex flex-col justify-center items-center">
-      {currentSentenceIdx >= props.sentences.length ? (
+      {isFinished(currentSentenceIdx, props.sentences.length) ? (
         <p>Finished!</p>
       ) : (
         <QuestionScreenController
@@ -23,4 +23,8 @@ export default function BookPlay(props: IBookPlayProps) {
       )}
     </div>
   );
+}
+
+function isFinished(currentIndex: number, totalItems: number) {
+  return currentIndex >= totalItems;
 }
