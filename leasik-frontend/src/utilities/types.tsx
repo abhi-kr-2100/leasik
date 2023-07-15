@@ -13,40 +13,46 @@ export type InputStatusType = "unchecked" | "correct" | "incorrect";
 // been inspired by this comment: https://github.com/abhi-kr-2100/leasik/issues/39#issuecomment-1272548336
 export type InputPrelimStatusType = "correct" | "incorrect" | "partial";
 
-type WordNode = {
-    id: string;
-    word: string;
-    proficiencyScore: number;
-}
-
-type WordEdge = {
-    node: WordNode;
-}
-
-export type SentenceNode = {
-    id: string;
-    text: string;
-    translation: string;
-    textLocale: string;
-    textLanguage: string;
-    wordSet: { edges: WordEdge[] };
-}
-
-export type SentenceEdge = {
-    node: SentenceNode;
-}
-
-export type Word = {
-    id: string;
-    word: string;
-    score: number;
-}
+export type Book = {
+  id: string;
+  name: string;
+  description: string;
+};
 
 export type Sentence = {
-    id: string;
-    text: string;
-    translation: string;
-    locale: string;
-    language: string;
-    words: Word[];
-}
+  id: string;
+  text: string;
+  translation: string;
+  locale: string;
+  language: string;
+  words: Word[];
+};
+
+export type Word = {
+  id: string;
+  word: string;
+  score: number;
+};
+
+export type SentenceEdge = {
+  node: SentenceNode;
+};
+
+type SentenceNode = {
+  id: string;
+  text: string;
+  translation: string;
+  textLocale: string;
+  textLanguage: string;
+  wordSet: { edges: WordEdge[] };
+};
+
+type WordEdge = {
+  node: WordNode;
+};
+
+type WordNode = {
+  id: string;
+  word: string;
+  proficiencyScore: number;
+};
