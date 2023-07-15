@@ -77,6 +77,8 @@ function normalizedString(s: string, locale: string = "") {
   const digits = "0123456789";
   const whitespace = " \t\n\r\v\f";
 
+  locale = getLocaleOrDefault(locale);
+
   return trim(s, punctuation + whitespace + digits).toLocaleLowerCase(locale);
 }
 
