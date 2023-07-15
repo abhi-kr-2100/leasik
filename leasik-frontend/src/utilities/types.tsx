@@ -23,15 +23,15 @@ export type Sentence = {
   id: string;
   text: string;
   translation: string;
-  locale: string;
-  language: string;
+  textLocale: string;
+  textLanguage: string;
   words: Word[];
 };
 
 export type Word = {
   id: string;
   word: string;
-  score: number;
+  proficiencyScore: number;
 };
 
 export type SentenceEdge = {

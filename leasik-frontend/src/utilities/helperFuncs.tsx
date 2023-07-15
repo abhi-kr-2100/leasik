@@ -11,7 +11,7 @@ export function toWords(text: string): string[] {
  */
 export function chooseMaskedWord(sentence: Sentence): Word {
   const prob_nums = getProbabilityNumbers(
-    sentence.words.map((word) => word.score)
+    sentence.words.map((word) => word.proficiencyScore)
   );
   const prob_array = getSpaceByProbabilityNumbers(sentence.words, prob_nums);
 

@@ -39,7 +39,7 @@ export default function QuestionScreenController(
     return null;
   }
 
-  const locale = props.sentence.locale;
+  const locale = props.sentence.textLocale;
 
   const primaryAction = () => {
     if (inputStatus !== "unchecked") {
@@ -56,10 +56,10 @@ export default function QuestionScreenController(
         scoreAnswer({ variables: { wordId: maskedWord.id, score: 0 } });
       }
 
-      if (props.sentence.language !== "") {
+      if (props.sentence.textLanguage !== "") {
         let utterence = new SpeechSynthesisUtterance();
         utterence.text = props.sentence.text;
-        utterence.lang = props.sentence.language;
+        utterence.lang = props.sentence.textLanguage;
         utterence.rate = 0.9;
 
         speechSynthesis.speak(utterence);

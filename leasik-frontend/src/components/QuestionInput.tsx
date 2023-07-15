@@ -22,7 +22,7 @@ export interface IQuestionInputProps {
 export default function QuestionInput(props: IQuestionInputProps) {
   const words = toWords(props.sentence.text);
   const maskedWordPosition = words.findIndex((word) =>
-    areEquivalent(word, props.maskedWord.word, props.sentence.locale)
+    areEquivalent(word, props.maskedWord.word, props.sentence.textLocale)
   );
   const beforeHiddenWord = words.slice(0, maskedWordPosition).join(" ");
   const hiddenWord = words[maskedWordPosition];
