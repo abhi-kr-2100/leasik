@@ -1,10 +1,11 @@
+import { shuffle } from "lodash";
 import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 
 import { GET_SENTENCES } from "../utilities/queries";
+import { SentenceEdge } from "../utilities/types";
 
 import BookPlay from "./BookPlay";
-import { SentenceEdge } from "../utilities/types";
 
 export default function BookPlayController() {
   const bookId = useParams().bookId;
@@ -17,7 +18,7 @@ export default function BookPlayController() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`Error loading cards: ${error.message}`}</div>;
 
-  const sentences = getSentencesFromResponse(data);
+  const sentences = shuffle(getSentencesFromResponse(data));
 
   return <BookPlay sentences={sentences} />;
 }
