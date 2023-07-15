@@ -32,7 +32,7 @@ export default function BookController(props: IBookControllerProps) {
   };
 
   const playLink = useMemo(
-    () => `/books/${props.book.id}`,
+    () => getPlayLink(props.book.id, tagStatuses, shouldPlayUntaggedSentences),
     [props.book, tagStatuses, shouldPlayUntaggedSentences]
   );
 
@@ -95,6 +95,22 @@ function TagSelectionModal(props: ITagSelectionModalProps) {
       </Box>
     </Modal>
   );
+}
+
+function getPlayLink(
+  bookId: string,
+  tagStatuses: TagSelectionStatus[],
+  shouldPlayUntaggedSentences: boolean
+) {
+  const queryParams = new URLSearchParams({
+    tags: tagStatuses
+      .filter((tag) => tag.isSelected)
+      .map((tag) => tag.label)
+      .toString(),
+    includeUntagged: shouldPlayUntaggedSentences.toString(),
+  });
+
+  return `/books/${bookId}?${queryParams}`;
 }
 
 interface ITagSelectionModalProps {
