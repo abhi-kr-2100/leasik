@@ -13,14 +13,12 @@ export default function BooksController() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{`couldn't retrive books: ${error.message}`}</div>;
 
-  const bookEdges = data.books.edges as { node: Types.Book }[];
-  const books = bookEdges.map(({ node: book }) => ({
-    id: book.id,
-    name: book.name,
-    description: book.description,
-  }));
-
+  const books = getBooksFromResponse(data);
   const bookComponents = books.map((sl) => <Book book={sl} />);
 
   return <Books books={bookComponents} />;
+}
+
+function getBooksFromResponse(resp: { books: { edges: Types.Book[] } }) {
+  return resp.books.edges;
 }
