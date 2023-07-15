@@ -1,9 +1,9 @@
 import { trim } from "lodash";
 import { Sentence, Word } from "./types";
 
-const punctuation = `!"#$%&'()*+,-./:;<=>?@[\\]^_\`{|}~`
-const digits = '0123456789'
-const whitespace = ' \t\n\r\v\f'
+const punctuation = `!"#$%&'()*+,-./:;<=>?@[\\]^_\`{|}~`;
+const digits = '0123456789';
+const whitespace = ' \t\n\r\v\f';
 
 export function toWords(text: string): string[] {
   return text.split(/\s+/);
@@ -11,17 +11,6 @@ export function toWords(text: string): string[] {
 
 export function chooseMaskedWord(sentence: Sentence): Word {
   return randomChoice(sentence.words);
-}
-
-export function findWordPositions(words: string[], word: string, locale: string = ""): number[] {
-  let positions: number[] = [];
-  for (let i = 0; i < words.length; ++i) {
-    if (matches(word, words[i], locale)) {
-      positions.push(i);
-    }
-  }
-
-  return positions;
 }
 
 export function randomChoice<T>(items: T[]): T {
