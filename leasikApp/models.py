@@ -15,12 +15,10 @@ from .helpers import get_overall_proficiency_score, sm2
 
 
 class Tag(models.Model):
-    """A tag made up of a short string."""
-
     label = models.CharField(max_length=50, unique=True)
 
     def __str__(self) -> str:
-        return f"{self.label}"
+        return self.label
 
 
 class Sentence(models.Model):
@@ -57,16 +55,12 @@ class Sentence(models.Model):
         return word_scores
 
     def get_proficiency_score(self, owner: settings.AUTH_USER_MODEL):
-        """The proficiency of the owner is in using the words in this
-        sentence's text in the context of this sentence.
-        """
-
+        """Proficiency of owner in using words in this sentence's context."""
         word_scores = self.get_word_scores(owner)
         return get_overall_proficiency_score(word_scores)
 
     def get_words(self):
         """Return the set of all words in the text of this sentence."""
-
         words = self.text.split()
         stripped_words = [
             word.strip(punctuation + whitespace + digits) for word in words
@@ -169,16 +163,16 @@ class WordScore(models.Model):
         if score not in range(0, 5 + 1):
             raise ValueError("Score must be an integer from 0 to 5.")
 
-        n, ef, i = sm2(
+        repetition_number, easiness_factor, inter_repetition_interval = sm2(
             score,
             self.repetition_number,
             self.easiness_factor,
             self.inter_repetition_interval,
         )
 
-        self.repetition_number = n
-        self.easiness_factor = ef
-        self.inter_repetition_interval = i
+        self.repetition_number = repetition_number
+        self.easiness_factor = easiness_factor
+        self.inter_repetition_interval = inter_repetition_interval
         self.last_review_date = date.today()
 
         self.save()
