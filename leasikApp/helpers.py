@@ -47,14 +47,9 @@ def sm2(
         # In the original SM-2 algorithm, the inter_repetition_interval may not
         # always increase even if one gets the word right. In our version, a
         # correct response always leads to an increase.
-        if score == 3:  # the user barely remembers the word
-            inter_repetition_interval = timedelta(
-                days=inter_repetition_interval.days + 1
-            )
-        else:
-            inter_repetition_interval = timedelta(
-                days=ceil(inter_repetition_interval.days * easiness_factor)
-            )
+        inter_repetition_interval = timedelta(
+            days=ceil(inter_repetition_interval.days * easiness_factor)
+        )
         repetition_number += 1
     else:
         repetition_number = 0
