@@ -60,8 +60,12 @@ def sm2(
         repetition_number = 0
         inter_repetition_interval = timedelta(days=1)
 
+    # In the standard SM-2 algorithm, only a score of 5 increases the
+    # easiness_factor, while a score of 4 leaves it unchanged. All lower scores
+    # decrease it. In our version, easiness_factor is never decreased on a
+    # correct answer (score >= 3).
     easiness_factor = easiness_factor + (
-        0.1 - (5 - score) * (0.08 + (5 - score) * 0.02)
+        0.1 - (4 - score) * (0.08 + (4 - score) * 0.02)
     )
     easiness_factor = max(easiness_factor, 1.3)
 
