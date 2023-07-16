@@ -1,5 +1,6 @@
 from typing import Iterable
 from datetime import timedelta
+from math import ceil
 
 
 def weighted_avg(weights_with_terms: Iterable[tuple[float, float]]) -> float:
@@ -38,19 +39,17 @@ def sm2(
     easiness_factor: float,
     inter_repetition_interval: timedelta,
 ) -> tuple[int, float, timedelta]:
-    """Implement the SM-2 SRS algorithm.
+    """Implement a variant of the SM-2 SRS algorithm.
 
     See https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm.
     """
     if score >= 3:
-        if repetition_number == 0:
-            inter_repetition_interval = timedelta(days=1)
-        elif repetition_number == 1:
-            inter_repetition_interval = timedelta(days=6)
-        else:
-            inter_repetition_interval = timedelta(
-                days=round(inter_repetition_interval.days * easiness_factor)
-            )
+        # In the original SM-2 algorithm, the inter_repetition_interval may not
+        # always increase even if one gets the word right. In our version, a
+        # correct response always leads to an increase.
+        inter_repetition_interval = timedelta(
+            days=ceil(inter_repetition_interval.days * easiness_factor)
+        )
         repetition_number += 1
     else:
         repetition_number = 0

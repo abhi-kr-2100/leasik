@@ -178,10 +178,10 @@ class WordScore(models.Model):
     easiness_factor = models.FloatField(default=2.5)
 
     # The default value for inter-repetition interval is not mentioned on the
-    # Wikipedia page for SM-2. A default of 0 has been chosen so that users can
-    # review newly added cards. It is always in whole days.
+    # Wikipedia page for SM-2. A non-zero default is chosen so that
+    # multiplication with it, doesn't yield zero.
     inter_repetition_interval = models.DurationField(
-        default=timedelta(days=0),
+        default=timedelta(days=1),
         verbose_name="inter-repetition interval",
         validators=[MinValueValidator(timedelta(days=0))],
     )
