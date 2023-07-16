@@ -2,6 +2,12 @@ from typing import Iterable
 from datetime import timedelta
 from math import ceil
 
+from django.db.models import Model
+
+
+def was_saved(instance: Model):
+    return instance.pk is None
+
 
 def weighted_avg(weights_with_terms: Iterable[tuple[float, float]]) -> float:
     total_weight: float = sum(weight for (weight, _) in weights_with_terms)

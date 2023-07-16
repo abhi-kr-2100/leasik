@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.core.validators import MinValueValidator
 from django.conf import settings
 
-from .helpers import get_overall_proficiency_score, sm2
+from .helpers import get_overall_proficiency_score, sm2, was_saved
 
 
 class Tag(models.Model):
@@ -114,6 +114,9 @@ class Sentence(models.Model):
 
 @receiver(post_save, sender=Sentence)
 def create_word_models(sender, instance: Sentence, *args, **kwargs):
+    if not was_saved(instance):
+        return  # the instance is being updated, not saved
+
     words = instance.get_words()
     for word in words:
         Word.objects.create(word=word, sentence=instance)
