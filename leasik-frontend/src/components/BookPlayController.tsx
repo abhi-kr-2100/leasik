@@ -17,7 +17,7 @@ export default function BookPlayController() {
   );
 
   const { loading, error, data } = useQuery(GET_SENTENCES, {
-    variables: { bookId, n: 20, tags, includeUntagged },
+    variables: { bookId, n: 10, tags, includeUntagged },
     fetchPolicy: "no-cache",
   });
 
