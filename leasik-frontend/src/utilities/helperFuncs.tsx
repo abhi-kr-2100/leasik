@@ -1,4 +1,4 @@
-import { min, trim } from "lodash";
+import { max, min, trim } from "lodash";
 import { Sentence, Word } from "./types";
 
 export function toWords(text: string): string[] {
@@ -14,12 +14,13 @@ export function chooseMaskedWord(sentence: Sentence): Word {
   // to their position in sentence.text
   const words = getOrderedWordsFromSentence(sentence);
 
-  const prob_nums = getProbabilityNumbers(
+  const probNums = getProbabilityNumbers(
     words.map((word) => word.proficiencyScore)
   );
-  const prob_array = getSpaceByProbabilityNumbers(words, prob_nums);
+  const boostedProbNums = getWithTopWeightsBoosted(probNums);
+  const probArray = getSpaceByProbabilityNumbers(words, boostedProbNums);
 
-  return randomChoice(prob_array);
+  return randomChoice(probArray);
 }
 
 export function areEquivalent(s1: string, s2: string, locale: string = "") {
@@ -61,6 +62,14 @@ function getSpaceByProbabilityNumbers<T>(items: T[], probNums: number[]) {
   });
 
   return space;
+}
+
+/**
+ * Bias the weights in favor of the highest weights.
+ */
+function getWithTopWeightsBoosted(weights: number[]) {
+  const highest = max(weights)!;
+  return weights.map((w) => (w !== highest ? w : Math.ceil(w * 1.5)));
 }
 
 /** Make all weights positive (greater than 0). */
