@@ -60,7 +60,10 @@ function getSpaceByProbabilityNumbers<T>(items: T[], probNums: number[]) {
 /** Make all weights positive (greater than 0). */
 function normalizedWeights(weights: number[]) {
   const base = Math.abs(min(weights) ?? 0) + 1; // plus one to make sure everything is > 0
-  return weights.map((w) => w + base);
+  const normalized = weights.map((w) => w + base);
+  const common_factor = gcd(normalized);
+
+  return normalized.map((n) => n / common_factor);
 }
 
 export function randomChoice<T>(items: T[]): T {
@@ -98,4 +101,12 @@ function getOrderedWordsFromSentence(sentence: Sentence): Word[] {
   }
 
   return orderedWords;
+}
+
+function gcd(numbers: number[]) {
+  return numbers.reduce(gcd2);
+}
+
+function gcd2(a: number, b: number): number {
+  return b === 0 ? a : gcd2(b, a % b);
 }
