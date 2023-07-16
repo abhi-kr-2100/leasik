@@ -48,8 +48,14 @@ function getProbabilityNumbers(weights: number[]) {
 }
 
 function getSpaceByProbabilityNumbers<T>(items: T[], probNums: number[]) {
+  let usedItems = new Set();
   let space: T[] = [];
   items.forEach((item, idx) => {
+    if (usedItems.has(item)) {
+      return;
+    }
+    usedItems.add(item);
+
     const repeated = Array(probNums[idx]).fill(item);
     space.push(...repeated);
   });
