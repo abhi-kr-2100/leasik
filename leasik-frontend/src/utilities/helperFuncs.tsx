@@ -94,6 +94,8 @@ function getOrderedWordsFromSentence(sentence: Sentence): Word[] {
   let orderedWords = [];
   for (const word of wordsInOriginalOrder) {
     orderedWords.push(
+      // sentence.words is in random order, so we need to find the word
+      // corresponding to the word in the original order
       sentence.words.find((w) =>
         areEquivalent(w.word, word, sentence.textLocale)
       )!
