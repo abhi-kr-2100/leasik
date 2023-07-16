@@ -15,15 +15,20 @@ def weighted_avg(weights_with_terms: Iterable[tuple[float, float]]) -> float:
 def get_overall_proficiency_score(word_scores: Iterable):
     """Return the weighted average normalized proficiency score of WordScores.
 
-    The average is weighted by the inverse of the easiness factor (whcih could
-    be called the difficulty factor). The higher the difficulty factor, the
-    more it contributes to the average.
+    The average is weighted by the easiness factor. Since a more negative
+    proficiency score of a word implies better proficiency (rather than higher
+    proficiency indicating a higher proficiency), a higher overall
+    proficiency of a sentence should imply a more difficult sentence.
+
+    This is why the proficiency scores are weighted by the easiness factor
+    rather than the inverse of the easiness factor: all proficiency scores are
+    negative, so multiplying them by a higher easiness factor makes them even
+    more negative. More negativity implies better mastery of the sentence.
 
     Normalization ensures that the number of word scores is irrelevant.
     """
     weights_with_terms: list[tuple[float, float]] = [
-        (1 / ws.easiness_factor, ws.get_proficiency_score())
-        for ws in word_scores
+        (ws.easiness_factor, ws.get_proficiency_score()) for ws in word_scores
     ]
 
     return weighted_avg(weights_with_terms) / len(word_scores)
