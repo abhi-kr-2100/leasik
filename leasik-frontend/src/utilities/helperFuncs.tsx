@@ -69,7 +69,7 @@ function getSpaceByProbabilityNumbers<T>(items: T[], probNums: number[]) {
  */
 function getWithTopWeightsBoosted(weights: number[]) {
   const highest = max(weights)!;
-  return weights.map((w) => (w !== highest ? w : Math.ceil(w * 1.5)));
+  return weights.map((w) => (w !== highest ? w : w * 3));
 }
 
 /** Make all weights positive (greater than 0). */
